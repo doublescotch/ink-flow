@@ -37,3 +37,17 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - Piège mesuré : détecter les archives VTK restées dans le jeu par « livre une texture cible » attrape `006_Angel_Body` et les textures de tête HD ; retenu : archives « pures » (toutes les entrées = textures de calque connues) ou contenu identique à un tatouage choisi (ETUDE § 14).
 - 19 h 40 : exe bâti (11,4 Mo), fenêtre capturée (18 tatouages, 4 voyants verts) ; **19 h 55 : exe figé testé sans clic (`INKFLOW_AUTOTEST`), cache vide, WolvenKit téléchargé par l'outil : 139,6 Mo, 106 fichiers identiques, 201 s**. SHA-256 du zip WolvenKit épinglée après deux téléchargements concordants.
 - En parallèle (demande de Hell_Kaiser, hors Ink Flow) : retrait du jeu des mods `5_Visuals` + `16_World` pour son test de perf (`cp:ETAT_2.5.md`).
+
+## 2026-11-01 (20 h-21 h 30) — QA 4 de l'exe, 1.0 décidée, dépôt git
+
+- 20 h-20 h 30 : **QA 4 par Hell_Kaiser** : exe lancé tel quel, jeu détecté, Browse vers un autre
+  dossier → « CLI non détecté », mappé à la main (Download non essayé) ; `in\` ajouté (20 entrées de
+  catalogue importées), un nom édité, Build, Install (popup : archives posées, anciennes dans
+  `backup\2026-11-01_200343`). En jeu : miroir OK, nom édité affiché, **slot actif conservé** après
+  le build frais. Validé.
+- 21 h : décisions : **1.0 à livrer**, **dépôt `ink-flow` ouvert** (« tout cœur ouvert »). Dépôt
+  initialisé en local (Fable) : premier commit = builder, tools, templates, ETUDE, LOG, HANDOVER ;
+  `canari\` exclu après un premier essai qui l'avait pris (commentaire en fin de ligne dans
+  `.gitignore` : non supporté par git, corrigé, commit réécrit avant tout push) ; `.gitattributes`
+  LF. Réponse à « comment l'exe choisit le corps » gravée dans `HANDOVER.md` (lue dans `core.py`).
+- 21 h 20 : go de Hell_Kaiser pour la mise en ligne, **branche `master`** (règle : tous ses dépôts).

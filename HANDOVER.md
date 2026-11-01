@@ -29,9 +29,45 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 - **`InkFlowBuilder.exe` 0.4.0 : `C:\__DEV\cyberpunk\ink_flow\exe\dist\InkFlowBuilder.exe`** (11,4 Mo, PyInstaller un fichier, SHA-256 dans la sortie de `build_exe.ps1`) ; venv dans `exe\venv`, maison de test `exe\home` (`INKFLOW_HOME`, config + catalogue + WolvenKit téléchargé + cache 516 Mo). **Preuves** : moteur CLI = 106/106 entrées identiques à la v0.3b, même taille ; **exe figé, cache vide, mode `INKFLOW_AUTOTEST` : 18 tatouages, 139,6 Mo, 106 fichiers identiques, 201 s** avec le WolvenKit qu'il a téléchargé lui-même (45 Mo, SHA-256 épinglée, vérifiée sur deux téléchargements) ; fenêtre capturée (`builder\tests\gui_main_2026-11-01.png`). Non testé sans clic : bouton Install (déplacement des archives VTK en conflit, sauvegarde), dialogue des doublons de noms, édition des noms (logique simple, à prendre en main par lui).
 - L'exe n'est **pas** copié dans OneDrive (binaire de 11 Mo, se rebâtit en 20 s) ; à sa demande seulement.
 
-## Prochain geste
+## État (2026-11-01, 21 h) : exe pris en main, 1.0 décidée, dépôt git ouvert
 
-1. **Prise en main de l'exe par Hell_Kaiser** : lancer `InkFlowBuilder.exe` tel quel (son vrai `%LOCALAPPDATA%\InkFlow` se crée, WolvenKit se télécharge), ajouter `C:\__DEV\cyberpunk\ink_flow\in\`, renommer, Build, Install (jeu fermé ; l'outil proposera de déplacer les archives VTK « pures » encore dans le jeu, aucune attendue), puis vérifier en jeu que c'est la même chose que la v0.3b. Ce qu'il voit de faux dans l'interface = liste pour la v0.4.1.
+- **QA 4 de l'exe par Hell_Kaiser (20 h-20 h 30) : validée.** Game folder détecté seul ; Browse vers
+  un autre dossier → « CLI WolvenKit non détecté », mappé à la main (le bouton Download n'a pas été
+  essayé) ; `in\` ajouté (catalogue : 20 entrées importées de `inkflow_slugs.json`) ; un nom édité à
+  la main ; Build ; Install → popup de succès (`Ink_Flow.archive` + `.xl` dans `archive\pc\mod`,
+  anciens dans `%LOCALAPPDATA%\InkFlow\backup\2026-11-01_200343`). En jeu : miroir OK, le nom
+  édité s'affiche, **le slot actif du personnage a gardé son tatouage** après le build frais
+  (slug stable par empreinte de contenu : un joueur qui ajoute des tatouages ne perd pas ses
+  réglages). Un seul écart vu : rien.
+- **Dans le jeu : build de l'exe 0.4.0** (20 h 03), contenu = v0.3b (18 tatouages, 2 slots,
+  miroir, opacité 1,0).
+- **Décisions de Hell_Kaiser (21 h)** : **livrer une 1.0 à ce stade** ; **dépôt git `ink-flow`,
+  ouvert** (« tout cœur ouvert, les gens doivent pouvoir contrôler ce qu'on a fait ») : initialisé
+  **en local** à 21 h 05 à la racine du projet (branche `main`, committer Hell_Kaiser, auteur Claude
+  Fable 5.1), contenu = builder + tools + templates + ETUDE, LOG, HANDOVER ; `canari\` exclu
+  (textures tierces). **Aucun dépôt GitHub créé** : sur son go seulement.
+- **Comment l'exe choisit le corps** (question de Hell_Kaiser, réponse lue dans `core.py`,
+  `find_owner`) : pour chaque cible (corps, bras G/D, tête), il cherche dans `archive\pc\mod` la
+  **première archive dans l'ordre de chargement du jeu** (alphabétique, insensible à la casse) qui
+  livre le maillage vanilla (`t0_000_pwa_base__full.mesh`…), sinon le jeu de base ; la coque est
+  une copie de CE maillage. Donc même choix que le jeu si plusieurs corps sont chargés ; le journal
+  de build l'écrit (`Body : 006_Angel_Body.archive (over …)`). Pas « Angel » en dur : tout corps
+  dont le maillage a des matériaux locaux et l'apparence de peau standard passe, sinon erreur
+  « unsupported body mod ». Ce qui n'est **pas** supporté : la **famille UV** (texture
+  `fullbody_overlay_d01.xbm`, corps Solo), V masculin, FPP. **Conséquence à écrire dans le README** :
+  changer de corps après un build = rebâtir (la coque est une copie de l'ancien corps).
+
+## Prochain geste (1.0)
+
+1. **Avant publication** : (a) `env.py` : test du bouton Download par lui ; (b) README : « rebâtir
+   après un changement de corps » + ligne sur le slot conservé ; (c) **permissions** : les
+   `templates\*.json` viennent du CCXL Tattoo Toolkit (20279) et de Kylin (localisation) : demander
+   ou remplacer par des gabarits tirés des fichiers vanilla ; (d) version 1.0.0 dans `gui.py` /
+   `build_exe.ps1`, exe rebâti, SHA-256 notée ; (e) création du dépôt GitHub `doublescotch/ink-flow`
+   sur son go, push ; (f) page Nexus (texte, captures, faux positifs antivirus annoncés).
+2. **Après la 1.0** : famille UV (corps Solo), icônes dans le créateur, FPP, V masculin, poids
+   (morphtarget partagé), morph changé au charcudoc (QA non cochée).
+3. ~~Prise en main de l'exe par Hell_Kaiser~~ **faite (QA 4)**.
 2. ~~Poser la v0.3~~ **posée à 13 h 11**.
 2. **QA v0.3 à lui** (liste complète ETUDE § 12) ; les points qui tranchent : (b) la coque de tête **suit les morphs** du visage (preset, nez, mâchoire…) et (a) s'affiche tout court : c'est le seul point non lu de la recette (nos infos tête sont dans la section **corps** du créateur, le vanilla met les siennes dans la section tête). Si (a) ou (b) rate : variante = infos tête dans `headCustomizationOptions` (groupes `TPP`, `character_customization`, `TPP_photomode`) référencées depuis nos switchers du corps ; ≈ 30 lignes.
 3. ~~**Décision de Hell_Kaiser (01/11, 16 h) : « on finit Ink Flow après, nouvelle session »** : QA complète de la tête~~ faite (QA 3) ; ~~**exe + interface**~~ livré (v0.4, 20 h). Reste, à son choix : **git** (il a dit « pas encore » ; à ouvrir avant toute publication), **icônes** dans le créateur, **famille UV**, **FPP**, **V masculin**, **poids** (16,4 Mo de morphtarget par tête : morphtarget partagé par dynamic materials), **morph changé au charcudoc** (point de QA non coché, non bloquant), **signature de code / faux positifs antivirus** avant Nexus.
