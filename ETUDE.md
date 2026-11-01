@@ -308,3 +308,49 @@ produits, et le squelette de localisation neutre donne la même localisation.
 **Livrable** : `exe\dist\InkFlowBuilder-1.0.0.zip` (exe + README + LICENSE, 11,7 Mo, SHA-256
 `35b5bf52…40daf6`), à envoyer sur Nexus par Hell_Kaiser avec la SHA-256 de l'exe dans la description
 du fichier. Non fait par moi : upload, captures, test du bouton Download (ses gestes).
+
+## 16. Première personne (2026-11-01, 23 h → 23 h 30, Fable, décision de Hell_Kaiser « ajouter la FPP avant l'upload »)
+
+**Pourquoi elle manquait** : coque FPP d'Angel dans le canari v1 (suspecte, non prouvée, d'une couture
+de bras ; retirée en v2, § 7) ; soupçon tombé à la QA v0 (couture revue sans coque FPP, § 9) ; jamais
+testable sur sa sauvegarde du début ; passée « après la 1.0 » à chaque passation.
+
+**Mesuré avant de coder** (vanilla `female_cco.inkcharcustomization`, extraction Angel `gen\arms`) :
+- Le `link` d'un switcher est une **clé partagée**, pas un nom : `body_tattoo` porte `link=body_tattoo`
+  et `fpp_body_tattoo` (index 1050, caché, `uiSlots=[fpp_body_tattoo]`, tags `NewGame`) porte le même ;
+  `nipples` et `fpp_nipples` partagent `nipples type` (tags `NewGame, Ripperdoc` tous deux). Les options
+  du suiveur ont les mêmes index que celles du maître. 8 switchers vanilla ont `link` = leur nom, 11 rien.
+- Groupes : `FPP_Body` ne liste que les entrées `fpp_*` ; `TPP_Body` et `character_creation` que les TPP.
+  Le générateur 1.0.0 mettait tous nos noms dans les trois groupes.
+- `fpp\t0_000_pwa_fpp__torso.mesh` (Angel) = **octet pour octet** `t0_000_pwa_base__full.mesh` (SHA-256
+  `d067067d…`, 4 220 371 o) : la coque FPP du corps est la coque TPP, aucun maillage de plus.
+- L'app FPP d'Angel `l0_000_fpp__full.app` affiche ce torse avec `chunkMask` **0xFFFFFFFFFFFFFFE0**
+  (chunks 5-7 du corps, 42 091 sommets ; 0-4 cachés). La coque FPP reçoit le même masque, lu dans l'app
+  FPP active du joueur (`fpp_torso_mask`, cache, repli sur la valeur mesurée).
+- Bras FPP `fpp\a0_000_pwa_fpp__full_l/r.mesh` : 4 / 3 chunks, 31 952 / 30 616 sommets, matériaux locaux,
+  apparence `01_ca_pale` ; le droit nomme ses matériaux `01_ca_pale_body` (contrôle de `shell()` élargi
+  à un préfixe). Vanilla FPP : `t0_000_fpp__tattoo_01.app` = un seul maillage « full » dédié (12 589
+  sommets), `entGarmentSkinnedMeshComponent`, masque plein ; non repris (c'est la piste v4 qui cassait).
+
+**Recette (builder `core.py`, `FPP_TARGETS`, réglage `fpp`, défaut on, case « First person » de la fenêtre,
+`--no-fpp` en CLI)** : par slot, un switcher suiveur `inkflow_slot<n>_fpp` (index 1066-1074, libres en
+vanilla), `link` = `inkflow_slot<n>` posé aussi sur le maître, `uiSlots` `inkflow_slot<n>_fpp`,
+`_fpp_arm_l`, `_fpp_arm_r`, mêmes tags que le maître, options aux mêmes index (Off + un par fichier,
+`off_fpp*` quand le fichier n'a pas la cible). Par fichier : `fpp_body` = `.app` garment sur
+`<slug>_pwa.mesh` avec le masque ; `fpp_arm_l/r` = copie décal du bras FPP actif (texture du bras TPP,
+`<slug>_pwa_fpp_arm_l/r.mesh`). Groupes : `FPP_Body` = noms `_fpp` seuls ; TPP et création = les autres
+(sans `fpp`, l'ancien comportement reste). Tête : rien (jamais vue en FPP).
+
+**Build CLI (`exe\home`, cache chaud)** : 18 tatouages, **150,3 Mo, 157 fichiers, 129 s** (1.0.0 : 139,6 Mo,
+106) : + 11 maillages de bras FPP (≈ 1 Mo chacun), + 40 `.app`. Dépaqueté (`gen\verify\fpp1`) : 4
+switchers (1041, 1042 ; 1066, 1067 liés), 100 infos dont 46 FPP, `FPP_Body` 48 / 0, `TPP_Body` et
+`character_creation` 56 / 0 ; `samurai_slot1_fpp.app` → `samurai_pwa.mesh` masque `…E0` ; bras FPP →
+texture du bras, `customization_tattoos_01_ca_pale.mi`, alpha 1,0. Exe rebâti (§ 15 pour la méthode).
+
+**QA en jeu (à lui, sauvegarde avec miroir)** : (a) créateur **inchangé** (pas de double décal ni de
+scintillement sur les bras : prouve que `FPP_Body` n'est pas dessiné dans le créateur) ; (b) en jeu,
+bras nus, regarder ses bras et vers le bas : tatouage présent, aligné avec le TPP (miroir) ; (c) aucun
+bout de tatouage flottant près de la caméra (masque) ; (d) changer de slot au miroir ou au charcudoc :
+la FPP suit (lien + tags) ; (e) mode photo inchangé. Si (a) rate : le groupe ne filtre pas le dessin, il
+faudra un `.app` FPP dédié hors du créateur (étude à part). Si (b) rate sans rien d'autre : `link` non
+suivi pour une clé custom → repli = noms FPP dans les options du maître (patron canari v1, § 7).

@@ -49,6 +49,7 @@ T = {
     "options": "Options",
     "slots": "Slots",
     "mirror": "Also available at the apartment mirror",
+    "fpp": "First person (arms and body seen by V)",
     "alpha": "Opacity",
     "out": "Output folder",
     "open": "Open",
@@ -217,9 +218,11 @@ class App(tk.Tk):
         ttk.Spinbox(f, from_=1, to=9, width=4, textvariable=self.slots_var).grid(row=0, column=1, sticky="w", **pad)
         self.mirror_var = tk.BooleanVar(value=bool(self.cfg["mirror"]))
         ttk.Checkbutton(f, text=T["mirror"], variable=self.mirror_var).grid(row=0, column=2, sticky="w", padx=(18, 6))
-        ttk.Label(f, text=T["alpha"]).grid(row=0, column=3, sticky="w", padx=(18, 6))
+        self.fpp_var = tk.BooleanVar(value=bool(self.cfg["fpp"]))
+        ttk.Checkbutton(f, text=T["fpp"], variable=self.fpp_var).grid(row=0, column=3, sticky="w", padx=(18, 6))
+        ttk.Label(f, text=T["alpha"]).grid(row=0, column=4, sticky="w", padx=(18, 6))
         self.alpha_var = tk.DoubleVar(value=float(self.cfg["alpha"]))
-        ttk.Spinbox(f, from_=0.1, to=1.0, increment=0.1, width=5, textvariable=self.alpha_var, format="%.1f").grid(row=0, column=4, sticky="w", **pad)
+        ttk.Spinbox(f, from_=0.1, to=1.0, increment=0.1, width=5, textvariable=self.alpha_var, format="%.1f").grid(row=0, column=5, sticky="w", **pad)
         ttk.Label(f, text=T["out"]).grid(row=1, column=0, sticky="w", **pad)
         self.out_var = tk.StringVar(value=self.cfg["out"])
         ttk.Entry(f, textvariable=self.out_var).grid(row=1, column=1, columnspan=5, sticky="ew", **pad)
@@ -494,7 +497,8 @@ class App(tk.Tk):
     def _settings(self):
         return core.Settings(game=self.game_var.get().strip(), cli=self.cli, work=env.WORK_DIR, out=self.out_var.get().strip() or env.OUT_DIR,
                              name=MOD_NAME, slots=max(1, int(self.slots_var.get())), slot_title="Ink {n}", max_name=int(self.cfg["max_name"]),
-                             alpha=round(float(self.alpha_var.get()), 2), mirror=bool(self.mirror_var.get()), route1=False)
+                             alpha=round(float(self.alpha_var.get()), 2), mirror=bool(self.mirror_var.get()),
+                             fpp=bool(self.fpp_var.get()), route1=False)
 
     def _selected_entries(self):
         return [e for e in self.entries if e.supported and e.id not in self.unchecked]
@@ -520,7 +524,7 @@ class App(tk.Tk):
         except (tk.TclError, ValueError) as e:
             messagebox.showerror(T["err"], str(e))
             return
-        self.cfg["slots"], self.cfg["mirror"], self.cfg["alpha"], self.cfg["out"] = s.slots, s.mirror, s.alpha, s.out
+        self.cfg["slots"], self.cfg["mirror"], self.cfg["fpp"], self.cfg["alpha"], self.cfg["out"] = s.slots, s.mirror, s.fpp, s.alpha, s.out
         self.cfg.save()
         self.result = None
         self._clear_log()
@@ -641,6 +645,7 @@ class App(tk.Tk):
             self.cfg["out"] = self.out_var.get().strip()
             self.cfg["slots"] = int(self.slots_var.get())
             self.cfg["mirror"] = bool(self.mirror_var.get())
+            self.cfg["fpp"] = bool(self.fpp_var.get())
             self.cfg["alpha"] = round(float(self.alpha_var.get()), 2)
             self.cfg["unchecked"] = sorted(self.unchecked)
             self.cfg.save()

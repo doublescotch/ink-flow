@@ -16,7 +16,7 @@ cfg = {
     "game": r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077",
     "cli": r"D:\OneDrive - NS2I\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\WolvenKit.Console-9.1.0\WolvenKit.CLI.exe",
     "out": r"C:\__DEV\cyberpunk\ink_flow\exe\test_out",
-    "slots": 2, "mirror": True, "alpha": 1.0,
+    "slots": 2, "mirror": True, "fpp": True, "alpha": 1.0,
     "files": [os.path.join(IN, f) for f in sorted(os.listdir(IN)) if f.lower().endswith(".archive")],
     "unchecked": [],
 }

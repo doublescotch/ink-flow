@@ -5,11 +5,39 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-01, 21 h 45) : 1.0.0 bâtie, attend son test du bouton Download et l'upload
+## État (2026-11-01, 23 h 45) : 1.0.0 + première personne bâtie, QA FPP attendue avant l'upload
 
-- **Exe 1.0.0 : `C:\__DEV\cyberpunk\ink_flow\exe\dist\InkFlowBuilder.exe`** (11,4 Mo, SHA-256
+- **Première personne (décision de Hell_Kaiser, 23 h : « ajouter la FPP avant l'upload »)** : livrée
+  dans le builder (ETUDE § 16 : suiveur caché par slot lié au sélecteur, coque du corps masquée comme le
+  torse FPP actif, copies des bras FPP, groupe `FPP_Body` seul ; case « First person » cochée par défaut,
+  `--no-fpp` en CLI). Build CLI : 150,3 Mo, 157 fichiers (+ 10,7 Mo), structure contrôlée dépaquetée.
+  **Jamais vue en jeu** : la pose et la QA sont à lui.
+- **QA FPP (à lui, sauvegarde avec miroir, bras nus)** : exe 1.0.0 rebâti → Build → Install (jeu fermé),
+  puis (a) créateur inchangé (ni double décal ni scintillement des bras) ; (b) en jeu, bras et corps vus
+  de V tatoués comme au miroir ; (c) rien qui flotte près de la caméra ; (d) changer le slot au miroir ou
+  au charcudoc : la FPP suit ; (e) mode photo inchangé. Replis si (a) ou (b) rate : ETUDE § 16, fin.
+- **Exe 1.0.0 rebâti à 23 h 35** : `exe\dist\InkFlowBuilder.exe` 11,4 Mo, SHA-256 `b1fd72db…68075`
+  (autotest figé : 157 fichiers, 150 347 776 o, 124 s, même résultat que le CLI) ;
+  zip `exe\dist\InkFlowBuilder-1.0.0.zip` 11,7 Mo, SHA-256 `c0b18ba7…4b027`, **recopié sur sa copie
+  dans le dossier du projet** (celle de 21 h 19 n'avait pas la FPP). README, `NEXUS.md` (limite FPP
+  retirée, résumé 247 caractères, étape 4) et ETUDE § 16 à jour ; le tout commité.
+- **`publish\` renommé `releases\` par lui (23 h 26, hors git)** : `Ink_Flow_Builder-1.0.0.zip` (sa copie
+  de 21 h 19, **remplacée par le zip avec FPP** à 23 h 45), `main.png`, `Ink Flow Interface.png` (22 h 54 :
+  fenêtre du builder **sans** la case « First person », capture 1 à refaire).
+
+- **Test de l'exe vierge par Hell_Kaiser (22 h)** : `%LOCALAPPDATA%\InkFlow` supprimé, relance : le jeu
+  est retrouvé seul (registre Steam + `libraryfolders.vdf`, `env.find_game_candidates`, aucune
+  mémoire) ; **bouton Download OK** (WolvenKit dans `InkFlow\wolvenkit`, lié) ; build à faire par lui.
+- **Slots, tranché par lui (22 h)** : réglage du **builder** (case Slots, 1 à 9, défaut 2), rien dans
+  Mod Settings (ArchiveXL fusionne les options du créateur au chargement). Plafond 9 = index 1041 à
+  1049 libres sous `body_tattoo` (1040), `fpp_body_tattoo` à 1050. Résumé Nexus, étape 4 de la page
+  et README reformulés (« Ink 1 to Ink 9, you choose how many ») : **non commités**.
+- Déposés par lui dans le dossier du projet : `InkFlowBuilder-1.0.0.zip` (copie de l'upload, 11,7 Mo,
+  non versionné, à ajouter au `.gitignore` ou à laisser hors git) et `publish\main.jpg` (22 h 35,
+  626 Ko : capture pour la page Nexus ?). À trancher par lui : versionner `publish\` ou non.
+- ~~**Exe 1.0.0 : `C:\__DEV\cyberpunk\ink_flow\exe\dist\InkFlowBuilder.exe`** (11,4 Mo, SHA-256
   `13c14eaa…bbc9b9`) ; **zip d'upload `exe\dist\InkFlowBuilder-1.0.0.zip`** (11,7 Mo, exe + README +
-  LICENSE, SHA-256 `35b5bf52…40daf6`). Preuve : exe figé en mode `INKFLOW_AUTOTEST` (maison `exe\home`,
+  LICENSE, SHA-256 `35b5bf52…40daf6`)~~ remplacés à 23 h 35 par la 1.0.0 avec FPP (SHA-256 ci-dessus). Preuve : exe figé en mode `INKFLOW_AUTOTEST` (maison `exe\home`,
   cache chaud) : 18 tatouages, 106 fichiers, 139 599 872 o en 120 s, **0 octet différent hors index**
   contre la v0.3b posée dans le jeu (536 dans l'index = horodatages), `.xl` identique.
 - **Gabarits (décision de Hell_Kaiser, 21 h 15 : garder + créditer)** : le toolkit 20279 se présente
@@ -77,20 +105,21 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   de build l'écrit (`Body : 006_Angel_Body.archive (over …)`). Pas « Angel » en dur : tout corps
   dont le maillage a des matériaux locaux et l'apparence de peau standard passe, sinon erreur
   « unsupported body mod ». Ce qui n'est **pas** supporté : la **famille UV** (texture
-  `fullbody_overlay_d01.xbm`, corps Solo), V masculin, FPP. **Conséquence à écrire dans le README** :
+  `fullbody_overlay_d01.xbm`, corps Solo), V masculin ~~, FPP~~ (FPP livrée le 01/11 à 23 h 30, § 16). **Conséquence à écrire dans le README** :
   changer de corps après un build = rebâtir (la coque est une copie de l'ancien corps).
 
 ## Prochain geste (1.0)
 
-1. **Avant publication** : (a) `env.py` : **test du bouton Download par lui** (renommer ou vider
+1. **Avant publication** : ~~(a) `env.py` : test du bouton Download par lui (renommer ou vider
    `exe\home\wolvenkit\` ou `%LOCALAPPDATA%\InkFlow\wolvenkit\`, relancer l'exe, cliquer Download :
-   45 Mo, SHA-256 vérifiée par l'outil) ; ~~(b) README~~ fait (21 h 30) ; ~~(c) permissions~~ tranché
+   45 Mo, SHA-256 vérifiée par l'outil)~~ **fait à 22 h, OK** ; ~~(b) README~~ fait (21 h 30) ; ~~(c) permissions~~ tranché
    « garder + créditer » (21 h 15), **lui : lire la boîte Permissions de 20279 sur le site** ;
    ~~(d) version 1.0.0, exe rebâti, SHA-256 notée~~ fait (21 h 18, `13c14eaa…`) ; ~~(e) dépôt GitHub~~
    fait (21 h 25) ; ~~(f) page Nexus~~ brouillon `NEXUS.md` (21 h 25), **à relire par lui** ; (g) **ses
    captures** (4 listées dans `NEXUS.md`, second écran) ; (h) **upload Nexus par lui** (zip + SHA-256
-   dans la description du fichier), puis tag `v1.0.0` sur le dépôt.
-2. **Après la 1.0** : famille UV (corps Solo), icônes dans le créateur, FPP, V masculin, poids
+   dans la description du fichier), puis tag `v1.0.0` sur le dépôt. **Avant (g) et (h) : (0) la QA FPP**
+   (bloc « État » ci-dessus) ; l'upload attend son verdict.
+2. **Après la 1.0** : famille UV (corps Solo), icônes dans le créateur, ~~FPP~~ (livrée), V masculin, poids
    (morphtarget partagé), morph changé au charcudoc (QA non cochée).
 3. ~~Prise en main de l'exe par Hell_Kaiser~~ **faite (QA 4)**.
 2. ~~Poser la v0.3~~ **posée à 13 h 11**.
@@ -107,7 +136,8 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ## Ouvert (non tranché, non mesuré)
 
 - **Section des infos tête** : corps (choisi, non lu) contre tête (vanilla) ; tranché par la QA (a)/(b).
-- **FPP** : aucune coque FPP ; non testable sur sa sauvegarde (créateur seul).
+- ~~**FPP** : aucune coque FPP ; non testable sur sa sauvegarde (créateur seul).~~ Livrée le 01/11 à
+  23 h 30 (ETUDE § 16) ; **QA en jeu attendue**, points (a)-(e) du bloc « État ».
 - **Mode photo / miroir** : groupe `TPP_photomode` de la tête non renseigné par nos groupes.
 - **Vêtements** : masques de chunks par nom de composant, jamais testé habillé.
 - **Corps UV** : coque à la mise à plat UV, dérivable du corps UV (ETUDE § 5.1) ; aucune surface UV sur son montage (§ 10).

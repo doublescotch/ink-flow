@@ -63,3 +63,21 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   `NEXUS.md` (brouillon de page, anglais) ; exe rebâti (SHA-256 `13c14eaa…`) ; **autotest : 106 fichiers,
   0 octet différent hors index contre la v0.3b**, `.xl` identique ; zip d'upload `InkFlowBuilder-1.0.0.zip`
   (SHA-256 `35b5bf52…`). Jeu non touché (le build 0.4.0 posé est identique hors index). ETUDE § 15.
+- 22 h : **bouton Download testé par Hell_Kaiser** sur une maison vierge (`%LOCALAPPDATA%\InkFlow` supprimé) : WolvenKit téléchargé dans `InkFlow\wolvenkit`, lié ; le jeu a été retrouvé seul (registre Steam + `libraryfolders.vdf`, `env.find_game_candidates`). Sa question sur les slots : réglage du builder (1 à 9), pas de Mod Settings ; plafond 9 = index 1041-1049 libres sous `body_tattoo` (1040), `fpp_body_tattoo` à 1050. Résumé Nexus et README reformulés (« Ink 1 to Ink 9, you choose how many »).
+
+## 2026-11-01 (23 h → 23 h 45) — Première personne ajoutée à la 1.0.0
+
+- 23 h : question de Hell_Kaiser sur la limite « no first-person shells » de `NEXUS.md` ; réponse
+  anchrée (canari v1, QA v0, sauvegarde du début, `link` non lu) ; décision in-prompt : **ajouter la FPP
+  avant l'upload**.
+- 23 h 05-23 h 15 : mesures (ETUDE § 16) : `link` = clé partagée maître / suiveur ; torse FPP d'Angel
+  = corps TPP octet pour octet ; masque `0xFFFFFFFFFFFFFFE0` dans `l0_000_fpp__full.app` ; bras FPP à
+  matériaux locaux (le droit : `01_ca_pale_body`).
+- 23 h 15-23 h 30 : `core.py` (`FPP_TARGETS`, `fpp_torso_mask`, suiveur par slot, groupe `FPP_Body`
+  séparé), case « First person » (`gui.py`, `config.py`), `--no-fpp` (CLI). Build CLI sur `exe\home` :
+  150,3 Mo, 157 fichiers, 129 s ; dépaqueté et contrôlé (`gen\verify\fpp1`). README, `NEXUS.md`
+  (résumé 247 caractères), ETUDE § 16.
+- 23 h 35 : exe 1.0.0 rebâti (SHA-256 `b1fd72db…68075` ; autotest de l'exe figé sur `exe\home` : 157
+  fichiers, 150 347 776 o, 124 s, « first person on »), zip `InkFlowBuilder-1.0.0.zip` refait (SHA-256
+  `c0b18ba7…4b027`) et **recopié sur sa copie dans le dossier du projet** (l'ancienne, 21 h 19, était
+  sans FPP). Jeu non touché : la QA FPP est à lui (Build + Install dans l'exe, sauvegarde avec miroir).

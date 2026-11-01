@@ -10,6 +10,7 @@ DEFAULTS = {
     "out": env.OUT_DIR,
     "slots": 2,
     "mirror": True,
+    "fpp": True,
     "alpha": 1.0,
     "slot_title": "Ink {n}",
     "max_name": 20,
