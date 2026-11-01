@@ -1,0 +1,10 @@
+# Ink Flow : depot ouvert. Rien qui appartienne a un autre auteur n'est versionne.
+# canari/ = archives de test baties avec des textures de tatouages tiers (76 Mo).
+canari/
+__pycache__/
+*.pyc
+*.exe
+*.spec
+build/
+dist/
+venv/

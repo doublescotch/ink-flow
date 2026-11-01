@@ -1,0 +1,1354 @@
+{
+  "Header": {
+    "WolvenKitVersion": "9.1.0",
+    "WKitJsonVersion": "0.0.9",
+    "GameVersion": 2310,
+    "ExportedDateTime": "2026-10-31T08:11:51.2940753Z",
+    "DataType": "CR2W",
+    "ArchiveFileName": "C:\\__DEV\\cyberpunk\\tattoo_ccxl\\dl\\20279\\unz\\Arm Tattoo\\source\\archive\\your_name\\ccxl\\arm_tattoo_demo\\appearances\\arm_tattoo.app"
+  },
+  "Data": {
+    "Version": 195,
+    "BuildVersion": 0,
+    "RootChunk": {
+      "$type": "appearanceAppearanceResource",
+      "alternateAppearanceMapping": [],
+      "alternateAppearanceSettingName": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+      },
+      "alternateAppearanceSuffixes": [],
+      "appearances": [
+        {
+          "HandleId": "0",
+          "Data": {
+            "$type": "appearanceAppearanceDefinition",
+            "censorFlags": 0,
+            "compiledData": {
+              "BufferId": "0",
+              "Flags": 0,
+              "Type": "WolvenKit.RED4.Archive.Buffer.RedPackage, WolvenKit.RED4, Version=9.1.0.0, Culture=neutral, PublicKeyToken=null",
+              "Data": {
+                "Version": 4,
+                "Sections": 7,
+                "CruidIndex": -1,
+                "CruidDict": {
+                  "0": "7812330769891095044"
+                },
+                "Chunks": [
+                  {
+                    "$type": "entGarmentSkinnedMeshComponent",
+                    "acceptDismemberment": 1,
+                    "autoHideDistance": 0,
+                    "castLocalShadows": "Always",
+                    "castShadows": "Always",
+                    "chunkMask": "9223372036854775807",
+                    "forcedLodDistance": "Default",
+                    "forceLODLevel": -1,
+                    "id": "7812330769891095044",
+                    "isEnabled": 1,
+                    "isReplicable": 0,
+                    "localTransform": {
+                      "$type": "WorldTransform",
+                      "Orientation": {
+                        "$type": "Quaternion",
+                        "i": 0,
+                        "j": 0,
+                        "k": 0,
+                        "r": 1
+                      },
+                      "Position": {
+                        "$type": "WorldPosition",
+                        "x": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        },
+                        "y": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        },
+                        "z": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        }
+                      }
+                    },
+                    "LODMode": "AlwaysVisible",
+                    "mesh": {
+                      "DepotPath": {
+                        "$type": "ResourcePath",
+                        "$storage": "string",
+                        "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_left_pwa.mesh"
+                      },
+                      "Flags": "Default"
+                    },
+                    "meshAppearance": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "your_arm_tattoo_left"
+                    },
+                    "name": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "your_arm_tattoo_left"
+                    },
+                    "navigationImpact": {
+                      "$type": "NavGenNavigationSetting",
+                      "navmeshImpact": "Ignored"
+                    },
+                    "order": 0,
+                    "overrideMeshNavigationImpact": 1,
+                    "parentTransform": {
+                      "HandleId": "1",
+                      "Data": {
+                        "$type": "entHardTransformBinding",
+                        "bindName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "root"
+                        },
+                        "enabled": 1,
+                        "enableMask": {
+                          "$type": "entTagMask",
+                          "excludedTags": {
+                            "$type": "redTagList",
+                            "tags": [
+                              {
+                                "$type": "CName",
+                                "$storage": "string",
+                                "$value": "NoBinding"
+                              }
+                            ]
+                          },
+                          "hardTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          },
+                          "softTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          }
+                        },
+                        "slotName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "None"
+                        }
+                      }
+                    },
+                    "renderingPlaneAnimationParam": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "renderPlane"
+                    },
+                    "renderSceneLayerMask": "Default",
+                    "skinning": {
+                      "HandleId": "2",
+                      "Data": {
+                        "$type": "entSkinningBinding",
+                        "bindName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "root"
+                        },
+                        "enabled": 1,
+                        "enableMask": {
+                          "$type": "entTagMask",
+                          "excludedTags": {
+                            "$type": "redTagList",
+                            "tags": [
+                              {
+                                "$type": "CName",
+                                "$storage": "string",
+                                "$value": "NoBinding"
+                              }
+                            ]
+                          },
+                          "hardTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          },
+                          "softTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          }
+                        }
+                      }
+                    },
+                    "useProxyMeshAsShadowMesh": 0,
+                    "useSkinningLOD": 0,
+                    "version": 0,
+                    "visibilityAnimationParam": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "None"
+                    }
+                  }
+                ]
+              }
+            },
+            "components": [
+              {
+                "$type": "entGarmentSkinnedMeshComponent",
+                "acceptDismemberment": 1,
+                "autoHideDistance": 0,
+                "castLocalShadows": "Always",
+                "castShadows": "Always",
+                "chunkMask": "9223372036854775807",
+                "forcedLodDistance": "Default",
+                "forceLODLevel": -1,
+                "id": "7812330769891095044",
+                "isEnabled": 1,
+                "isReplicable": 0,
+                "localTransform": {
+                  "$type": "WorldTransform",
+                  "Orientation": {
+                    "$type": "Quaternion",
+                    "i": 0,
+                    "j": 0,
+                    "k": 0,
+                    "r": 1
+                  },
+                  "Position": {
+                    "$type": "WorldPosition",
+                    "x": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    },
+                    "y": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    },
+                    "z": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    }
+                  }
+                },
+                "LODMode": "AlwaysVisible",
+                "mesh": {
+                  "DepotPath": {
+                    "$type": "ResourcePath",
+                    "$storage": "string",
+                    "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_left_pwa.mesh"
+                  },
+                  "Flags": "Default"
+                },
+                "meshAppearance": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "your_arm_tattoo_left"
+                },
+                "name": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "your_arm_tattoo_left"
+                },
+                "navigationImpact": {
+                  "$type": "NavGenNavigationSetting",
+                  "navmeshImpact": "Ignored"
+                },
+                "order": 0,
+                "overrideMeshNavigationImpact": 1,
+                "parentTransform": {
+                  "HandleRefId": "1"
+                },
+                "renderingPlaneAnimationParam": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "renderPlane"
+                },
+                "renderSceneLayerMask": "Default",
+                "skinning": {
+                  "HandleRefId": "2"
+                },
+                "useProxyMeshAsShadowMesh": 0,
+                "useSkinningLOD": 0,
+                "version": 0,
+                "visibilityAnimationParam": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "None"
+                }
+              }
+            ],
+            "cookedDataPathOverride": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "forcedLodDistance": 0,
+            "hitRepresentationOverrides": [],
+            "inheritedVisualTags": {
+              "$type": "redTagList",
+              "tags": []
+            },
+            "looseDependencies": [],
+            "name": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "w__arm_tattoo_left"
+            },
+            "parametersBuffer": {
+              "$type": "entEntityParametersBuffer",
+              "parameterBuffers": []
+            },
+            "parentAppearance": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "partsMasks": [],
+            "partsOverrides": [],
+            "partsValues": [],
+            "proxyMesh": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "proxyMeshAppearance": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "resolvedDependencies": [
+              {
+                "DepotPath": {
+                  "$type": "ResourcePath",
+                  "$storage": "string",
+                  "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_left_pwa.mesh"
+                },
+                "Flags": "Soft"
+              }
+            ],
+            "visualTags": {
+              "$type": "redTagList",
+              "tags": [
+                {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "Female"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "HandleId": "3",
+          "Data": {
+            "$type": "appearanceAppearanceDefinition",
+            "censorFlags": 0,
+            "compiledData": {
+              "BufferId": "1",
+              "Flags": 0,
+              "Type": "WolvenKit.RED4.Archive.Buffer.RedPackage, WolvenKit.RED4, Version=9.1.0.0, Culture=neutral, PublicKeyToken=null",
+              "Data": {
+                "Version": 4,
+                "Sections": 7,
+                "CruidIndex": -1,
+                "CruidDict": {
+                  "0": "7812330769891095044"
+                },
+                "Chunks": [
+                  {
+                    "$type": "entGarmentSkinnedMeshComponent",
+                    "acceptDismemberment": 1,
+                    "autoHideDistance": 0,
+                    "castLocalShadows": "Always",
+                    "castShadows": "Always",
+                    "chunkMask": "9223372036854775807",
+                    "forcedLodDistance": "Default",
+                    "forceLODLevel": -1,
+                    "id": "7812330769891095044",
+                    "isEnabled": 1,
+                    "isReplicable": 0,
+                    "localTransform": {
+                      "$type": "WorldTransform",
+                      "Orientation": {
+                        "$type": "Quaternion",
+                        "i": 0,
+                        "j": 0,
+                        "k": 0,
+                        "r": 1
+                      },
+                      "Position": {
+                        "$type": "WorldPosition",
+                        "x": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        },
+                        "y": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        },
+                        "z": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        }
+                      }
+                    },
+                    "LODMode": "AlwaysVisible",
+                    "mesh": {
+                      "DepotPath": {
+                        "$type": "ResourcePath",
+                        "$storage": "string",
+                        "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_right_pwa.mesh"
+                      },
+                      "Flags": "Default"
+                    },
+                    "meshAppearance": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "your_arm_tattoo_right"
+                    },
+                    "name": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "your_arm_tattoo_right"
+                    },
+                    "navigationImpact": {
+                      "$type": "NavGenNavigationSetting",
+                      "navmeshImpact": "Ignored"
+                    },
+                    "order": 0,
+                    "overrideMeshNavigationImpact": 1,
+                    "parentTransform": {
+                      "HandleId": "4",
+                      "Data": {
+                        "$type": "entHardTransformBinding",
+                        "bindName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "root"
+                        },
+                        "enabled": 1,
+                        "enableMask": {
+                          "$type": "entTagMask",
+                          "excludedTags": {
+                            "$type": "redTagList",
+                            "tags": [
+                              {
+                                "$type": "CName",
+                                "$storage": "string",
+                                "$value": "NoBinding"
+                              }
+                            ]
+                          },
+                          "hardTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          },
+                          "softTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          }
+                        },
+                        "slotName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "None"
+                        }
+                      }
+                    },
+                    "renderingPlaneAnimationParam": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "renderPlane"
+                    },
+                    "renderSceneLayerMask": "Default",
+                    "skinning": {
+                      "HandleId": "5",
+                      "Data": {
+                        "$type": "entSkinningBinding",
+                        "bindName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "root"
+                        },
+                        "enabled": 1,
+                        "enableMask": {
+                          "$type": "entTagMask",
+                          "excludedTags": {
+                            "$type": "redTagList",
+                            "tags": [
+                              {
+                                "$type": "CName",
+                                "$storage": "string",
+                                "$value": "NoBinding"
+                              }
+                            ]
+                          },
+                          "hardTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          },
+                          "softTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          }
+                        }
+                      }
+                    },
+                    "useProxyMeshAsShadowMesh": 0,
+                    "useSkinningLOD": 0,
+                    "version": 0,
+                    "visibilityAnimationParam": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "None"
+                    }
+                  }
+                ]
+              }
+            },
+            "components": [
+              {
+                "$type": "entGarmentSkinnedMeshComponent",
+                "acceptDismemberment": 1,
+                "autoHideDistance": 0,
+                "castLocalShadows": "Always",
+                "castShadows": "Always",
+                "chunkMask": "9223372036854775807",
+                "forcedLodDistance": "Default",
+                "forceLODLevel": -1,
+                "id": "7812330769891095044",
+                "isEnabled": 1,
+                "isReplicable": 0,
+                "localTransform": {
+                  "$type": "WorldTransform",
+                  "Orientation": {
+                    "$type": "Quaternion",
+                    "i": 0,
+                    "j": 0,
+                    "k": 0,
+                    "r": 1
+                  },
+                  "Position": {
+                    "$type": "WorldPosition",
+                    "x": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    },
+                    "y": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    },
+                    "z": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    }
+                  }
+                },
+                "LODMode": "AlwaysVisible",
+                "mesh": {
+                  "DepotPath": {
+                    "$type": "ResourcePath",
+                    "$storage": "string",
+                    "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_right_pwa.mesh"
+                  },
+                  "Flags": "Default"
+                },
+                "meshAppearance": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "your_arm_tattoo_right"
+                },
+                "name": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "your_arm_tattoo_right"
+                },
+                "navigationImpact": {
+                  "$type": "NavGenNavigationSetting",
+                  "navmeshImpact": "Ignored"
+                },
+                "order": 0,
+                "overrideMeshNavigationImpact": 1,
+                "parentTransform": {
+                  "HandleRefId": "4"
+                },
+                "renderingPlaneAnimationParam": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "renderPlane"
+                },
+                "renderSceneLayerMask": "Default",
+                "skinning": {
+                  "HandleRefId": "5"
+                },
+                "useProxyMeshAsShadowMesh": 0,
+                "useSkinningLOD": 0,
+                "version": 0,
+                "visibilityAnimationParam": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "None"
+                }
+              }
+            ],
+            "cookedDataPathOverride": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "forcedLodDistance": 0,
+            "hitRepresentationOverrides": [],
+            "inheritedVisualTags": {
+              "$type": "redTagList",
+              "tags": []
+            },
+            "looseDependencies": [],
+            "name": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "w__arm_tattoo_right"
+            },
+            "parametersBuffer": {
+              "$type": "entEntityParametersBuffer",
+              "parameterBuffers": []
+            },
+            "parentAppearance": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "partsMasks": [],
+            "partsOverrides": [],
+            "partsValues": [],
+            "proxyMesh": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "proxyMeshAppearance": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "resolvedDependencies": [
+              {
+                "DepotPath": {
+                  "$type": "ResourcePath",
+                  "$storage": "string",
+                  "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_right_pwa.mesh"
+                },
+                "Flags": "Soft"
+              }
+            ],
+            "visualTags": {
+              "$type": "redTagList",
+              "tags": [
+                {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "Female"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "HandleId": "6",
+          "Data": {
+            "$type": "appearanceAppearanceDefinition",
+            "censorFlags": 0,
+            "compiledData": {
+              "BufferId": "2",
+              "Flags": 0,
+              "Type": "WolvenKit.RED4.Archive.Buffer.RedPackage, WolvenKit.RED4, Version=9.1.0.0, Culture=neutral, PublicKeyToken=null",
+              "Data": {
+                "Version": 4,
+                "Sections": 7,
+                "CruidIndex": -1,
+                "CruidDict": {
+                  "0": "7812330769891095044"
+                },
+                "Chunks": [
+                  {
+                    "$type": "entGarmentSkinnedMeshComponent",
+                    "acceptDismemberment": 1,
+                    "autoHideDistance": 0,
+                    "castLocalShadows": "Always",
+                    "castShadows": "Always",
+                    "chunkMask": "9223372036854775807",
+                    "forcedLodDistance": "Default",
+                    "forceLODLevel": -1,
+                    "id": "7812330769891095044",
+                    "isEnabled": 1,
+                    "isReplicable": 0,
+                    "localTransform": {
+                      "$type": "WorldTransform",
+                      "Orientation": {
+                        "$type": "Quaternion",
+                        "i": 0,
+                        "j": 0,
+                        "k": 0,
+                        "r": 1
+                      },
+                      "Position": {
+                        "$type": "WorldPosition",
+                        "x": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        },
+                        "y": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        },
+                        "z": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        }
+                      }
+                    },
+                    "LODMode": "AlwaysVisible",
+                    "mesh": {
+                      "DepotPath": {
+                        "$type": "ResourcePath",
+                        "$storage": "string",
+                        "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_left_pma.mesh"
+                      },
+                      "Flags": "Default"
+                    },
+                    "meshAppearance": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "your_arm_tattoo_left"
+                    },
+                    "name": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "your_arm_tattoo_left"
+                    },
+                    "navigationImpact": {
+                      "$type": "NavGenNavigationSetting",
+                      "navmeshImpact": "Ignored"
+                    },
+                    "order": 0,
+                    "overrideMeshNavigationImpact": 1,
+                    "parentTransform": {
+                      "HandleId": "7",
+                      "Data": {
+                        "$type": "entHardTransformBinding",
+                        "bindName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "root"
+                        },
+                        "enabled": 1,
+                        "enableMask": {
+                          "$type": "entTagMask",
+                          "excludedTags": {
+                            "$type": "redTagList",
+                            "tags": [
+                              {
+                                "$type": "CName",
+                                "$storage": "string",
+                                "$value": "NoBinding"
+                              }
+                            ]
+                          },
+                          "hardTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          },
+                          "softTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          }
+                        },
+                        "slotName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "None"
+                        }
+                      }
+                    },
+                    "renderingPlaneAnimationParam": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "renderPlane"
+                    },
+                    "renderSceneLayerMask": "Default",
+                    "skinning": {
+                      "HandleId": "8",
+                      "Data": {
+                        "$type": "entSkinningBinding",
+                        "bindName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "root"
+                        },
+                        "enabled": 1,
+                        "enableMask": {
+                          "$type": "entTagMask",
+                          "excludedTags": {
+                            "$type": "redTagList",
+                            "tags": [
+                              {
+                                "$type": "CName",
+                                "$storage": "string",
+                                "$value": "NoBinding"
+                              }
+                            ]
+                          },
+                          "hardTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          },
+                          "softTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          }
+                        }
+                      }
+                    },
+                    "useProxyMeshAsShadowMesh": 0,
+                    "useSkinningLOD": 0,
+                    "version": 0,
+                    "visibilityAnimationParam": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "None"
+                    }
+                  }
+                ]
+              }
+            },
+            "components": [
+              {
+                "$type": "entGarmentSkinnedMeshComponent",
+                "acceptDismemberment": 1,
+                "autoHideDistance": 0,
+                "castLocalShadows": "Always",
+                "castShadows": "Always",
+                "chunkMask": "9223372036854775807",
+                "forcedLodDistance": "Default",
+                "forceLODLevel": -1,
+                "id": "7812330769891095044",
+                "isEnabled": 1,
+                "isReplicable": 0,
+                "localTransform": {
+                  "$type": "WorldTransform",
+                  "Orientation": {
+                    "$type": "Quaternion",
+                    "i": 0,
+                    "j": 0,
+                    "k": 0,
+                    "r": 1
+                  },
+                  "Position": {
+                    "$type": "WorldPosition",
+                    "x": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    },
+                    "y": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    },
+                    "z": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    }
+                  }
+                },
+                "LODMode": "AlwaysVisible",
+                "mesh": {
+                  "DepotPath": {
+                    "$type": "ResourcePath",
+                    "$storage": "string",
+                    "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_left_pma.mesh"
+                  },
+                  "Flags": "Default"
+                },
+                "meshAppearance": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "your_arm_tattoo_left"
+                },
+                "name": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "your_arm_tattoo_left"
+                },
+                "navigationImpact": {
+                  "$type": "NavGenNavigationSetting",
+                  "navmeshImpact": "Ignored"
+                },
+                "order": 0,
+                "overrideMeshNavigationImpact": 1,
+                "parentTransform": {
+                  "HandleRefId": "7"
+                },
+                "renderingPlaneAnimationParam": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "renderPlane"
+                },
+                "renderSceneLayerMask": "Default",
+                "skinning": {
+                  "HandleRefId": "8"
+                },
+                "useProxyMeshAsShadowMesh": 0,
+                "useSkinningLOD": 0,
+                "version": 0,
+                "visibilityAnimationParam": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "None"
+                }
+              }
+            ],
+            "cookedDataPathOverride": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "forcedLodDistance": 0,
+            "hitRepresentationOverrides": [],
+            "inheritedVisualTags": {
+              "$type": "redTagList",
+              "tags": []
+            },
+            "looseDependencies": [],
+            "name": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "m__arm_tattoo_left"
+            },
+            "parametersBuffer": {
+              "$type": "entEntityParametersBuffer",
+              "parameterBuffers": []
+            },
+            "parentAppearance": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "partsMasks": [],
+            "partsOverrides": [],
+            "partsValues": [],
+            "proxyMesh": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "proxyMeshAppearance": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "resolvedDependencies": [
+              {
+                "DepotPath": {
+                  "$type": "ResourcePath",
+                  "$storage": "string",
+                  "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_left_pma.mesh"
+                },
+                "Flags": "Soft"
+              }
+            ],
+            "visualTags": {
+              "$type": "redTagList",
+              "tags": [
+                {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "Male"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "HandleId": "9",
+          "Data": {
+            "$type": "appearanceAppearanceDefinition",
+            "censorFlags": 0,
+            "compiledData": {
+              "BufferId": "3",
+              "Flags": 0,
+              "Type": "WolvenKit.RED4.Archive.Buffer.RedPackage, WolvenKit.RED4, Version=9.1.0.0, Culture=neutral, PublicKeyToken=null",
+              "Data": {
+                "Version": 4,
+                "Sections": 7,
+                "CruidIndex": -1,
+                "CruidDict": {
+                  "0": "7812330769891095044"
+                },
+                "Chunks": [
+                  {
+                    "$type": "entGarmentSkinnedMeshComponent",
+                    "acceptDismemberment": 1,
+                    "autoHideDistance": 0,
+                    "castLocalShadows": "Always",
+                    "castShadows": "Always",
+                    "chunkMask": "9223372036854775807",
+                    "forcedLodDistance": "Default",
+                    "forceLODLevel": -1,
+                    "id": "7812330769891095044",
+                    "isEnabled": 1,
+                    "isReplicable": 0,
+                    "localTransform": {
+                      "$type": "WorldTransform",
+                      "Orientation": {
+                        "$type": "Quaternion",
+                        "i": 0,
+                        "j": 0,
+                        "k": 0,
+                        "r": 1
+                      },
+                      "Position": {
+                        "$type": "WorldPosition",
+                        "x": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        },
+                        "y": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        },
+                        "z": {
+                          "$type": "FixedPoint",
+                          "Bits": 0
+                        }
+                      }
+                    },
+                    "LODMode": "AlwaysVisible",
+                    "mesh": {
+                      "DepotPath": {
+                        "$type": "ResourcePath",
+                        "$storage": "string",
+                        "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_right_pma.mesh"
+                      },
+                      "Flags": "Default"
+                    },
+                    "meshAppearance": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "your_arm_tattoo_right"
+                    },
+                    "name": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "your_arm_tattoo_right"
+                    },
+                    "navigationImpact": {
+                      "$type": "NavGenNavigationSetting",
+                      "navmeshImpact": "Ignored"
+                    },
+                    "order": 0,
+                    "overrideMeshNavigationImpact": 1,
+                    "parentTransform": {
+                      "HandleId": "10",
+                      "Data": {
+                        "$type": "entHardTransformBinding",
+                        "bindName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "root"
+                        },
+                        "enabled": 1,
+                        "enableMask": {
+                          "$type": "entTagMask",
+                          "excludedTags": {
+                            "$type": "redTagList",
+                            "tags": [
+                              {
+                                "$type": "CName",
+                                "$storage": "string",
+                                "$value": "NoBinding"
+                              }
+                            ]
+                          },
+                          "hardTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          },
+                          "softTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          }
+                        },
+                        "slotName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "None"
+                        }
+                      }
+                    },
+                    "renderingPlaneAnimationParam": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "renderPlane"
+                    },
+                    "renderSceneLayerMask": "Default",
+                    "skinning": {
+                      "HandleId": "11",
+                      "Data": {
+                        "$type": "entSkinningBinding",
+                        "bindName": {
+                          "$type": "CName",
+                          "$storage": "string",
+                          "$value": "root"
+                        },
+                        "enabled": 1,
+                        "enableMask": {
+                          "$type": "entTagMask",
+                          "excludedTags": {
+                            "$type": "redTagList",
+                            "tags": [
+                              {
+                                "$type": "CName",
+                                "$storage": "string",
+                                "$value": "NoBinding"
+                              }
+                            ]
+                          },
+                          "hardTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          },
+                          "softTags": {
+                            "$type": "redTagList",
+                            "tags": []
+                          }
+                        }
+                      }
+                    },
+                    "useProxyMeshAsShadowMesh": 0,
+                    "useSkinningLOD": 0,
+                    "version": 0,
+                    "visibilityAnimationParam": {
+                      "$type": "CName",
+                      "$storage": "string",
+                      "$value": "None"
+                    }
+                  }
+                ]
+              }
+            },
+            "components": [
+              {
+                "$type": "entGarmentSkinnedMeshComponent",
+                "acceptDismemberment": 1,
+                "autoHideDistance": 0,
+                "castLocalShadows": "Always",
+                "castShadows": "Always",
+                "chunkMask": "9223372036854775807",
+                "forcedLodDistance": "Default",
+                "forceLODLevel": -1,
+                "id": "7812330769891095044",
+                "isEnabled": 1,
+                "isReplicable": 0,
+                "localTransform": {
+                  "$type": "WorldTransform",
+                  "Orientation": {
+                    "$type": "Quaternion",
+                    "i": 0,
+                    "j": 0,
+                    "k": 0,
+                    "r": 1
+                  },
+                  "Position": {
+                    "$type": "WorldPosition",
+                    "x": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    },
+                    "y": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    },
+                    "z": {
+                      "$type": "FixedPoint",
+                      "Bits": 0
+                    }
+                  }
+                },
+                "LODMode": "AlwaysVisible",
+                "mesh": {
+                  "DepotPath": {
+                    "$type": "ResourcePath",
+                    "$storage": "string",
+                    "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_right_pma.mesh"
+                  },
+                  "Flags": "Default"
+                },
+                "meshAppearance": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "your_arm_tattoo_right"
+                },
+                "name": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "your_arm_tattoo_right"
+                },
+                "navigationImpact": {
+                  "$type": "NavGenNavigationSetting",
+                  "navmeshImpact": "Ignored"
+                },
+                "order": 0,
+                "overrideMeshNavigationImpact": 1,
+                "parentTransform": {
+                  "HandleRefId": "10"
+                },
+                "renderingPlaneAnimationParam": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "renderPlane"
+                },
+                "renderSceneLayerMask": "Default",
+                "skinning": {
+                  "HandleRefId": "11"
+                },
+                "useProxyMeshAsShadowMesh": 0,
+                "useSkinningLOD": 0,
+                "version": 0,
+                "visibilityAnimationParam": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "None"
+                }
+              }
+            ],
+            "cookedDataPathOverride": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "forcedLodDistance": 0,
+            "hitRepresentationOverrides": [],
+            "inheritedVisualTags": {
+              "$type": "redTagList",
+              "tags": []
+            },
+            "looseDependencies": [],
+            "name": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "m__arm_tattoo_right"
+            },
+            "parametersBuffer": {
+              "$type": "entEntityParametersBuffer",
+              "parameterBuffers": []
+            },
+            "parentAppearance": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "partsMasks": [],
+            "partsOverrides": [],
+            "partsValues": [],
+            "proxyMesh": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "proxyMeshAppearance": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "resolvedDependencies": [
+              {
+                "DepotPath": {
+                  "$type": "ResourcePath",
+                  "$storage": "string",
+                  "$value": "your_name\\ccxl\\arm_tattoo_demo\\meshes\\arm_tattoo\\your_arm_tattoo_right_pma.mesh"
+                },
+                "Flags": "Soft"
+              }
+            ],
+            "visualTags": {
+              "$type": "redTagList",
+              "tags": [
+                {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "Male"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "baseEntity": {
+        "DepotPath": {
+          "$type": "ResourcePath",
+          "$storage": "uint64",
+          "$value": "0"
+        },
+        "Flags": "Soft"
+      },
+      "baseEntityType": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+      },
+      "baseType": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+      },
+      "censorshipMapping": [],
+      "commonCookData": {
+        "DepotPath": {
+          "$type": "ResourcePath",
+          "$storage": "uint64",
+          "$value": "0"
+        },
+        "Flags": "Soft"
+      },
+      "cookingPlatform": "PLATFORM_None",
+      "DismEffects": [],
+      "DismWoundConfig": {
+        "$type": "entdismembermentWoundsConfigSet",
+        "Configs": []
+      },
+      "forceCompileProxy": 0,
+      "generatePlayerBlockingCollisionForProxy": 0,
+      "partType": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+      },
+      "preset": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+      },
+      "proxyPolyCount": 1400,
+      "Wounds": []
+    },
+    "EmbeddedFiles": []
+  }
+}

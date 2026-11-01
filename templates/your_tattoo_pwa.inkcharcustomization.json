@@ -1,0 +1,352 @@
+{
+  "Header": {
+    "WolvenKitVersion": "9.1.0",
+    "WKitJsonVersion": "0.0.9",
+    "GameVersion": 2310,
+    "ExportedDateTime": "2026-10-31T08:11:25.9756577Z",
+    "DataType": "CR2W",
+    "ArchiveFileName": "C:\\__DEV\\cyberpunk\\tattoo_ccxl\\dl\\20279\\unz\\Chest Tattoo\\source\\archive\\your_name\\ccxl\\chest_tattoo_demo\\inkcc\\your_tattoo_pwa.inkcharcustomization"
+  },
+  "Data": {
+    "Version": 195,
+    "BuildVersion": 0,
+    "RootChunk": {
+      "$type": "gameuiCharacterCustomizationInfoResource",
+      "armsCustomizationOptions": [],
+      "armsGroups": [],
+      "bodyCustomizationOptions": [
+        {
+          "HandleId": "0",
+          "Data": {
+            "$type": "gameuiSwitcherInfo",
+            "censorFlag": "0",
+            "censorFlagAction": "Activate",
+            "defaultIndex": 0,
+            "editTags": [
+              "NewGame",
+              "Ripperdoc"
+            ],
+            "enabled": 1,
+            "hidden": 0,
+            "index": 3305,
+            "link": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "linkController": 0,
+            "localizedName": "Chest Tattoo",
+            "name": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo"
+            },
+            "onDeactivateActions": [],
+            "options": [
+              {
+                "$type": "gameuiSwitcherOption",
+                "actions": [],
+                "index": 0,
+                "localizedName": "Common-Off",
+                "names": [
+                  {
+                    "$type": "CName",
+                    "$storage": "string",
+                    "$value": "chest_tattoo_off"
+                  }
+                ],
+                "randomizationInfo": {
+                  "$type": "gameuiCharacterRandomizationInfo",
+                  "maxRating": 10,
+                  "minRating": 1
+                },
+                "tags": {
+                  "$type": "redTagList",
+                  "tags": []
+                }
+              },
+              {
+                "$type": "gameuiSwitcherOption",
+                "actions": [],
+                "index": 1,
+                "localizedName": "Your Tattoo",
+                "names": [
+                  {
+                    "$type": "CName",
+                    "$storage": "string",
+                    "$value": "your_chest_tattoo"
+                  }
+                ],
+                "randomizationInfo": {
+                  "$type": "gameuiCharacterRandomizationInfo",
+                  "maxRating": 10,
+                  "minRating": 1
+                },
+                "tags": {
+                  "$type": "redTagList",
+                  "tags": []
+                }
+              }
+            ],
+            "randomizeCategory": "Tattoos",
+            "switchVisibility": 1,
+            "uiSlot": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo_switcher"
+            },
+            "uiSlots": [
+              {
+                "$type": "CName",
+                "$storage": "string",
+                "$value": "chest_tattoo"
+              }
+            ]
+          }
+        },
+        {
+          "HandleId": "1",
+          "Data": {
+            "$type": "gameuiAppearanceInfo",
+            "censorFlag": "0",
+            "censorFlagAction": "Activate",
+            "defaultIndex": 0,
+            "definitions": [
+              {
+                "$type": "gameuiIndexedAppearanceDefinition",
+                "actions": [],
+                "color": {
+                  "$type": "Color",
+                  "Alpha": 0,
+                  "Blue": 0,
+                  "Green": 0,
+                  "Red": 0
+                },
+                "icon": {
+                  "$type": "TweakDBID",
+                  "$storage": "uint64",
+                  "$value": "0"
+                },
+                "index": 0,
+                "localizedName": "",
+                "name": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "None"
+                },
+                "randomizationInfo": {
+                  "$type": "gameuiCharacterRandomizationInfo",
+                  "maxRating": 10,
+                  "minRating": 1
+                },
+                "tags": {
+                  "$type": "redTagList",
+                  "tags": []
+                }
+              }
+            ],
+            "editTags": [
+              "NewGame",
+              "Ripperdoc"
+            ],
+            "enabled": 0,
+            "hidden": 1,
+            "index": 0,
+            "link": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "linkController": 0,
+            "localizedName": "",
+            "name": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo_off"
+            },
+            "onDeactivateActions": [],
+            "randomizeCategory": "Tattoos",
+            "resource": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "uint64",
+                "$value": "0"
+              },
+              "Flags": "Soft"
+            },
+            "uiSlot": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo"
+            },
+            "useThumbnails": 0
+          }
+        },
+        {
+          "HandleId": "2",
+          "Data": {
+            "$type": "gameuiAppearanceInfo",
+            "censorFlag": "0",
+            "censorFlagAction": "Activate",
+            "defaultIndex": 0,
+            "definitions": [
+              {
+                "$type": "gameuiIndexedAppearanceDefinition",
+                "actions": [],
+                "color": {
+                  "$type": "Color",
+                  "Alpha": 0,
+                  "Blue": 0,
+                  "Green": 0,
+                  "Red": 0
+                },
+                "icon": {
+                  "$type": "TweakDBID",
+                  "$storage": "uint64",
+                  "$value": "0"
+                },
+                "index": 0,
+                "localizedName": "",
+                "name": {
+                  "$type": "CName",
+                  "$storage": "string",
+                  "$value": "w__chest_tattoo"
+                },
+                "randomizationInfo": {
+                  "$type": "gameuiCharacterRandomizationInfo",
+                  "maxRating": 10,
+                  "minRating": 1
+                },
+                "tags": {
+                  "$type": "redTagList",
+                  "tags": []
+                }
+              }
+            ],
+            "editTags": [
+              "NewGame",
+              "Ripperdoc"
+            ],
+            "enabled": 0,
+            "hidden": 1,
+            "index": 0,
+            "link": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "None"
+            },
+            "linkController": 0,
+            "localizedName": "",
+            "name": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "your_chest_tattoo"
+            },
+            "onDeactivateActions": [],
+            "randomizeCategory": "Tattoos",
+            "resource": {
+              "DepotPath": {
+                "$type": "ResourcePath",
+                "$storage": "string",
+                "$value": "your_name\\ccxl\\chest_tattoo_demo\\appearances\\chest_tattoo.app"
+              },
+              "Flags": "Soft"
+            },
+            "uiSlot": {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo"
+            },
+            "useThumbnails": 0
+          }
+        }
+      ],
+      "bodyGroups": [
+        {
+          "$type": "gameuiOptionsGroup",
+          "name": {
+            "$type": "CName",
+            "$storage": "string",
+            "$value": "FPP_Body"
+          },
+          "options": [
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo"
+            },
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo_off"
+            },
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "your_chest_tattoo"
+            }
+          ]
+        },
+        {
+          "$type": "gameuiOptionsGroup",
+          "name": {
+            "$type": "CName",
+            "$storage": "string",
+            "$value": "TPP_Body"
+          },
+          "options": [
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo"
+            },
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo_off"
+            },
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "your_chest_tattoo"
+            }
+          ]
+        },
+        {
+          "$type": "gameuiOptionsGroup",
+          "name": {
+            "$type": "CName",
+            "$storage": "string",
+            "$value": "character_creation"
+          },
+          "options": [
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo"
+            },
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "chest_tattoo_off"
+            },
+            {
+              "$type": "CName",
+              "$storage": "string",
+              "$value": "your_chest_tattoo"
+            }
+          ]
+        }
+      ],
+      "cookingPlatform": "PLATFORM_None",
+      "excludedFromRandomize": [],
+      "headCustomizationOptions": [],
+      "headGroups": [],
+      "perspectiveInfo": [],
+      "uiPresets": [],
+      "version": 0,
+      "versionUpdateInfo": []
+    },
+    "EmbeddedFiles": []
+  }
+}
