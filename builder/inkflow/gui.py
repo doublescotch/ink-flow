@@ -59,6 +59,11 @@ T = {
     "about": "About",
     "ready": "Ready.",
     "building": "Building…",
+    "cancel": "Cancel",
+    "cancelling": "Cancelling…",
+    "cancelled": "Build cancelled. Nothing was installed.",
+    "quit_busy": "A build is running. Cancel it and quit?",
+    "quit_download": "WolvenKit Console is still downloading. Quit anyway?",
     "built": "Built {name}.archive ({mb} MB, {n} files) in {s} s.",
     "installed": "Installed into archive\\pc\\mod.",
     "err": "Error",
@@ -129,6 +134,9 @@ class App(tk.Tk):
         self.unchecked = set(self.cfg["unchecked"])
         self.q = queue.Queue()
         self.busy = False
+        self.building = False        # busy with a build (Cancel offered) rather than a download
+        self.cancel = threading.Event()
+        self.quit_after_cancel = False
         self.result = None
         self.cli = None
         self.ok_env = False
@@ -296,8 +304,13 @@ class App(tk.Tk):
         self._update_buttons()
 
     def _update_buttons(self):
+        if self.building:            # the build button is the Cancel button while a build runs
+            self.btn_build.config(text=T["cancelling"] if self.cancel.is_set() else T["cancel"],
+                                  state="disabled" if self.cancel.is_set() else "normal")
+            self.btn_install.config(state="disabled")
+            return
         can = self.ok_env and not self.busy and any(e.supported and e.id not in self.unchecked for e in self.entries)
-        self.btn_build.config(state="normal" if can else "disabled")
+        self.btn_build.config(text=T["build"], state="normal" if can else "disabled")
         self.btn_install.config(state="normal" if (self.result and not self.busy and env.valid_game(self.game_var.get())) else "disabled")
 
     def pick_game(self):
@@ -411,6 +424,8 @@ class App(tk.Tk):
         return next((e for e in self.entries if (e.id or e.file) == iid), None)
 
     def _tree_click(self, ev):
+        if self.busy:
+            return "break"
         if self.tree.identify_region(ev.x, ev.y) != "cell":
             return
         if self.tree.identify_column(ev.x) == "#1":
@@ -418,6 +433,8 @@ class App(tk.Tk):
             return "break"
 
     def _tree_double(self, ev):
+        if self.busy:
+            return "break"
         if self.tree.identify_region(ev.x, ev.y) != "cell":
             return
         iid = self.tree.identify_row(ev.y)
@@ -428,7 +445,7 @@ class App(tk.Tk):
 
     def _toggle(self, iid):
         e = self._entry(iid)
-        if not e or not e.supported:
+        if self.busy or not e or not e.supported:
             return
         if e.id in self.unchecked:
             self.unchecked.discard(e.id)
@@ -441,6 +458,8 @@ class App(tk.Tk):
             self._toggle(iid)
 
     def _check_all(self, on):
+        if self.busy:
+            return
         for e in self.entries:
             if e.supported:
                 (self.unchecked.discard if on else self.unchecked.add)(e.id)
@@ -448,14 +467,14 @@ class App(tk.Tk):
 
     def remove_selected(self):
         sel = set(self.tree.selection())
-        if not sel:
+        if self.busy or not sel:
             return
         self.entries = [e for e in self.entries if (e.id or e.file) not in sel]
         self._refresh_tree()
 
     def rename_selected(self):
         sel = self.tree.selection()
-        if len(sel) == 1:
+        if not self.busy and len(sel) == 1:
             e = self._entry(sel[0])
             if e and e.supported:
                 new = simpledialog.askstring(T["rename"], T["col_name"], initialvalue=self.cat.name(e), parent=self)
@@ -466,7 +485,7 @@ class App(tk.Tk):
 
     def _edit_name(self, iid):
         e = self._entry(iid)
-        if not e or not e.supported:
+        if self.busy or not e or not e.supported:
             return
         self._close_editor()
         x, y, w, h = self.tree.bbox(iid, "#4")
@@ -504,6 +523,9 @@ class App(tk.Tk):
         return [e for e in self.entries if e.supported and e.id not in self.unchecked]
 
     def build(self):
+        if self.building:
+            self.cancel_build()
+            return
         if self.busy:
             return
         if not self.ok_env:
@@ -528,6 +550,8 @@ class App(tk.Tk):
         self.cfg.save()
         self.result = None
         self._clear_log()
+        self.cancel.clear()
+        self.building = True
         self._set_busy(True, T["building"])
 
         def prog(i, n, text):
@@ -535,8 +559,10 @@ class App(tk.Tk):
 
         def work():
             try:
-                res = core.run_build(s, sel, self.cat, lambda *a: self.q.put(("log", " ".join(str(x) for x in a))), prog)
+                res = core.run_build(s, sel, self.cat, lambda *a: self.q.put(("log", " ".join(str(x) for x in a))), prog, self.cancel)
                 self.q.put(("built", res))
+            except core.Cancelled:
+                self.q.put(("cancelled",))
             except core.BuildError as e:
                 self.q.put(("build_error", str(e)))
             except Exception as e:  # noqa: BLE001
@@ -544,6 +570,12 @@ class App(tk.Tk):
                 self.q.put(("build_error", f"{e}\n\n{traceback.format_exc()[-1500:]}"))
 
         threading.Thread(target=work, daemon=True).start()
+
+    def cancel_build(self):
+        if self.building and not self.cancel.is_set():
+            self.cancel.set()
+            self.status.config(text=T["cancelling"])
+            self._update_buttons()
 
     def install(self):
         if self.busy or not self.result:
@@ -588,11 +620,25 @@ class App(tk.Tk):
     # ------------------------------------------------------------------ plumbing
     def _set_busy(self, busy, text=None):
         self.busy = busy
+        if not busy:
+            self.building = False
         if text:
             self.status.config(text=text)
         if not busy:
             self.progress["value"] = 0
+        self._lock(busy)
         self._update_buttons()
+
+    def _lock(self, on):
+        """Whole window read-only while busy : every ttk control but the build/Cancel button. The tattoo list ignores
+        clicks and keys through `self.busy` (a disabled Treeview still takes them)."""
+        self._close_editor()
+        todo = list(self.winfo_children())
+        while todo:
+            w = todo.pop()
+            todo.extend(w.winfo_children())
+            if w is not self.btn_build and isinstance(w, (ttk.Button, ttk.Entry, ttk.Spinbox, ttk.Checkbutton, ttk.Treeview)):
+                w.state(["disabled"] if on else ["!disabled"])
 
     def _clear_log(self):
         self.log.config(state="normal")
@@ -626,6 +672,14 @@ class App(tk.Tk):
                         self._autotest_done(False, args[0])
                     else:
                         messagebox.showerror(T["err"], T["err_build"].format(e=args[0][:1500]))
+                elif kind == "cancelled":
+                    self._log(T["cancelled"])
+                    self._set_busy(False, T["cancelled"])
+                    if self.autotest:
+                        self._autotest_done(False, T["cancelled"])
+                    elif self.quit_after_cancel:
+                        self.on_close()
+                        return
                 elif kind == "downloaded":
                     self.cfg["cli"] = args[0]
                     self._set_busy(False, T["ready"])
@@ -640,6 +694,14 @@ class App(tk.Tk):
         self.after(100, self._poll)
 
     def on_close(self):
+        if self.building and not self.autotest:
+            # Quit = cancel first : the WolvenKit process is killed and the half-written archive removed, then close.
+            if self.quit_after_cancel or messagebox.askyesno(APP_NAME, T["quit_busy"]):
+                self.quit_after_cancel = True
+                self.cancel_build()
+            return
+        if self.busy and not self.autotest and not messagebox.askyesno(APP_NAME, T["quit_download"]):
+            return
         try:
             self.cfg["game"] = self.game_var.get().strip()
             self.cfg["out"] = self.out_var.get().strip()
