@@ -1,7 +1,8 @@
 # Ink Flow Builder
 
 **Ink Flow — VTK/UV CCXL Tattoo Loader** adds *your own* VTK tattoo archives to the Cyberpunk 2077 character creator
-as extra tattoo slots ("Ink 1", "Ink 2", …), each with every tattoo you own, stackable, for body, arms and head.
+as extra tattoo slots ("Ink 1", "Ink 2", …), each with every tattoo you own, stackable, for body, arms and head,
+in third person and in first person.
 The builder turns the `.archive` files you already downloaded into **one** `Ink_Flow.archive` + `.xl` on your machine.
 Nothing made by other authors is redistributed.
 
@@ -18,7 +19,8 @@ Nothing made by other authors is redistributed.
 2. **Add files…** or **Add folder…**: your VTK tattoo `.archive` files (the ones you would normally drop in `archive\pc\mod`).
    The builder reads each file and shows what it covers: Body, Arm L, Arm R, Head. Unsupported files are greyed out with the reason.
 3. Give each tattoo the **name** you want to read in the creator (double-click, 20 characters max). Uncheck the ones you do not want.
-4. Choose the number of **slots** (how many tattoos V can wear at once) and whether the slots also show at the **apartment mirror**.
+4. Choose the number of **slots** (1 to 9: how many tattoos V can wear at once), whether the slots also show at the **apartment mirror**,
+   and whether to build the **first person** shells (on by default: the body and arms V sees of herself; about 1 MB more per arm tattoo).
 5. **Build** (about 2 minutes for 18 tattoos the first time, faster afterwards: the extractions are cached), then **Install into game** with the game closed.
    The builder warns about VTK tattoo archives still in `archive\pc\mod` (they would paint a permanent tattoo under the slots) and can move them to a backup folder.
 6. In game: character creator, ripperdoc (and mirror if enabled) → **Ink 1 / Ink 2 / …** under "Body Tattoos".
@@ -43,6 +45,12 @@ The build log names it (`Body : 006_Angel_Body.archive (over …)`). Any body mo
 the standard skin appearance works; otherwise the builder stops with "unsupported body mod". The head shell carries a
 copy of the face morph target so it follows face sculpting. Textures are copied byte for byte.
 
+First person follows the vanilla pattern: each slot gets a hidden companion switcher linked to it (the way the game's
+own `fpp_body_tattoo` follows `body_tattoo`), listed in the `FPP_Body` group only, that drives the first-person shells:
+the body shell again, shown through the chunk mask the active first-person torso uses (read from the active
+`l0_000_fpp__full.app`; the torso mesh is a byte-identical copy of the body mesh), and copies of the active first-person
+arm meshes. The head is never seen in first person, so it has no first-person shell.
+
 ## Files
 
 - `InkFlowBuilder.py`, `inkflow/gui.py`: the window (tkinter).
@@ -57,8 +65,7 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 
 ## Known limits of this first cut
 
-- Female V only. UV Framework tattoos (Solo-type bodies) not supported yet. No first-person (FPP) shells. No icons in
-  the creator (text options).
+- Female V only. UV Framework tattoos (Solo-type bodies) not supported yet. No icons in the creator (text options).
 - Face sculpting changed at the ripperdoc after a build has not been QA'd yet (the head shell follows the face morphs
   on an already sculpted face).
 - Single-file PyInstaller executables are sometimes flagged by antivirus heuristics. The source is here; you can run `python InkFlowBuilder.py` instead.

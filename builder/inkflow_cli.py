@@ -1,7 +1,7 @@
 """Ink Flow Builder, command line (same engine as the GUI ; replaces tools/inkflow_build.py v0.3).
 
   python -I inkflow_cli.py --in <folder> [--game <Cyberpunk 2077>] [--cli <WolvenKit.CLI.exe>] [--slots 2]
-         [--slot-index 1041] [--slot-title "Ink {n}"] [--max-name 20] [--alpha 1.0] [--no-mirror] [--route1]
+         [--slot-index 1041] [--slot-title "Ink {n}"] [--max-name 20] [--alpha 1.0] [--no-mirror] [--no-fpp] [--route1]
          [--out <dir>] [--work <dir>] [--catalogue <json>] [--name Ink_Flow] [--list] [--install]
 """
 import argparse
@@ -27,6 +27,7 @@ def main():
     ap.add_argument("--max-name", type=int, default=20)
     ap.add_argument("--alpha", type=float, default=1.0)
     ap.add_argument("--no-mirror", action="store_true", help="creator + ripperdoc only (default: mirror too)")
+    ap.add_argument("--no-fpp", action="store_true", help="no first-person shells (default: body and arms seen by V too)")
     ap.add_argument("--route1", action="store_true")
     ap.add_argument("--list", action="store_true", help="analyse only, nothing written")
     ap.add_argument("--install", action="store_true", help="copy the result into archive\\pc\\mod (game closed)")
@@ -61,7 +62,8 @@ def main():
         return
 
     s = core.Settings(game=game, cli=cli, work=a.work, out=a.out, name=a.name, slots=a.slots, slot_index=a.slot_index,
-                      slot_title=a.slot_title, max_name=a.max_name, alpha=a.alpha, mirror=not a.no_mirror, route1=a.route1)
+                      slot_title=a.slot_title, max_name=a.max_name, alpha=a.alpha, mirror=not a.no_mirror, fpp=not a.no_fpp,
+                      route1=a.route1)
     try:
         res = core.run_build(s, [e for e in entries if e.supported], cat, log)
         if a.install:

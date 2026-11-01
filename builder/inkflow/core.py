@@ -10,6 +10,9 @@ Same recipe, same output (ETUDE § 8-13) :
     (slot, tattoo, target) ;
   - N switchers (route 2, Heterochromia pattern : one option drives one uiSlot per target), options Off + one per
     tattoo ; route 1 (an option in the vanilla « Body Tattoos » switcher) is off by default ;
+  - first person (default on) : per slot a hidden follower switcher linked to the slot's switcher (vanilla
+    `fpp_body_tattoo` -> `body_tattoo` pattern) drives FPP shells : the body shell again, shown through the chunk mask
+    of the active FPP torso, and copies of the active FPP arm meshes ; listed in the `FPP_Body` group only ;
   - names shown in game come from the Catalogue (player-editable `name`, immutable `slug`) ;
   - nothing is written to the game by the engine ; `install()` does it on demand.
 
@@ -37,6 +40,11 @@ DECAL_MI = (r"base\characters\common\skin\character_mat_instance\__parameters\cu
             r"\tattoos__parameters\customization_tattoos_01_ca_pale.mi")
 ARMS_TEX = r"base\characters\player\femme\body\arms\textures"
 HEAD_DIR = r"base\characters\head\player_base_heads\player_female_average"
+FPP_DIR = BODY_DIR + r"\fpp"
+FPP_APP = r"base\characters\common\player_base_bodies\appearances\l0_000_fpp__full.app"
+FPP_TORSO_MESH = FPP_DIR + r"\t0_000_pwa_fpp__torso.mesh"
+FPP_TORSO_MASK = "18446744073709551584"     # 0xFFFFFFFFFFFFFFE0 : body chunks 5-7, what the vanilla/Angel FPP app shows (measured 2026-11-01)
+FPP_INDEX_OFFSET = 25                       # follower switchers at 1066-1074 : free in vanilla (1065 = last body_scars entry, 1090 = genitals)
 
 TARGETS = [
     dict(code="body", label="Body", tex=r"base\v_textures\body\v_overlay.xbm",
@@ -57,6 +65,22 @@ TARGETS = [
          old=r"your_name\ccxl\chest_tattoo_demo\meshes\chest_tattoo\your_chest_tattoo_pwa.morphtarget", suffix="_head"),
 ]
 TARGET_BY_CODE = {t["code"]: t for t in TARGETS}
+# First person (ETUDE § 16). What V sees of herself in first person : the FPP torso, a byte-identical copy of the TPP
+# body mesh shown through a chunk mask (so the body shell is reused, masked the same way), and two dedicated FPP arm
+# meshes (copied as decals like the TPP arms). The head is never seen in first person. `parent` = the target whose
+# texture (and, for the body, whose shell) the companion uses.
+FPP_TARGETS = [
+    dict(code="fpp_body", label="FPP body", parent="body", mesh=None, morph=None,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_fpp"),
+    dict(code="fpp_arm_l", label="FPP arm L", parent="arm_l", mesh=FPP_DIR + r"\a0_000_pwa_fpp__full_l.mesh", morph=None,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_fpp_arm_l"),
+    dict(code="fpp_arm_r", label="FPP arm R", parent="arm_r", mesh=FPP_DIR + r"\a0_000_pwa_fpp__full_r.mesh", morph=None,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_right", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_right_pwa.mesh", suffix="_fpp_arm_r"),
+]
+FPP_BY_PARENT = {t["parent"]: t for t in FPP_TARGETS}
 TARGET_BY_TEX = {t["tex"]: t for t in TARGETS}
 KNOWN_OTHER = {
     r"base\4k\common\overlays\fullbody_overlay_d01.xbm": "UV body+arms (not supported yet)",
@@ -357,6 +381,41 @@ def extract_mesh(cli, game, work, t, log):
     return mesh_json, morph_json
 
 
+def fpp_torso_mask(cli, game, work, log):
+    """Chunk mask of the FPP torso in the active FPP body .app : what the game shows of the body mesh in first person.
+    The FPP body shell gets the same mask. Cached on the source archive ; the measured vanilla/Angel value is the
+    fallback (the app may live elsewhere than the mesh, or not be readable)."""
+    src, owners = find_owner(game, FPP_APP)
+    who = owners[0] + (f" (over {', '.join(owners[1:])})" if len(owners) > 1 else "") if owners else "base game"
+    try:
+        if not os.path.isfile(src) or rdar.fnv1a64(FPP_APP) not in rdar.hashes(src):
+            log(f"  FPP app: not found ({who}), default mask {FPP_TORSO_MASK}")
+            return FPP_TORSO_MASK
+        d = os.path.join(work, "mesh", "fpp_app")
+        marker = os.path.join(d, ".src")
+        key = stamp(src) + "|" + FPP_APP
+        app_json = os.path.join(d, FPP_APP + ".json")
+        if not (cached(marker, key) and os.path.isfile(app_json)):
+            shutil.rmtree(d, ignore_errors=True)
+            os.makedirs(d)
+            cli.run("unbundle", src, "-o", d, "-r", re.escape("\\" + os.path.basename(FPP_APP)) + "$", what="unbundle fpp app")
+            cli.run("convert", "serialize", os.path.join(d, os.path.dirname(FPP_APP)), what="serialize fpp app")
+            if not os.path.isfile(app_json):
+                raise BuildError("expected file missing after extraction: " + app_json)
+            with open(marker, "w") as f:
+                f.write(key)
+        for a in load(app_json)["Data"]["RootChunk"]["appearances"]:
+            for c in a["Data"]["components"]:
+                mesh = ((c.get("mesh") or {}).get("DepotPath") or {}).get("$value") or ""
+                if mesh.lower() == FPP_TORSO_MESH.lower() and c.get("chunkMask") is not None:
+                    log(f"  FPP app: {who}, torso mask {c['chunkMask']}")
+                    return c["chunkMask"]
+        log(f"  ! FPP app: {who}, no torso component: default mask {FPP_TORSO_MASK}")
+    except (BuildError, OSError, ValueError, KeyError, TypeError) as e:
+        log(f"  ! FPP app: {who}, not readable ({e}): default mask {FPP_TORSO_MASK}")
+    return FPP_TORSO_MASK
+
+
 # ----------------------------------------------------------------------------- 3. textures
 def extract_textures(cli, archive, slug, work, log):
     """All target textures of one tattoo archive -> work\\tex\\<slug>\\<game path> (cached)."""
@@ -410,8 +469,8 @@ def shell(active, tex, alpha, what):
         raise BuildError(f"{what}: non-local materials in the active mesh (unsupported body mod)")
     if root.get("localMaterialInstances") or root.get("preloadLocalMaterialInstances") or root.get("externalMaterials"):
         raise BuildError(f"{what}: external materials in the active mesh (unsupported body mod)")
-    if not any(e["name"]["$value"] == MESH_APPEARANCE for e in entries):
-        raise BuildError(f"{what}: no material {MESH_APPEARANCE} in the active mesh")
+    if not any(e["name"]["$value"].startswith(MESH_APPEARANCE) for e in entries):   # FPP arm R names them `01_ca_pale_body`
+        raise BuildError(f"{what}: no material {MESH_APPEARANCE}* in the active mesh")
     if not any(a["Data"]["name"]["$value"] == MESH_APPEARANCE for a in root["appearances"]):
         raise BuildError(f"{what}: no appearance {MESH_APPEARANCE} in the active mesh")
     for i in range(len(mats)):
@@ -430,7 +489,7 @@ def retarget_morph(active_morph, t, new_mesh):
     return morph, len(morph["Data"]["RootChunk"].get("targets") or [])
 
 
-def make_app(template, t, resource, comp_name, definition):
+def make_app(template, t, resource, comp_name, definition, chunk_mask=None):
     app = copy.deepcopy(template)
     root = app["Data"]["RootChunk"]
     root["appearances"] = [a for a in root["appearances"] if a["Data"]["name"]["$value"] == t["keep"]]
@@ -449,6 +508,8 @@ def make_app(template, t, resource, comp_name, definition):
             set_cname(comp, "meshAppearance", MESH_APPEARANCE)
             comp["castShadows"] = "Never"
             comp["castLocalShadows"] = "Never"
+            if chunk_mask is not None:
+                comp["chunkMask"] = chunk_mask
             n += 1
     if n != 2:
         raise BuildError(f"template {t['tpl']}: {n} components of type {t['ctype']} (expected 2)")
@@ -468,6 +529,7 @@ class Settings:
     max_name: int = 20
     alpha: float = 1.0
     mirror: bool = True
+    fpp: bool = True
     route1: bool = False
 
 
@@ -493,8 +555,9 @@ class BuildResult:
     size: int
 
 
-def build_archive(s, cli, items, active, log):
-    """items: list of Item ; active: target code -> (mesh json, morph json). -> (archive, xl, listing)."""
+def build_archive(s, cli, items, active, log, fpp_mask=None):
+    """items: list of Item ; active: target code -> (mesh json, morph json) ; fpp_mask: chunk mask of the FPP body shell
+    (`fpp_torso_mask`, when `s.fpp`). -> (archive, xl, listing)."""
     tdir = templates_dir()
     src = os.path.join(s.work, "pack", s.name)
     shutil.rmtree(src, ignore_errors=True)
@@ -539,6 +602,24 @@ def build_archive(s, cli, items, active, log):
                 save(pp.slot_app(n_), make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_slot{n_}_{slug}{t['suffix']}", f"w__{slug}{t['suffix']}"))
                 expected.append(pp.slot_app(n_))
             parts.append(f"{t['code']} {nv} vertices / {nm} mat." + (f" / {nt} morphs" if nt else ""))
+        if s.fpp:
+            for t in it.targets:
+                f = FPP_BY_PARENT.get(t["code"])
+                if not f:
+                    continue
+                pt, pf = Paths(slug, t), Paths(slug, f)
+                if f["mesh"]:
+                    mesh, nm, nv = shell(meshes[f["code"]], pt.tex, s.alpha, f"[{slug}] {f['code']}")
+                    save(pf.mesh, mesh)
+                    expected.append(pf.mesh)
+                    resource, mask = pf.mesh, None
+                    parts.append(f"{f['code']} {nv} vertices / {nm} mat.")
+                else:
+                    resource, mask = pt.mesh, fpp_mask
+                    parts.append(f"{f['code']} = body shell, mask {mask}")
+                for n_ in slots:
+                    save(pf.slot_app(n_), make_app(tpls[f["tpl"]], f, resource, f"inkflow_slot{n_}_{slug}{f['suffix']}", f"w__{slug}{f['suffix']}", mask))
+                    expected.append(pf.slot_app(n_))
         log(f"  [{slug}] \"{it.name}\": " + " ; ".join(parts))
 
     cc = load(os.path.join(tdir, "your_tattoo_pwa.inkcharcustomization.json"))
@@ -572,7 +653,7 @@ def build_archive(s, cli, items, active, log):
         d["editTags"] = list(tags)
         return d
 
-    entries, names_all, loc_entries = [], [], []
+    entries, names_all, names_fpp, loc_entries = [], [], [], []
     for it in items:
         loc_entries.append((f"UI-Customization-inkflow_{it.slug}", it.name))
         if s.route1:
@@ -623,10 +704,42 @@ def build_archive(s, cli, items, active, log):
         entries += [s2] + offs + infos
         names_all += [f"inkflow_slot{n_}"] + [o["name"]["$value"] for o in offs] + [x["name"]["$value"] for x in infos]
         loc_entries.append((f"UI-Customization-inkflow_slot{n_}", s.slot_title.replace("{n}", str(n_))))
+        if s.fpp:
+            # Follower switcher : same link key as the slot's switcher (vanilla `nipples` / `fpp_nipples` share
+            # "nipples type", `fpp_body_tattoo` links to `body_tattoo`), same option indexes, one FPP uiSlot per
+            # companion ; listed in the FPP_Body group only, so the creator never draws the FPP shells.
+            set_cname(s2, "link", f"inkflow_slot{n_}")
+            fui = {f["code"]: f"inkflow_slot{n_}{f['suffix']}" for f in FPP_TARGETS}
+            foff = {f["code"]: f"inkflow_slot{n_}_off{f['suffix']}" for f in FPP_TARGETS}
+            s3 = copy.deepcopy(tk_switcher)
+            set_cname(s3, "name", f"inkflow_slot{n_}_fpp")
+            set_cname(s3, "link", f"inkflow_slot{n_}")
+            s3["index"] = s.slot_index + FPP_INDEX_OFFSET + n_ - 1
+            s3["localizedName"] = f"UI-Customization-inkflow_slot{n_}"
+            set_cname(s3, "uiSlot", f"inkflow_slot{n_}_fpp_switcher")
+            s3["editTags"] = list(tags)
+            s3["uiSlots"] = [cname(fui[f["code"]]) for f in FPP_TARGETS]
+            s3["options"] = [copy.deepcopy(tk_switcher["options"][0])]
+            s3["options"][0]["names"] = [cname(foff[f["code"]]) for f in FPP_TARGETS]
+            foffs = [off(foff[f["code"]], fui[f["code"]]) for f in FPP_TARGETS]
+            finfos = []
+            for i, it in enumerate(items, 1):
+                names = []
+                for f in FPP_TARGETS:
+                    if TARGET_BY_CODE[f["parent"]] in it.targets:
+                        nm = f"inkflow_slot{n_}_{it.slug}{f['suffix']}"
+                        finfos.append(info(nm, fui[f["code"]], Paths(it.slug, f).slot_app(n_), f"w__{it.slug}{f['suffix']}"))
+                        names.append(nm)
+                    else:
+                        names.append(foff[f["code"]])
+                s3["options"].append(option(i, f"UI-Customization-inkflow_{it.slug}", names))
+            entries += [s3] + foffs + finfos
+            names_fpp += [f"inkflow_slot{n_}_fpp"] + [o["name"]["$value"] for o in foffs] + [x["name"]["$value"] for x in finfos]
 
     root["bodyCustomizationOptions"] = [{"HandleId": str(i), "Data": d} for i, d in enumerate(entries)]
     for g in root["bodyGroups"]:
-        g["options"] = [cname(x) for x in names_all]
+        fpp_group = s.fpp and g["name"]["$value"] == "FPP_Body"
+        g["options"] = [cname(x) for x in (names_fpp if fpp_group else names_all)]
     inkcc = rf"{P}\inkflow_pwa.inkcharcustomization"
     save(inkcc, cc)
     expected.append(inkcc)
@@ -710,6 +823,14 @@ def run_build(s, entries, catalogue, log, progress=None):
     log("2. active meshes")
     needed = [t for t in TARGETS if any(t in it.targets for it in built)]
     active = {t["code"]: extract_mesh(cli, s.game, s.work, t, log) for t in needed}
+    fpp_mask = None
+    if s.fpp:
+        log("2b. first person")
+        for f in FPP_TARGETS:
+            if f["mesh"] and TARGET_BY_CODE[f["parent"]] in needed:
+                active[f["code"]] = extract_mesh(cli, s.game, s.work, f, log)
+        if TARGET_BY_CODE["body"] in needed:
+            fpp_mask = fpp_torso_mask(cli, s.game, s.work, log)
 
     log("3. textures")
     for i, it in enumerate(built):
@@ -718,11 +839,11 @@ def run_build(s, entries, catalogue, log, progress=None):
 
     step(2 + len(built), "Building the archive")
     log("4. build")
-    arc, xl, listing = build_archive(s, cli, built, active, log)
+    arc, xl, listing = build_archive(s, cli, built, active, log, fpp_mask)
     catalogue.save()
     size = os.path.getsize(arc)
     log(f"\nDONE in {time.time() - t0:.0f} s: {arc} ({size / 1e6:.1f} MB, {len(listing)} files) + {os.path.basename(xl)}")
-    log(f"  {len(built)} tattoo(s), {s.slots} slot(s), mirror {'on' if s.mirror else 'off'}")
+    log(f"  {len(built)} tattoo(s), {s.slots} slot(s), mirror {'on' if s.mirror else 'off'}, first person {'on' if s.fpp else 'off'}")
     for it in built:
         log(f"    {it.slug:40s} \"{it.name}\"  [{', '.join(it.entry.target_codes)}]")
     step(total, "Done")
