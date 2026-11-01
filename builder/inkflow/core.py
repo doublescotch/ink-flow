@@ -100,6 +100,10 @@ class BuildError(Exception):
     """Anything that stops a build, with a message meant for the player."""
 
 
+class Cancelled(Exception):
+    """The player pressed Cancel. Not a BuildError : no fallback (`fpp_torso_mask`) may swallow it."""
+
+
 def templates_dir():
     """Templates ship next to the package in dev (`Projects/Ink Flow/templates`) and inside the bundle when frozen."""
     if getattr(sys, "frozen", False):
@@ -165,24 +169,37 @@ def make_slug(stem, taken):
 
 # ----------------------------------------------------------------------------- WolvenKit CLI
 class Cli:
-    def __init__(self, exe, log):
+    def __init__(self, exe, log, cancel=None):
         if not exe or not os.path.isfile(exe):
             raise BuildError("WolvenKit CLI not found: " + str(exe))
         self.exe = exe
         self.log = log
+        self.cancel = cancel         # threading.Event : set = kill the running CLI and raise Cancelled
 
     def run(self, *args, what=""):
         t = time.time()
         try:
-            r = subprocess.run([self.exe, *args], capture_output=True, text=True, creationflags=NO_WINDOW)
+            p = subprocess.Popen([self.exe, *args], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=NO_WINDOW)
         except OSError as e:
             raise BuildError(f"cannot start WolvenKit CLI: {e}") from e
-        ok = r.returncode == 0 and "Error" not in r.stdout
+        try:
+            while True:
+                try:
+                    out, err = p.communicate(timeout=0.25)
+                    break
+                except subprocess.TimeoutExpired:
+                    if self.cancel is not None and self.cancel.is_set():
+                        raise Cancelled() from None
+        except BaseException:        # Cancel, Ctrl+C : never leave a WolvenKit process behind
+            p.kill()
+            p.communicate()
+            raise
+        ok = p.returncode == 0 and "Error" not in out
         self.log(f"  cli {what or args[0]}: {'OK' if ok else 'FAILED'} ({time.time() - t:.1f} s)")
         if not ok:
-            raise BuildError(f"WolvenKit CLI failed ({what or args[0]}, exit {r.returncode}):\n"
-                             + r.stdout[-3000:] + r.stderr[-2000:])
-        return r.stdout
+            raise BuildError(f"WolvenKit CLI failed ({what or args[0]}, exit {p.returncode}):\n"
+                             + out[-3000:] + err[-2000:])
+        return out
 
     def version(self):
         """Self-test : the CLI starts (the .NET runtime it needs is present)."""
@@ -785,8 +802,10 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
     return arc, xl, listing
 
 
-def run_build(s, entries, catalogue, log, progress=None):
-    """Whole build : entries (supported, selected) -> BuildResult. `progress(step, total, text)` is optional."""
+def run_build(s, entries, catalogue, log, progress=None, cancel=None):
+    """Whole build : entries (supported, selected) -> BuildResult. `progress(step, total, text)` is optional ;
+    `cancel` (threading.Event) set = Cancelled at the next step or CLI poll. The cache stays valid (each marker is
+    written after its extraction), a half-written archive in the output folder is removed."""
     t0 = time.time()
     items = [e for e in entries if e.supported]
     if not items:
@@ -796,10 +815,12 @@ def run_build(s, entries, catalogue, log, progress=None):
     if not os.path.isdir(s.game):
         raise BuildError("game folder not found: " + s.game)
     catalogue.ensure(items)
-    cli = Cli(s.cli, log)
+    cli = Cli(s.cli, log, cancel)
     total = 3 + len(items)
 
     def step(i, text):
+        if cancel is not None and cancel.is_set():
+            raise Cancelled()
         if progress:
             progress(i, total, text)
 
@@ -839,7 +860,13 @@ def run_build(s, entries, catalogue, log, progress=None):
 
     step(2 + len(built), "Building the archive")
     log("4. build")
-    arc, xl, listing = build_archive(s, cli, built, active, log, fpp_mask)
+    try:
+        arc, xl, listing = build_archive(s, cli, built, active, log, fpp_mask)
+    except Cancelled:
+        for p in (os.path.join(s.out, s.name + ".archive"), os.path.join(s.out, s.name + ".archive.xl")):
+            if os.path.isfile(p):
+                os.remove(p)
+        raise
     catalogue.save()
     size = os.path.getsize(arc)
     log(f"\nDONE in {time.time() - t0:.0f} s: {arc} ({size / 1e6:.1f} MB, {len(listing)} files) + {os.path.basename(xl)}")

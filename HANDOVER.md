@@ -5,7 +5,26 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-01, 23 h 45) : 1.0.0 + première personne bâtie, QA FPP attendue avant l'upload
+## État (2026-11-02, 0 h 15) : QA FPP validée, interface verrouillée pendant le build, upload à lui
+
+- **QA FPP de Hell_Kaiser (02/11, vers 0 h) : validée.** 9 slots, tous ses tatouages chargés depuis son
+  pack V's Body : (a) créateur, les 9 slots superposables apparaissent bien ; (b) tatouages des bras vus
+  au miroir puis en première personne (tête baissée) ; (d) posés au miroir, suivis en FPP ; (e) mode
+  photo OK ; **pas de bras plus clair**. (c) rien qui flotte : non signalé.
+- **Sa demande d'interface (même message)** : les boutons restaient cliquables pendant le build. Livré :
+  fenêtre en lecture seule pendant le build (tous les contrôles ttk grisés, la liste ignore clics et
+  touches), le bouton Build devient **Cancel** ; fermer la fenêtre = « annuler et quitter ? ». Moteur :
+  `core.Cancelled` (distincte de `BuildError`, que `fpp_torso_mask` avale), `Cli.run` tue WolvenKit.
+- **Preuves (GUI pilotée, maison `exe\home`)** : Cancel pendant le `deserialize` : `WolvenKit.CLI.exe`
+  vivant à l'appui, absent 1 s après, sortie vide (archive partielle retirée), bouton « Cancelling… »
+  grisé, 13 s ; 24 contrôles grisés, seul Cancel actif ; build complet ensuite : 157 fichiers,
+  150 347 776 o, identique. Exe figé rebâti à 0 h 09 (SHA-256 `7df14236…3cb7775`), autotest : 157 fichiers,
+  150 347 776 o, 145 s. Zip `c1e354ae…5aa02a` recopié sur ses deux copies (racine du projet et `releases\`).
+- **Attend lui** : boîte Permissions de 20279, relecture de `NEXUS.md`, captures (sa capture
+  `releases\Ink Flow Interface.png` de 0 h 05 montre la fenêtre au repos : le verrou n'y change rien),
+  upload Nexus (zip + SHA-256 de l'exe), puis tag `v1.0.0`.
+
+## ~~État (2026-11-01, 23 h 45) : 1.0.0 + première personne bâtie, QA FPP attendue avant l'upload~~ remplacé (0 h 15)
 
 - **Première personne (décision de Hell_Kaiser, 23 h : « ajouter la FPP avant l'upload »)** : livrée
   dans le builder (ETUDE § 16 : suiveur caché par slot lié au sélecteur, coque du corps masquée comme le

@@ -81,3 +81,15 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   fichiers, 150 347 776 o, 124 s, « first person on »), zip `InkFlowBuilder-1.0.0.zip` refait (SHA-256
   `c0b18ba7…4b027`) et **recopié sur sa copie dans le dossier du projet** (l'ancienne, 21 h 19, était
   sans FPP). Jeu non touché : la QA FPP est à lui (Build + Install dans l'exe, sauvegarde avec miroir).
+
+## 2026-11-02 (0 h → 0 h 15) — QA FPP validée, interface verrouillée pendant le build
+
+- Vers 0 h : **QA FPP de Hell_Kaiser validée** (9 slots, son pack V's Body entier : créateur, miroir,
+  première personne tête baissée, mode photo ; pas de bras plus clair). Sa demande dans le même message :
+  verrouiller l'interface pendant le build, avec un seul bouton Annuler.
+- 0 h-0 h 09 : `core.Cancelled`, `Cli.run` par `Popen` (WolvenKit tué sur Cancel ou Ctrl+C),
+  `run_build(..., cancel)`, archive partielle retirée ; `gui.py` : `_lock`, Build → Cancel,
+  fermeture = annuler puis quitter. GUI pilotée : Cancel au `deserialize` propre (13 s, aucun
+  WolvenKit restant, sortie vide) ; build complet identique (157 fichiers, 150 347 776 o).
+- 0 h 09-0 h 12 : exe rebâti (`7df14236…`), autotest figé identique (145 s) ; zip `c1e354ae…`
+  recopié sur ses deux copies.
