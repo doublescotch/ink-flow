@@ -45,7 +45,8 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   ouvert** (« tout cœur ouvert, les gens doivent pouvoir contrôler ce qu'on a fait ») : initialisé
   **en local** à 21 h 05 à la racine du projet (branche `main`, committer Hell_Kaiser, auteur Claude
   Fable 5.1), contenu = builder + tools + templates + ETUDE, LOG, HANDOVER ; `canari\` exclu
-  (textures tierces). **Aucun dépôt GitHub créé** : sur son go seulement.
+  (textures tierces). ~~Aucun dépôt GitHub créé~~ **En ligne à 21 h 25 sur son go :
+  `https://github.com/doublescotch/ink-flow`, public, branche `master`** (règle : tous ses dépôts).
 - **Comment l'exe choisit le corps** (question de Hell_Kaiser, réponse lue dans `core.py`,
   `find_owner`) : pour chaque cible (corps, bras G/D, tête), il cherche dans `archive\pc\mod` la
   **première archive dans l'ordre de chargement du jeu** (alphabétique, insensible à la casse) qui
@@ -63,8 +64,8 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
    après un changement de corps » + ligne sur le slot conservé ; (c) **permissions** : les
    `templates\*.json` viennent du CCXL Tattoo Toolkit (20279) et de Kylin (localisation) : demander
    ou remplacer par des gabarits tirés des fichiers vanilla ; (d) version 1.0.0 dans `gui.py` /
-   `build_exe.ps1`, exe rebâti, SHA-256 notée ; (e) création du dépôt GitHub `doublescotch/ink-flow`
-   sur son go, push ; (f) page Nexus (texte, captures, faux positifs antivirus annoncés).
+   `build_exe.ps1`, exe rebâti, SHA-256 notée ; ~~(e) création du dépôt GitHub `doublescotch/ink-flow`
+   sur son go, push~~ fait (21 h 25) ; (f) page Nexus (texte, captures, faux positifs antivirus annoncés).
 2. **Après la 1.0** : famille UV (corps Solo), icônes dans le créateur, FPP, V masculin, poids
    (morphtarget partagé), morph changé au charcudoc (QA non cochée).
 3. ~~Prise en main de l'exe par Hell_Kaiser~~ **faite (QA 4)**.
