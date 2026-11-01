@@ -23,27 +23,51 @@ Nothing made by other authors is redistributed.
    The builder warns about VTK tattoo archives still in `archive\pc\mod` (they would paint a permanent tattoo under the slots) and can move them to a backup folder.
 6. In game: character creator, ripperdoc (and mirror if enabled) → **Ink 1 / Ink 2 / …** under "Body Tattoos".
 
-Rebuild whenever you add tattoos or rename them. A tattoo keeps its internal id across rebuilds and renames of the file, so a saved character keeps its tattoos.
+Rebuild whenever you add tattoos or rename them. A tattoo keeps its internal id across rebuilds and renames of the file
+(the id comes from the file content), so a saved character keeps the tattoos it wears in each slot.
+
+**Rebuild after changing your body mod.** The shells are copies of the body and head meshes that were active when you
+built: if you install, remove or reorder a body mod later, build again (and install), otherwise the tattoos keep the
+old body's shape.
+
+Only the archives you add are read. The builder never uploads anything, never touches your saves, and never writes
+in the game folder before you click **Install into game** (the previous `Ink_Flow` files go to `backup\`).
 
 ## How it works
 
-The shell meshes that carry each tattoo are copies of **your active body and head meshes** (whatever body mod is first in your `archive\pc\mod`, or the vanilla game), with their skin materials replaced by the vanilla tattoo decal material pointing at the tattoo texture. The head shell carries a copy of the face morph target so it follows face sculpting. Textures are copied byte for byte.
+The shell meshes that carry each tattoo are copies of **your active body and head meshes**, with their skin materials
+replaced by the vanilla tattoo decal material pointing at the tattoo texture. "Active" means what the game itself
+uses: for each part (body, left arm, right arm, head) the builder looks in `archive\pc\mod` for the first archive in
+the game's load order (alphabetical, case-insensitive) that delivers the vanilla mesh, and falls back to the base game.
+The build log names it (`Body : 006_Angel_Body.archive (over …)`). Any body mod whose mesh keeps local materials and
+the standard skin appearance works; otherwise the builder stops with "unsupported body mod". The head shell carries a
+copy of the face morph target so it follows face sculpting. Textures are copied byte for byte.
 
 ## Files
 
 - `InkFlowBuilder.py`, `inkflow/gui.py`: the window (tkinter).
 - `inkflow/core.py`: the engine (also used by `inkflow_cli.py`, a command line with the same options).
 - `inkflow/env.py`: game detection, ArchiveXL, .NET, WolvenKit download (pinned version, size and SHA-256 checked).
-- `templates/` (one folder up): the JSON templates of the CCXL Tattoo Toolkit, in WolvenKit format.
+- `templates/` (one folder up): JSON templates in WolvenKit format: the `.app` and `.inkcharcustomization` skeletons
+  come from the **CCXL Tattoo Toolkit** by thrasherpass (Nexus 20279), a template resource made for this; the
+  localization skeleton is a neutral placeholder. Every path, name and entry is rewritten at build time.
 - `build_exe.ps1`: builds the single-file exe with PyInstaller.
 
 Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` cache, `out\`, `backup\`, `wolvenkit\`). Set `INKFLOW_HOME` to use another folder.
 
 ## Known limits of this first cut
 
-- Female V only. UV Framework tattoos not supported yet. No icons in the creator (text options).
+- Female V only. UV Framework tattoos (Solo-type bodies) not supported yet. No first-person (FPP) shells. No icons in
+  the creator (text options).
+- Face sculpting changed at the ripperdoc after a build has not been QA'd yet (the head shell follows the face morphs
+  on an already sculpted face).
 - Single-file PyInstaller executables are sometimes flagged by antivirus heuristics. The source is here; you can run `python InkFlowBuilder.py` instead.
 
-## Licence
+## Credits and licence
 
-MIT (this tool). WolvenKit belongs to its authors and is downloaded, not shipped. Tattoos stay the property of their authors.
+- **thrasherpass**: CCXL Tattoo Toolkit (Nexus 20279), whose templates define the switcher layout.
+- **psiberx**: ArchiveXL, and **WolvenKit** team: WolvenKit Console, downloaded at first run, not shipped.
+- The tattoo authors whose archives you build with. This tool redistributes nothing of theirs. A built
+  `Ink_Flow.archive` contains their textures: it is for your own game, do not share it without their permission.
+
+MIT (this tool). Source: https://github.com/doublescotch/ink-flow

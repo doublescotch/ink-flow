@@ -286,3 +286,25 @@ Tous à matériaux **locaux**, même structure que le corps : la recette v5 (cop
 **Exe** : PyInstaller 6 dans un venv `C:\__DEV\cyberpunk\ink_flow\exe\venv` (Python 3.11 du Store : fonctionne), `--onefile --windowed`, **11,4 Mo**. Capture de la fenêtre (PrintWindow par ctypes, PNG écrit à la main) : `exe\gui_main.png`, les 18 tatouages listés et cochés, quatre voyants verts, Build actif. **Exe figé testé sans clic** (mode `INKFLOW_AUTOTEST`, maison `exe\home` vide de cache, WolvenKit téléchargé par l'outil lui-même) : **18 tatouages, 139 599 872 o, 106 entrées identiques à la v0.3b, `.xl` identique, 201 s** (contre 123 s avec le cache de `gen\` : les extractions dominent).
 
 **Limites annoncées du premier jet** : V féminine ; VTK seulement (UV listé « ignored ») ; pas d'icônes ; `--route1` absent de l'interface ; faux positifs antivirus possibles (un fichier PyInstaller) ; pas de signature de code.
+
+## 15. Version 1.0.0 : gabarits, preuve, zip (2026-11-01, 21 h 15 → 21 h 45, Fable, go de Hell_Kaiser « tout le lot »)
+
+**Gabarits (décision : garder + créditer).** Les trois gabarits `.app` / `.inkcharcustomization` sont des
+exports WolvenKit du CCXL Tattoo Toolkit 20279 (thrasherpass), dont la description Nexus (lue par l'API
+v1, `description`) dit : « a template resource for CCXL tattoo additions… template source files for your
+WolvenKit project ». Les copier dans un projet est l'usage prévu ; la boîte « Permissions » de la page
+n'est pas servie par l'API (et la page refuse les clients hors navigateur) : Hell_Kaiser la lit sur le
+site. Le gabarit de localisation (Kylin) ne servait que de squelette (`core.py` vide ses entrées et
+écrit les siennes) : remplacé par une entrée neutre `placeholder`. Les en-têtes `ArchiveFileName`
+(chemins `C:\__DEV\…`) sont remplacés par le nom du gabarit. Crédit thrasherpass dans README et NEXUS.md.
+
+**Preuve d'identité après nettoyage** : `VERSION = "1.0.0"`, `build_exe.ps1` → exe 11,4 Mo, SHA-256
+`13c14eaa…bbc9b9` ; mode `INKFLOW_AUTOTEST` sur `exe\home` (cache chaud) : 18 tatouages, 106 fichiers,
+139 599 872 o, 120 s ; comparaison octet à octet avec la v0.3b du jeu (scratchpad `cmp_rdar.py`, index
+lu dans l'en-tête RDAR : position 139 583 488, taille 14 684) : **536 octets différents, tous dans
+l'index, 0 hors index** ; `.xl` identique. Les en-têtes des JSON n'entrent donc pas dans les fichiers
+produits, et le squelette de localisation neutre donne la même localisation.
+
+**Livrable** : `exe\dist\InkFlowBuilder-1.0.0.zip` (exe + README + LICENSE, 11,7 Mo, SHA-256
+`35b5bf52…40daf6`), à envoyer sur Nexus par Hell_Kaiser avec la SHA-256 de l'exe dans la description
+du fichier. Non fait par moi : upload, captures, test du bouton Download (ses gestes).

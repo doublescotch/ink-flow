@@ -2,11 +2,33 @@
 
 Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaque projet de création porte sa passation et son journal dans son dossier ; `cp:HANDOVER.md` ne garde qu'un renvoi). Ce fichier ne porte que **l'état vivant** : ce qui est posé, ce qui attend, ce qui n'est pas tranché. Les mesures, décisions et acquis vivent dans `ETUDE.md` ; la chronologie dans `LOG.md`.
 
-**Pas de git tant que le proto ne tient pas** ; l'exe du builder en demandera un, ouvert, pour la confiance.
+~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
+`https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
+
+## État (2026-11-01, 21 h 45) : 1.0.0 bâtie, attend son test du bouton Download et l'upload
+
+- **Exe 1.0.0 : `C:\__DEV\cyberpunk\ink_flow\exe\dist\InkFlowBuilder.exe`** (11,4 Mo, SHA-256
+  `13c14eaa…bbc9b9`) ; **zip d'upload `exe\dist\InkFlowBuilder-1.0.0.zip`** (11,7 Mo, exe + README +
+  LICENSE, SHA-256 `35b5bf52…40daf6`). Preuve : exe figé en mode `INKFLOW_AUTOTEST` (maison `exe\home`,
+  cache chaud) : 18 tatouages, 106 fichiers, 139 599 872 o en 120 s, **0 octet différent hors index**
+  contre la v0.3b posée dans le jeu (536 dans l'index = horodatages), `.xl` identique.
+- **Gabarits (décision de Hell_Kaiser, 21 h 15 : garder + créditer)** : le toolkit 20279 se présente
+  comme « a template resource … template source files for your WolvenKit project » (description Nexus,
+  lue par l'API ; la boîte Permissions n'est pas lisible par l'API : **à lire par lui sur la page**) ;
+  en-têtes WolvenKit nettoyés (plus de chemin `C:\__DEV`), localisation = squelette neutre
+  (`placeholder`, plus rien de Kylin). Crédit thrasherpass dans le README et la page Nexus.
+- README : rebâtir après un changement de corps, slot conservé, comment le corps est choisi, limites
+  (UV, FPP, morph au charcudoc non coché), crédits. **Dans le jeu : build 0.4.0 de 20 h 03 inchangé**
+  (même contenu que la 1.0.0 au bit près hors index : rien à reposer).
+- Brouillon de la page Nexus : **`NEXUS.md`** (racine du projet, anglais : nom, résumé, description
+  BBCode, permissions, crédits, fichier à envoyer, captures à prendre).
 
 ## Où sont les choses
 
-- Projet (OneDrive) : `cp:__DEV\Projects\Ink Flow\` : `ETUDE.md` (§ 1-12), `tools\inkflow_build.py` (générateur **v0.3**), `tools\rdar.py` (index RDAR sans WolvenKit), `tools\build_canari.py` (figé, canaris v1-v5), `tools\nexus_dl.py`, `templates\` (gabarits JSON), `canari\` (v1-v5).
+- Projet (OneDrive, dépôt git) : `cp:__DEV\Projects\Ink Flow\` : `ETUDE.md` (§ 1-15), `NEXUS.md` (page
+  Nexus), `builder\` (exe : `inkflow\`, `README.md`, `LICENSE`, `build_exe.ps1`), `tools\inkflow_build.py`
+  (générateur **v0.3**, figé), `tools\rdar.py`, `tools\build_canari.py` (figé), `tools\nexus_dl.py`,
+  `templates\` (gabarits JSON neutralisés), `canari\` (v1-v5, hors git).
 - Jetable (poste) : `C:\__DEV\cyberpunk\ink_flow\` : `in\` (17 archives VTK de test tirées de `3_Bodies\V's Body.zip` + catalogue `inkflow_slugs.json`), `gen\` (`mesh`, `tex`, `pack`, `out`, `verify`, `head_src` = tête HD extraite), `src\` (copies d'archives du jeu, dont les trois `*_HD_Head*`), `builds\v0\`, `v0.1\`, **`v0.2b\`** (archives posées précédemment), `canari_retire\`.
 - Jeu : `archive\pc\mod\Ink_Flow.archive` + `.xl` (écriture = `WRITE_UNLOCK.txt` sur `archive\pc\mod`, 60 min, ou la formule ; jeu fermé).
 
@@ -60,12 +82,14 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 
 ## Prochain geste (1.0)
 
-1. **Avant publication** : (a) `env.py` : test du bouton Download par lui ; (b) README : « rebâtir
-   après un changement de corps » + ligne sur le slot conservé ; (c) **permissions** : les
-   `templates\*.json` viennent du CCXL Tattoo Toolkit (20279) et de Kylin (localisation) : demander
-   ou remplacer par des gabarits tirés des fichiers vanilla ; (d) version 1.0.0 dans `gui.py` /
-   `build_exe.ps1`, exe rebâti, SHA-256 notée ; ~~(e) création du dépôt GitHub `doublescotch/ink-flow`
-   sur son go, push~~ fait (21 h 25) ; (f) page Nexus (texte, captures, faux positifs antivirus annoncés).
+1. **Avant publication** : (a) `env.py` : **test du bouton Download par lui** (renommer ou vider
+   `exe\home\wolvenkit\` ou `%LOCALAPPDATA%\InkFlow\wolvenkit\`, relancer l'exe, cliquer Download :
+   45 Mo, SHA-256 vérifiée par l'outil) ; ~~(b) README~~ fait (21 h 30) ; ~~(c) permissions~~ tranché
+   « garder + créditer » (21 h 15), **lui : lire la boîte Permissions de 20279 sur le site** ;
+   ~~(d) version 1.0.0, exe rebâti, SHA-256 notée~~ fait (21 h 18, `13c14eaa…`) ; ~~(e) dépôt GitHub~~
+   fait (21 h 25) ; ~~(f) page Nexus~~ brouillon `NEXUS.md` (21 h 25), **à relire par lui** ; (g) **ses
+   captures** (4 listées dans `NEXUS.md`, second écran) ; (h) **upload Nexus par lui** (zip + SHA-256
+   dans la description du fichier), puis tag `v1.0.0` sur le dépôt.
 2. **Après la 1.0** : famille UV (corps Solo), icônes dans le créateur, FPP, V masculin, poids
    (morphtarget partagé), morph changé au charcudoc (QA non cochée).
 3. ~~Prise en main de l'exe par Hell_Kaiser~~ **faite (QA 4)**.

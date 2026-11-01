@@ -51,3 +51,15 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   `.gitignore` : non supporté par git, corrigé, commit réécrit avant tout push) ; `.gitattributes`
   LF. Réponse à « comment l'exe choisit le corps » gravée dans `HANDOVER.md` (lue dans `core.py`).
 - 21 h 20 : go de Hell_Kaiser pour la mise en ligne, **branche `master`** (règle : tous ses dépôts).
+
+## 2026-11-01 (21 h 10-21 h 45) — 1.0.0 : gabarits, README, exe, page Nexus
+
+- 21 h 10 : « Reprends » ; passations lues ; provenance des gabarits mesurée : toolkit 20279 = « template
+  resource » (description Nexus par l'API ; page refusée hors navigateur, boîte Permissions non lue).
+- 21 h 15 : décisions de Hell_Kaiser (question in-prompt) : **garder + créditer** ; **go sur tout le lot**
+  (b, c, d, f), le test du bouton Download reste à lui.
+- 21 h 15-21 h 30 : gabarits nettoyés (en-têtes sans chemin local, localisation neutre) ; `VERSION =
+  "1.0.0"` ; README (rebâtir après changement de corps, slot conservé, choix du corps, limites, crédits) ;
+  `NEXUS.md` (brouillon de page, anglais) ; exe rebâti (SHA-256 `13c14eaa…`) ; **autotest : 106 fichiers,
+  0 octet différent hors index contre la v0.3b**, `.xl` identique ; zip d'upload `InkFlowBuilder-1.0.0.zip`
+  (SHA-256 `35b5bf52…`). Jeu non touché (le build 0.4.0 posé est identique hors index). ETUDE § 15.

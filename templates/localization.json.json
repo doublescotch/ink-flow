@@ -5,7 +5,7 @@
     "GameVersion": 2310,
     "ExportedDateTime": "2026-10-31T07:58:02.4292158Z",
     "DataType": "CR2W",
-    "ArchiveFileName": "C:\\__DEV\\cyberpunk\\tattoo_ccxl\\x\\kylin\\kylin\\ccxl\\k3_ponytail_wa\\localization\\k3_ponytail_wa__local.json"
+    "ArchiveFileName": "localization.json"
   },
   "Data": {
     "Version": 195,
@@ -20,17 +20,10 @@
           "entries": [
             {
               "$type": "localizationPersistenceOnScreenEntry",
-              "femaleVariant": "kylin_ponytail_wa",
-              "maleVariant": "",
+              "femaleVariant": "placeholder",
+              "maleVariant": "placeholder",
               "primaryKey": "0",
-              "secondaryKey": "UI-Customization-kylin_ponytail_wa"
-            },
-            {
-              "$type": "localizationPersistenceOnScreenEntry",
-              "femaleVariant": "kylin_ponytail_wa",
-              "maleVariant": "",
-              "primaryKey": "0",
-              "secondaryKey": "UI-Customization-kylin_ponytail_wa"
+              "secondaryKey": "UI-Customization-placeholder"
             }
           ]
         }
