@@ -1,0 +1,41 @@
+{
+  "Header": {
+    "WolvenKitVersion": "9.1.0",
+    "WKitJsonVersion": "0.0.9",
+    "GameVersion": 2310,
+    "ExportedDateTime": "2026-10-31T07:58:02.4292158Z",
+    "DataType": "CR2W",
+    "ArchiveFileName": "C:\\__DEV\\cyberpunk\\tattoo_ccxl\\x\\kylin\\kylin\\ccxl\\k3_ponytail_wa\\localization\\k3_ponytail_wa__local.json"
+  },
+  "Data": {
+    "Version": 195,
+    "BuildVersion": 0,
+    "RootChunk": {
+      "$type": "JsonResource",
+      "cookingPlatform": "PLATFORM_PC",
+      "root": {
+        "HandleId": "0",
+        "Data": {
+          "$type": "localizationPersistenceOnScreenEntries",
+          "entries": [
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "femaleVariant": "kylin_ponytail_wa",
+              "maleVariant": "",
+              "primaryKey": "0",
+              "secondaryKey": "UI-Customization-kylin_ponytail_wa"
+            },
+            {
+              "$type": "localizationPersistenceOnScreenEntry",
+              "femaleVariant": "kylin_ponytail_wa",
+              "maleVariant": "",
+              "primaryKey": "0",
+              "secondaryKey": "UI-Customization-kylin_ponytail_wa"
+            }
+          ]
+        }
+      }
+    },
+    "EmbeddedFiles": []
+  }
+}
