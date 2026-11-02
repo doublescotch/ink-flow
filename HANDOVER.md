@@ -26,6 +26,13 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   testé ; hypothèse REDmod / MO2 des trois EBBRB attend un `build.log`.
 - Scripts : `tools\qa_2026-11-02\build_pure_link.py` (build du passage 3), `tools\probe\logs\2026-11-02_181554`
   (journaux, hors git). `gen\nexus_36814_desc.bbcode` = sa page telle que publiée (poste).
+- **Son plan avant l'upload (18 h 35)** : test « premier utilisateur » : désinstaller le runtime .NET 10 et
+  `%LOCALAPPDATA%\InkFlow`, exe 1.0.1 vierge, **corps vanilla** (Angel + têtes à parquer : moi, sur son go, jeu fermé),
+  2-3 tatouages, Build, Install, captures du processus et du résultat en jeu ; puis la même chose sur **Angel**. C'est
+  la première exécution réelle du bouton Install .NET Runtime 10 (jamais joué sur ce poste : ETUDE § 18). Effets à
+  savoir : `%LOCALAPPDATA%\InkFlow` emporte le catalogue (noms édités), la config (liste des archives, slots), le cache
+  (build suivant ≈ 2 min au lieu de 20 s), WolvenKit (retéléchargé, 45 Mo) et `backup\` (anciens Ink_Flow ; le
+  build de 17 h 28 reste dans `C:\__DEV\cyberpunk\ink_flow\…\out` et dans le jeu).
 
 ## ~~État (2026-11-02, 18 h 15) : FPP corrigée et prouvée sur Angel, .NET installable depuis le builder, 1.0.1 prête sauf QA vanilla~~ dépassé (18 h 30)
 
