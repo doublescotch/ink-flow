@@ -27,9 +27,10 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   dernier paragraphe. Codeware 1.21.2 est dans son jeu ; Redscript : vérifier `red4ext\plugins`
   (`r6\scripts` n'existe pas encore). Le script de Hyst (`dl\4654\ebbrb\r6\scripts\VTK_Hyst_CC_Edit`) est
   un bon modèle d'accroche `Resource/Load`.
-- Scripts jetables de la séance (scratchpad, à recopier dans `tools\` s'ils resservent) : `game_step.py`
+- Scripts de la séance, versionnés dans **`tools\qa_2026-11-02\`** (chemins en dur du poste) : `game_step.py`
   (isolate / install / angelbuild / embed / nofpp / fpparms / fppbody / restore), `build_pure*.py`,
-  `build_fpp_bisect.py`, `vanilla_in_game.py`, `order_test.py`, `vanilla_test.py`, `ebbrb_test.py`.
+  `build_fpp_bisect.py`, `vanilla_in_game.py`, `order_test.py`, `vanilla_test.py`, `ebbrb_test.py`,
+  `gui_capture_101.py`.
 - **Durée du déverrouillage** : `UNLOCK_TTL_SECONDS` dans les deux hooks installés (lignes 67 et 85) et
   dans `pipeline\hooks\` ; à lui (fichiers de règles).
 
