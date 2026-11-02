@@ -105,3 +105,15 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   corps à 91 k sommets. Correctifs (a)-(f) proposés, en attente de son go ; réponses Nexus rédigées.
 - Perf (sa mesure, setup minimal Angel + Ink Flow, appartement H10) : ≈ 100 fps en auto léger / moyen,
   80-90 en high / ultra ; setup complet 50-60 avec micro-saccades. Mesures par piles à venir.
+
+## 2026-11-02 (14 h → 15 h) — 1.0.1 : ordre de chargement, bras vanilla, Scan, build.log
+
+- Go de Hell_Kaiser sur les six points et sur « commit docs + tag v1.0.0 » : docs commitées (`217ada3`),
+  tag `v1.0.0` posé sur `dcf165a` et poussé.
+- Code (ETUDE § 17, « Livré ») : `game_archives` (modlist.txt, REDmod, ordre MO2), `shell()` à trois magasins,
+  ligne Body mesh, Scan game folder, `build.log`, `--from-game`. Preuves : tests d'ordre A → H, build CLI
+  complet sur corps vanilla (157 fichiers, 71,1 Mo), exe figé identique à la 1.0.0 sur Angel (157 fichiers,
+  150 347 776 o), capture de la fenêtre. Exe `fc33b615…`, zip `8b38f547…` dans `releases\`.
+- README (Body mesh, Scan, MO2, Troubleshooting), `NEXUS.md` (étapes, « Slots visible but nothing on V ? »,
+  changelog 1.0.1), `NEXUS_POSTS.md` (réponses à poster). Jetables : `dl\4654\ebbrb\` gardé comme fixture
+  (zip supprimé), `gen\t101\` gardé (arbre factice vanilla + build de 71 Mo), `fakegameB` supprimé.

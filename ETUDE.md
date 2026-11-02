@@ -419,3 +419,33 @@ disparaît.
 en rouge si « base game », avec le conseil MO2 / REDmod ; (d) `build.log` écrit dans
 `%LOCALAPPDATA%\InkFlow` à chaque build ; (e) README et page Nexus : MO2 = lancer le builder depuis MO2,
 REDmod, bras vanilla, « send your build.log ». (f) Scan game folder : lot séparé.
+
+**Livré (1.0.1, 14 h → 15 h, go de Hell_Kaiser sur les six points, question in-prompt)** :
+- `core.py` : `game_archives(game)` = ordre de chargement réel (`archive\pc\mod` selon `modlist.txt` s'il
+  existe, sinon alphabétique ; puis `mods\<nom>\archives` selon `r6\cache\modded\MO_REDmod_load_order.txt`
+  s'il existe, sinon alphabétique par dossier ; les legacy chargent avant les REDmod) ; `find_owner` le suit,
+  repli jeu de base ; libellés `006_Angel_Body.archive` / `mods\x\archives\y.archive (REDmod)` ; clé de cache
+  des extractions = chemin complet de l'archive source. `shell()` accepte les trois magasins de matériaux
+  (`localMaterialBuffer`, `preloadLocalMaterialInstances`, `localMaterialInstances`), un seul à la fois, et
+  remplace le `Data` des handles. `is_pure_tattoo`, `find_tattoo_archives` (Scan), `conflicting_archives`
+  sur legacy + REDmod avec des libellés relatifs au jeu, `install` sauvegarde sous le même chemin relatif.
+  `rdar.index()` : index des archives en cache (chemin, taille, mtime).
+- `gui.py` : ligne **Body mesh** sous les quatre voyants (fil, `active_owners` sur corps / bras / tête ;
+  rouge « BASE GAME … MO2 » si le corps est le jeu de base) ; bouton **Scan game folder…** (copie dans
+  `%LOCALAPPDATA%\InkFlow\tattoos\`, nom suffixé par l'empreinte si collision) ; `build.log` réécrit à chaque
+  build (version, date, jeu, voyants, ligne Body mesh, réglages, puis chaque ligne du journal) ; erreur de
+  build renvoie vers `build.log`. CLI : `--from-game`, `--in` facultatif.
+- **Preuves** : `order_test.py` (arbre factice) : alphabétique, `modlist.txt`, REDmod, ordre MO2, legacy
+  avant REDmod, détection des tatouages purs, libellés de conflits : **A → H conformes**. `vanilla_test.py`
+  après correctif : bras G / D **SHELL OK** (23 / 22 matériaux). **Build CLI complet sur le corps vanilla**
+  (arbre factice `gen\t101\fakegame`, jonction vers le `content` du jeu, `archive\pc\mod` vide) : 18 tatouages,
+  **157 fichiers, 71,1 Mo, 206 s** ; coque de bras dépaquetée et resérialisée : 23 matériaux preload = décal
+  `customization_tattoos_01_ca_pale.mi` → `inkflow\tattoos\samurai\samurai_arm_l.xbm`, 5 787 sommets.
+  **Exe figé 1.0.1** (autotest `exe\home`, Angel) : **157 fichiers, 150 347 776 o, identiques à la 1.0.0**,
+  207 s, `build.log` écrit. Fenêtre capturée (`builder\tests\gui_main_2026-11-02.png`) : ligne verte
+  « Body mesh: 006_Angel_Body.archive | arms: … | head: 006_VTK_Vanilla_HD_Head_xBaebsae.archive ».
+  Exe final (après un changement de séparateur dans le libellé) : SHA-256 `fc33b615…9805`, zip
+  `InkFlowBuilder-1.0.1.zip` SHA-256 `8b38f547…`, copie dans `releases\`.
+- **Non prouvé en jeu** : le rendu d'une coque de bras vanilla (QA à lui : Angel et têtes retirés, build,
+  install, bras tatoués au miroir ; puis remettre Angel et rebâtir) ; et l'hypothèse REDmod / MO2 elle-même,
+  qui attend le `build.log` d'un des trois utilisateurs EBBRB.

@@ -1,10 +1,11 @@
-"""Ink Flow engine (v0.4, 2026-11-01) : the generator of `tools/inkflow_build.py` v0.3 turned into a library.
+"""Ink Flow engine (v0.4, 2026-11-01 ; 1.0.1, 2026-11-02) : the generator of `tools/inkflow_build.py` v0.3 turned into a library.
 
 Same recipe, same output (ETUDE § 8-13) :
   - every tattoo .archive chosen by the player is indexed (RDAR, no WolvenKit) and its TARGETS recognised by the files
     it replaces (body `v_overlay.xbm`, arms `femme_arm_left|right_01_overlay.xbm`, head `h0_001_pwa_c__basehead_overlay.xbm`) ;
-  - for every target the ACTIVE mesh of the player (first archive of `archive\\pc\\mod` that ships it, else the base
-    game) is extracted and serialised with WolvenKit CLI (cached) ;
+  - for every target the ACTIVE mesh of the player (first archive in the game's load order that ships it : `archive\\pc\\mod`
+    with `modlist.txt` if present, then REDmod `mods\\*\\archives`, else the base game ; `game_archives`) is extracted
+    and serialised with WolvenKit CLI (cached) ;
   - per tattoo and target : the texture copied byte for byte, a shell = COPY OF THE ACTIVE MESH whose skin materials
     become the vanilla tattoo decal material, the mesh morphtarget (body, head) re-pointed to the shell, one .app per
     (slot, tattoo, target) ;
@@ -344,16 +345,93 @@ def option_label(name, max_len):
 
 
 # ----------------------------------------------------------------------------- 2. active meshes
+LEGACY_DIR = r"archive\pc\mod"
+LEGACY_LIST = "modlist.txt"                                  # optional, written by MO2 : the game follows it
+REDMOD_DIR = "mods"                                          # REDmod : mods\<name>\archives\*.archive
+REDMOD_LIST = r"r6\cache\modded\MO_REDmod_load_order.txt"   # optional (MO2) ; else ASCII order of the folder names
+BASE_GAME = "base game"
+
+
 def mod_dir(game):
-    return os.path.join(game, r"archive\pc\mod")
+    return os.path.join(game, LEGACY_DIR)
+
+
+def _read_list(path):
+    try:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            return [l.strip() for l in f if l.strip() and not l.lstrip().startswith("#")]
+    except OSError:
+        return []
+
+
+def _ordered(names, listed):
+    """`names` in the game's order : those named in `listed` first, in that order (with or without extension, any
+    case), then the others alphabetically (case-insensitive, the game's default)."""
+    low = {}
+    for n in names:
+        low[n.lower()] = n
+        low[os.path.splitext(n)[0].lower()] = n
+    out, seen = [], set()
+    for l in listed:
+        n = low.get(l.lower())
+        if n and n not in seen:
+            out.append(n)
+            seen.add(n)
+    return out + [n for n in sorted(names, key=str.lower) if n not in seen]
+
+
+def game_archives(game):
+    """Every mod .archive the game loads, in LOAD ORDER (the first that ships a path wins) : `archive\\pc\\mod`
+    (`modlist.txt` if present, else alphabetical), then the REDmod folders `mods\\<name>\\archives` (MO2's
+    `MO_REDmod_load_order.txt` if present, else alphabetical by folder ; legacy archives load before REDmods).
+    -> list of (label, full path) ; label = path relative to the game folder, `\\` separated."""
+    out = []
+    mod = mod_dir(game)
+    if os.path.isdir(mod):
+        names = [f for f in os.listdir(mod) if f.lower().endswith(".archive")]
+        for n in _ordered(names, _read_list(os.path.join(mod, LEGACY_LIST))):
+            out.append((LEGACY_DIR + "\\" + n, os.path.join(mod, n)))
+    rm = os.path.join(game, REDMOD_DIR)
+    if os.path.isdir(rm):
+        folders = [d for d in os.listdir(rm) if os.path.isdir(os.path.join(rm, d, "archives"))]
+        for d in _ordered(folders, _read_list(os.path.join(game, REDMOD_LIST))):
+            ad = os.path.join(rm, d, "archives")
+            for n in rdar.archives_in(ad):
+                out.append((f"{REDMOD_DIR}\\{d}\\archives\\{n}", os.path.join(ad, n)))
+    return out
+
+
+def short_label(label):
+    """What the log and the window show : `006_Angel_Body.archive` for a legacy archive, `mods\\x\\archives\\y.archive
+    (REDmod)` otherwise."""
+    if label.lower().startswith(LEGACY_DIR.lower() + "\\"):
+        return label[len(LEGACY_DIR) + 1:]
+    return label + " (REDmod)"
+
+
+def owners_of(game, path):
+    """(label, full path) of every mod archive shipping `path`, in load order."""
+    h = rdar.fnv1a64(path)
+    out = []
+    for label, full in game_archives(game):
+        try:
+            if h in rdar.index(full):
+                out.append((label, full))
+        except (ValueError, OSError):
+            continue
+    return out
 
 
 def find_owner(game, path):
-    mod = mod_dir(game)
-    owners = rdar.owners(mod, path) if os.path.isdir(mod) else []
-    if owners:
-        return os.path.join(mod, owners[0]), owners
+    """-> (archive to extract from, short labels of every mod archive shipping `path`, first = the game's choice)."""
+    o = owners_of(game, path)
+    if o:
+        return o[0][1], [short_label(l) for l, _ in o]
     return os.path.join(game, BASEGAME), []
+
+
+def who_ships(owners):
+    return owners[0] + (f" (over {', '.join(owners[1:])})" if len(owners) > 1 else "") if owners else BASE_GAME
 
 
 def active_owners(game, codes):
@@ -362,23 +440,21 @@ def active_owners(game, codes):
     for c in codes:
         t = TARGET_BY_CODE[c]
         _, owners = find_owner(game, t["mesh"])
-        who = owners[0] + (f" (over {', '.join(owners[1:])})" if len(owners) > 1 else "") if owners else "base game"
-        out[c] = (who, owners)
+        out[c] = (who_ships(owners), owners)
     return out
 
 
 def extract_mesh(cli, game, work, t, log):
     """Active mesh of a target (+ morphtarget) : extracted and serialised to JSON, cached on the source archive."""
     src, owners = find_owner(game, t["mesh"])
-    who = owners[0] + (f" (over {', '.join(owners[1:])})" if len(owners) > 1 else "") if owners else "base game"
-    log(f"  {t['label']:6s}: {who}")
+    log(f"  {t['label']:6s}: {who_ships(owners)}")
     if not os.path.isfile(src):
         raise BuildError("base game archive not found: " + src)
-    if t["morph"] and rdar.fnv1a64(t["morph"]) not in rdar.hashes(src):
+    if t["morph"] and rdar.fnv1a64(t["morph"]) not in rdar.index(src):
         raise BuildError(f"the morphtarget of {t['code']} ({t['morph']}) is not in the same archive as the mesh ({src}): unsupported layout")
     d = os.path.join(work, "mesh", t["code"])
     marker = os.path.join(d, ".src")
-    key = stamp(src) + "|" + t["mesh"]
+    key = stamp(src) + "|" + src.lower() + "|" + t["mesh"]
     mesh_json = os.path.join(d, t["mesh"] + ".json")
     morph_json = os.path.join(d, t["morph"] + ".json") if t["morph"] else None
     if cached(marker, key) and os.path.isfile(mesh_json) and (not morph_json or os.path.isfile(morph_json)):
@@ -403,14 +479,14 @@ def fpp_torso_mask(cli, game, work, log):
     The FPP body shell gets the same mask. Cached on the source archive ; the measured vanilla/Angel value is the
     fallback (the app may live elsewhere than the mesh, or not be readable)."""
     src, owners = find_owner(game, FPP_APP)
-    who = owners[0] + (f" (over {', '.join(owners[1:])})" if len(owners) > 1 else "") if owners else "base game"
+    who = who_ships(owners)
     try:
-        if not os.path.isfile(src) or rdar.fnv1a64(FPP_APP) not in rdar.hashes(src):
+        if not os.path.isfile(src) or rdar.fnv1a64(FPP_APP) not in rdar.index(src):
             log(f"  FPP app: not found ({who}), default mask {FPP_TORSO_MASK}")
             return FPP_TORSO_MASK
         d = os.path.join(work, "mesh", "fpp_app")
         marker = os.path.join(d, ".src")
-        key = stamp(src) + "|" + FPP_APP
+        key = stamp(src) + "|" + src.lower() + "|" + FPP_APP
         app_json = os.path.join(d, FPP_APP + ".json")
         if not (cached(marker, key) and os.path.isfile(app_json)):
             shutil.rmtree(d, ignore_errors=True)
@@ -476,22 +552,43 @@ def decal_material(tex, alpha):
             "cookingPlatform": "PLATFORM_None", "enableMask": 0, "metadata": None, "resourceVersion": 4, "values": values}
 
 
+def material_stores(root):
+    """Where a mesh keeps its local materials, every non-empty store : `localMaterialBuffer.materials` (body mods,
+    vanilla body and head : a list of CMaterialInstance), `preloadLocalMaterialInstances` or `localMaterialInstances`
+    (vanilla arm meshes : a list of {HandleId, Data: CMaterialInstance}). -> [(kind, list)], kind "buffer", "preload"
+    or "local"."""
+    found = []
+    for kind, lst in (("buffer", (root.get("localMaterialBuffer") or {}).get("materials")),
+                      ("preload", root.get("preloadLocalMaterialInstances")),
+                      ("local", root.get("localMaterialInstances"))):
+        if lst:
+            found.append((kind, lst))
+    return found
+
+
 def shell(active, tex, alpha, what):
-    """Shell = copy of the active mesh whose every skin material becomes the decal (canary v5)."""
+    """Shell = copy of the active mesh whose every skin material becomes the decal (canary v5). Works on the three
+    material stores (`material_stores`) : the vanilla arms keep theirs in `preloadLocalMaterialInstances` (measured
+    2026-11-02, ETUDE § 17), body mods and the vanilla body / head in `localMaterialBuffer`."""
     mesh = copy.deepcopy(active)
     root = mesh["Data"]["RootChunk"]
-    mats = root["localMaterialBuffer"]["materials"] if root.get("localMaterialBuffer") else []
     entries = root["materialEntries"]
-    if not (len(mats) == len(entries) and mats and all(e["isLocalInstance"] == 1 for e in entries)):
-        raise BuildError(f"{what}: non-local materials in the active mesh (unsupported body mod)")
-    if root.get("localMaterialInstances") or root.get("preloadLocalMaterialInstances") or root.get("externalMaterials"):
+    stores = material_stores(root)
+    kind, mats = stores[0] if len(stores) == 1 else (None, [])
+    if root.get("externalMaterials") or root.get("preloadExternalMaterials"):
         raise BuildError(f"{what}: external materials in the active mesh (unsupported body mod)")
+    if not (kind and len(mats) == len(entries) and all(e["isLocalInstance"] == 1 for e in entries)):
+        raise BuildError(f"{what}: non-local or mixed materials in the active mesh (unsupported body mod ; stores "
+                         f"{[k for k, _ in stores] or 'none'}, {len(mats)} materials for {len(entries)} entries)")
     if not any(e["name"]["$value"].startswith(MESH_APPEARANCE) for e in entries):   # FPP arm R names them `01_ca_pale_body`
         raise BuildError(f"{what}: no material {MESH_APPEARANCE}* in the active mesh")
     if not any(a["Data"]["name"]["$value"] == MESH_APPEARANCE for a in root["appearances"]):
         raise BuildError(f"{what}: no appearance {MESH_APPEARANCE} in the active mesh")
     for i in range(len(mats)):
-        mats[i] = decal_material(tex, alpha)
+        if kind == "buffer":
+            mats[i] = decal_material(tex, alpha)
+        else:
+            mats[i]["Data"] = decal_material(tex, alpha)      # keep the HandleId, replace the instance
     root["castsRayTracedShadowsFromOriginalGeometry"] = 0
     chunks = root["renderResourceBlob"]["Data"]["header"]["renderChunkInfos"]
     return mesh, len(mats), sum(c["numVertices"] for c in chunks)
@@ -878,16 +975,34 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
 
 
 # ----------------------------------------------------------------------------- 5. the player's game
+def is_pure_tattoo(archive):
+    """PURE VTK tattoo archive : every entry is a known overlay / roughness texture and at least one is a target.
+    Body mods such as Angel also ship `v_overlay.xbm`, with 100+ other files : they are NOT pure."""
+    hs = rdar.index(archive)
+    return bool(hs) and hs <= set(HASH_PATH) and bool(hs & TARGET_HASHES)
+
+
+def find_tattoo_archives(game):
+    """The pure VTK tattoo archives the game currently loads (`archive\\pc\\mod` and REDmod), in load order :
+    (label, full path). What the "Scan game folder" button imports. ~0.4 s for 600 archives (index only)."""
+    out = []
+    for label, full in game_archives(game):
+        if os.path.basename(full) in CANARI:
+            continue
+        try:
+            if is_pure_tattoo(full):
+                out.append((label, full))
+        except (ValueError, OSError):
+            continue
+    return out
+
+
 def conflicting_archives(game, selected=(), exclude_names=()):
-    """VTK tattoo archives still in `archive\\pc\\mod` : they paint a permanent overlay in the skin, under Ink Flow's
-    layers. Two criteria, both by content (never by file name) :
-      - PURE tattoo archive : every entry is a known overlay / roughness texture (body mods such as Angel also ship
-        `v_overlay.xbm`, with 100+ other files : they are NOT flagged, moving them would break the body) ;
-      - same content as one of the `selected` inputs (size, then SHA-256).
-    ~0.4 s for 600 archives (index only). Returns sorted file names."""
-    mod = mod_dir(game)
-    if not os.path.isdir(mod):
-        return []
+    """VTK tattoo archives still loaded by the game (`archive\\pc\\mod` and REDmod) : they paint a permanent overlay
+    in the skin, under Ink Flow's layers. Two criteria, both by content (never by file name) :
+      - PURE tattoo archive (`is_pure_tattoo`) ;
+      - same content as one of the `selected` inputs (size, then SHA-256) : a copy imported by "Scan game folder".
+    Returns labels = paths relative to the game folder, in load order (what `install(move_conflicts)` takes)."""
     by_size = {}
     for e in selected:
         try:
@@ -895,16 +1010,15 @@ def conflicting_archives(game, selected=(), exclude_names=()):
         except OSError:
             continue
     out = []
-    for a in rdar.archives_in(mod):
-        if a in exclude_names or a in CANARI:
+    for label, full in game_archives(game):
+        name = os.path.basename(full)
+        if name in exclude_names or name in CANARI:
             continue
-        p = os.path.join(mod, a)
         try:
-            hs = rdar.hashes(p)
-            if hs and hs <= set(HASH_PATH) and hs & TARGET_HASHES:
-                out.append(a)
-            elif os.path.getsize(p) in by_size and rdar.content_id(p) in by_size[os.path.getsize(p)]:
-                out.append(a)
+            if is_pure_tattoo(full):
+                out.append(label)
+            elif os.path.getsize(full) in by_size and rdar.content_id(full) in by_size[os.path.getsize(full)]:
+                out.append(label)
         except (ValueError, OSError):
             continue
     return out
@@ -923,8 +1037,9 @@ def game_running():
 
 
 def install(result, game, backup_dir, log, move_conflicts=()):
-    """Copy the archive + .xl into `archive\\pc\\mod`. Anything replaced, and the conflicting archives asked for, go to
-    `backup_dir\\<timestamp>\\`. Returns the backup folder (or None if nothing was backed up)."""
+    """Copy the archive + .xl into `archive\\pc\\mod`. Anything replaced, and the conflicting archives asked for
+    (labels relative to the game folder, from `conflicting_archives`), go to `backup_dir\\<timestamp>\\<same relative
+    path>`. Returns the backup folder (or None if nothing was backed up)."""
     mod = mod_dir(game)
     if not os.path.isdir(mod):
         raise BuildError("game mod folder not found: " + mod)
@@ -933,21 +1048,22 @@ def install(result, game, backup_dir, log, move_conflicts=()):
     stamp_dir = os.path.join(backup_dir, time.strftime("%Y-%m-%d_%H%M%S"))
     backed = False
 
-    def backup(name):
+    def backup(rel):
         nonlocal backed
-        p = os.path.join(mod, name)
+        p = os.path.join(game, rel)
         if os.path.isfile(p):
-            os.makedirs(stamp_dir, exist_ok=True)
-            shutil.move(p, os.path.join(stamp_dir, name))
+            dst = os.path.join(stamp_dir, rel)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.move(p, dst)
             backed = True
-            log(f"  moved to backup: {name}")
+            log(f"  moved to backup: {rel}")
 
     for src in (result.archive, result.xl):
-        backup(os.path.basename(src))
+        backup(LEGACY_DIR + "\\" + os.path.basename(src))
     for name in CANARI:
-        backup(name)
-    for name in move_conflicts:
-        backup(name)
+        backup(LEGACY_DIR + "\\" + name)
+    for rel in move_conflicts:
+        backup(rel)
     for src in (result.archive, result.xl):
         shutil.copy2(src, os.path.join(mod, os.path.basename(src)))
         log(f"  installed: {os.path.basename(src)}")

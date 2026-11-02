@@ -5,7 +5,28 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-02, 14 h 30) : 1.0.0 publiée sur Nexus, premiers retours, correctifs 1.0.1 proposés
+## État (2026-11-02, 15 h) : 1.0.1 bâtie et prouvée hors jeu, upload et QA vanilla à lui
+
+- **1.0.1 livrée sur son go** (ETUDE § 17, « Livré ») : ordre de chargement réel (`modlist.txt`, REDmod, ordre
+  MO2), bras vanilla, ligne **Body mesh** dans la fenêtre, bouton **Scan game folder…**, `build.log`,
+  conflits sur REDmod aussi, CLI `--from-game`. Exe `C:\__DEV\cyberpunk\ink_flow\exe\dist\InkFlowBuilder.exe`
+  SHA-256 `fc33b615…9805` ; zip `InkFlowBuilder-1.0.1.zip` SHA-256 `8b38f547…`, copie dans `releases\`.
+- **Prouvé** : tests d'ordre A → H ; build CLI complet sur corps vanilla (157 fichiers, 71,1 Mo, coque de
+  bras vérifiée) ; exe figé sur Angel = 1.0.0 au bit près hors index (157 fichiers, 150 347 776 o) ; capture
+  `builder\tests\gui_main_2026-11-02.png`. **Jeu non touché** (son Ink Flow de la veille reste posé).
+- **À lui** : (1) QA **corps vanilla** : retirer Angel, refits et têtes VTK de `archive\pc\mod` (les garder de
+  côté), exe 1.0.1 → la ligne Body mesh doit passer rouge « BASE GAME » → Build → Install → miroir : bras
+  tatoués visibles ; puis remettre les archives, Build, Install. (2) Upload Nexus 1.0.1 (zip + SHA-256,
+  changelog dans `NEXUS.md`), description : étapes 1-2 et le bloc « Slots visible but nothing on V ? ».
+  (3) Poster les réponses de `NEXUS_POSTS.md` (EBBRB ×3, 0xVyper). (4) Tag `v1.0.1` après l'upload, sur un go.
+- **Reste non prouvé** : l'hypothèse REDmod / MO2 pour les trois EBBRB (attend un `build.log`) ; le rendu
+  d'une coque vanilla en jeu. Si un `build.log` EBBRB dit `Body : 05_Hyst_Refit…` et que rien ne s'affiche
+  quand même, l'hypothèse tombe : chercher alors côté redscript Hyst (`VTK_Hyst_CC_Edit`) ou `.app` EBBRB.
+- Jetables sur le poste : `dl\4654\ebbrb\` (fixture EBBRB, 178 Mo), `gen\t101\` (arbre factice vanilla,
+  cache, build de 71 Mo : 292 Mo), `gen\vanilla_test\`, `gen\ebbrb_test\`. Scripts de test dans le scratchpad
+  de la session (`vanilla_test.py`, `ebbrb_test.py`, `order_test.py`, `gui_capture_101.py`) : non versionnés.
+
+## ~~État (2026-11-02, 14 h 30) : 1.0.0 publiée sur Nexus, premiers retours, correctifs 1.0.1 proposés~~ remplacé (15 h)
 
 - **Publiée** par lui dans la nuit du 01 au 02/11 (page Nexus en ligne, 15 messages le matin). Son jeu
   purgé le 02/11 : 9 archives (Angel, refits vanilla, têtes VTK HD, Ink Flow de la veille), marche.
