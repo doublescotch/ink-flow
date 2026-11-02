@@ -46,3 +46,25 @@ Known issue in 1.0.0: with NO body mod at all (pure vanilla body), arm tattoos s
 "unsupported body mod" (the vanilla arm meshes store their materials differently), and the first-person
 shells break the mirror. Fixed in 1.0.1: the vanilla body was played in game (creator, mirror, first
 person, photo mode, 2026-11-02). Update, Build, Install.
+
+## Sticky (replaces the one of 2026-11-02 7:55 AM, to post with the 1.0.1 upload)
+
+```
+1.0.1 IS OUT: update, Build again, Install. Your old 1.0.0 build has a first-person bug, rebuilding fixes it.
+
+What 1.0.1 fixes (full list in the Changelogs tab):
+- First person: arm tattoos had holes and slid under the skin. Fixed.
+- Vanilla body (no body mod at all): now works, tested in game (creator, mirror, first person, photo mode).
+- REDmod and MO2: the builder now finds a body installed as REDmod. MO2 users: start InkFlowBuilder.exe THROUGH MO2 (add it as an executable), otherwise it cannot see your mods.
+- The window now shows which body the builder found ("Body mesh" line). Red = base game. If you play with a body mod and that line is red, the build will show nothing on V: fix that first.
+- .NET 10 Runtime: one button installs the right one. No more guessing on Microsoft's page.
+- build.log written at every build, in the data folder (button "Open data folder").
+
+Tested in game: Angel body (+ VTK Vanilla HD Head) and vanilla body, on 2.5. Other VTK bodies (EBBRB...) pass the builder's checks but I have not seen them in game yet. The tattoo shells are copies of YOUR body's meshes, so the body mod itself must work on 2.5. Not on 2.31.
+
+Ink Flow only needs ArchiveXL (and the RED4ext it runs on). Codeware, TweakXL, CET: not needed by Ink Flow.
+
+Still nothing on V? Post your build.log here (paste it or attach it), with your body mod and your mod manager. That file tells me which archive each mesh came from.
+
+Not in 1.0.1, still planned: cyberarms (not tested yet), male V (vanilla, then Gymfiend), UV tattoos. A video of the full process is coming.
+```
