@@ -354,3 +354,68 @@ bout de tatouage flottant près de la caméra (masque) ; (d) changer de slot au 
 la FPP suit (lien + tags) ; (e) mode photo inchangé. Si (a) rate : le groupe ne filtre pas le dessin, il
 faudra un `.app` FPP dédié hors du créateur (étude à part). Si (b) rate sans rien d'autre : `link` non
 suivi pour une clé custom → repli = noms FPP dans les options du maître (patron canari v1, § 7).
+
+## 17. Retours Nexus du 02/11 : corps vanilla, EBBRB, ordre de chargement (2026-11-02, 13 h → 14 h 30, Fable, lecture seule)
+
+**Retours lus** (15 messages sur la page Nexus, matin du 02/11) : trois utilisateurs EBBRB (Lorasyl,
+Bransburk, cybercock2067) : build et install sans erreur, slots visibles dans le créateur, **rien sur le
+corps** ; un .NET 10 non détecté ; un « ne marche pas en 2.3x » (attendu) ; deux demandes de V masculin ;
+0xVyper : « tout dynamique, sans rebuild ».
+
+**Mesure 1 : corps vanilla pur (aucun mod de corps).** Même code que le moteur (`find_owner` sans
+`archive\pc\mod` → repli `basegame_4_appearance.archive`), script jetable `vanilla_test.py` :
+
+| Cible | Maillage vanilla | Matériaux | `shell()` |
+|---|---|---|---|
+| corps | 8 chunks, 4 641 sommets | 46, `localMaterialBuffer` | OK, morph 2 cibles |
+| bras G / D | 4 / 3 chunks, 5 787 / 4 934 | 23 / 22 en **`preloadLocalMaterialInstances`** | **refusé** : « non-local materials (unsupported body mod) » |
+| tête | 1 chunk, 7 186 | 62 locaux | OK, morph 105 cibles |
+| bras FPP G / D | 5 529 / 4 934 | 22 / 16 locaux | OK |
+| app FPP | masque `…E0` | | OK |
+
+Le README et la page Nexus annoncent « or the vanilla body » : **faux pour les bras**. Un joueur sans mod
+de corps a une erreur au build dès qu'un fichier couvre un bras, avec un message qui accuse un body mod.
+Les `preloadLocalMaterialInstances` sont des `CMaterialInstance` (`baseMaterial` `female_arm_<teint>.mi`,
+`values` vides) rangés en `{HandleId, Data}` : même contenu que `localMaterialBuffer.materials`, autre
+rangement. Correctif : `shell()` remplace la liste présente (buffer ou preload), ≈ 10 lignes ; **QA en
+jeu sur corps vanilla nécessaire** (jamais vu).
+
+**Mesure 2 : EBBRB 5.0.0** (Hyst, Nexus 4654, fichier 170224 du 28/10, 185 Mo, dépaqueté dans
+`C:\__DEV\cyberpunk\ink_flow\dl\4654\ebbrb\`) : une archive `05_Hyst_Refit_ForcedBigBreastsBooty.archive`
++ `EBBRB.xl` (même patron qu'Angel : patch `femv_seamfix`, `hyst_boobs_*`, `player.bodyTypes: [EBBRB]`)
++ `r6\scripts\VTK_Hyst_CC_Edit\VTK_Hyst_CC_Edit.reds`. L'archive **livre** corps, bras HQ, bras FPP, torse
+FPP, app FPP, morphtarget du corps, `v_overlay`, `femme_arm_*_overlay`, pas la tête. Moteur sur un
+`archive\pc\mod` qui ne contient qu'elle (`ebbrb_test.py`) : **tout passe** (corps 8 chunks, 91 371
+sommets, 12 matériaux locaux ; bras 31 950 / 30 616 ; bras FPP 31 952 / 30 616 ; masque `…E0` ; morph 1
+cible). Angel (son cache) : 91 360 sommets, 12 matériaux, boîte englobante identique à 1,5 cm près.
+**Le moteur n'a aucune raison de rater EBBRB quand il le voit.**
+
+**Hypothèse retenue pour « slots visibles, rien sur le corps » : le builder n'a pas vu le corps.**
+`find_owner` ne lit que `archive\pc\mod`, en ordre alphabétique. Trois cas où le corps affiché par le jeu
+n'y est pas : (1) **REDmod** (`<jeu>\mods\<nom>\archives\`, déploiement Vortex « REDmod ») : les archives
+legacy chargent avant les REDmod, un corps REDmod est donc actif dès qu'aucun corps n'est dans
+`archive\pc\mod` ; (2) **MO2** : système de fichiers virtuel, le dossier réel est vide ou partiel quand le
+builder tourne hors MO2 ; (3) `archive\pc\mod\modlist.txt` : le jeu suit ce fichier, pas l'alphabet. Dans
+les trois cas, repli « base game » : la coque est le corps **vanilla** (4 641 sommets, boîte -0,117 → 1,653
+contre 0,007 → 1,531), posée sous la peau d'un corps à 91 k sommets plus volumineux : invisible ou par
+plaques. Le journal de build l'écrit (`Body : base game`) mais la fenêtre ne le met pas en évidence et
+aucun fichier journal n'est écrit. **Pas prouvé** : il faut la ligne « 2. active meshes » d'un des trois.
+
+Le redscript de Hyst (au chargement de `female_cco`, remplace l'option `breast` [4] et les options
+`[0..n)` du groupe `FPP_Body` par un donneur `mods\vtk\hyst_bodies\cc_edit.inkcharcustomization`) n'écrase
+que les premières entrées du groupe ; les nôtres sont ajoutées par ArchiveXL. Risque faible, non mesuré.
+Angel ne livre pas ce script (aucun `r6\scripts` dans son jeu purgé).
+
+**« Tout dynamique » (0xVyper)** : le § 4 reste vrai : une ressource = un chemin haché, deux archives qui
+livrent `v_overlay.xbm` ne sont pas distinguables à l'exécution, et la coque exige la copie du maillage
+actif, que seul WolvenKit sait réécrire. Faisable dans cet esprit : un bouton **Scan game folder** qui
+trouve seul les archives VTK pures (critère déjà codé dans `conflicting_archives`) dans `archive\pc\mod`
+et REDmod, les importe dans la liste et les écarte à l'install. Le rebuild reste, la collecte à la main
+disparaît.
+
+**Correctifs proposés (1.0.1, sur son go)** : (a) `shell()` accepte les matériaux preload (bras vanilla) ;
+(b) `find_owner` : `modlist.txt` s'il existe, sinon `archive\pc\mod` alphabétique, puis REDmod
+`mods\*\archives`, puis jeu de base ; (c) la fenêtre affiche le corps résolu (« Body: 006_Angel_Body.archive »),
+en rouge si « base game », avec le conseil MO2 / REDmod ; (d) `build.log` écrit dans
+`%LOCALAPPDATA%\InkFlow` à chaque build ; (e) README et page Nexus : MO2 = lancer le builder depuis MO2,
+REDmod, bras vanilla, « send your build.log ». (f) Scan game folder : lot séparé.

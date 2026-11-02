@@ -5,7 +5,33 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-02, 0 h 15) : QA FPP validée, interface verrouillée pendant le build, upload à lui
+## État (2026-11-02, 14 h 30) : 1.0.0 publiée sur Nexus, premiers retours, correctifs 1.0.1 proposés
+
+- **Publiée** par lui dans la nuit du 01 au 02/11 (page Nexus en ligne, 15 messages le matin). Son jeu
+  purgé le 02/11 : 9 archives (Angel, refits vanilla, têtes VTK HD, Ink Flow de la veille), marche.
+- **Retours** : trois utilisateurs **EBBRB** (Lorasyl, Bransburk, cybercock2067) : build et install sans
+  erreur, slots visibles, **rien sur le corps** ; TheQueenEmzz : .NET 10 non détecté (il a répondu :
+  runtime x64, capture ajoutée) ; Brandy1123 : 2.3x non fonctionnel (attendu) ; deux demandes de V
+  masculin ; 0xVyper : tout dynamique sans rebuild.
+- **Mesuré (ETUDE § 17)** : corps **vanilla pur** : corps et tête passent, **les bras sont refusés** par
+  `shell()` (matériaux en `preloadLocalMaterialInstances`) : le README et la page Nexus mentent sur
+  « or the vanilla body ». **EBBRB 5.0.0** (Nexus 4654, téléchargé, `dl\4654\ebbrb\`) : le moteur
+  accepte tout (corps 91 371 sommets, 12 matériaux, même boîte qu'Angel) : rien à corriger côté recette.
+- **Hypothèse pour les trois EBBRB (non prouvée)** : le builder n'a pas vu le corps (REDmod `mods\`, MO2
+  hors VFS, ou `modlist.txt`) et a bâti une coque **vanilla** (4 641 sommets) sous un corps à 91 k
+  sommets : invisible. Le journal de build dit `Body : base game` ; aucun fichier journal n'est écrit.
+  **À demander aux trois** : la ligne « 2. active meshes », le gestionnaire de mods (réponses rédigées).
+- **Correctifs 1.0.1 proposés (sur son go)** : (a) `shell()` accepte les matériaux preload ; (b)
+  `find_owner` : `modlist.txt`, `archive\pc\mod`, REDmod, jeu de base ; (c) corps résolu affiché dans la
+  fenêtre, rouge si « base game » ; (d) `build.log` dans `%LOCALAPPDATA%\InkFlow` ; (e) README et page
+  Nexus (MO2, REDmod, bras vanilla, build.log). (f) bouton Scan game folder : lot à part.
+- QA à prévoir après (a) : **corps vanilla** (retirer Angel et les têtes de son jeu, bâtir, bras tatoués
+  visibles), puis remettre Angel et rebâtir.
+- Non versionnés dans le projet : `InkFlowBuilder-1.0.0.zip`, `releases\` (captures 1, 2, 4 de 0 h 51,
+  Nexus de 9 h). **Tag `v1.0.0` absent** (local et GitHub, mesuré à 14 h 30) : à poser sur `dcf165a`
+  avec le commit des docs, sur son go.
+
+## ~~État (2026-11-02, 0 h 15) : QA FPP validée, interface verrouillée pendant le build, upload à lui~~ remplacé (14 h 30)
 
 - **QA FPP de Hell_Kaiser (02/11, vers 0 h) : validée.** 9 slots, tous ses tatouages chargés depuis son
   pack V's Body : (a) créateur, les 9 slots superposables apparaissent bien ; (b) tatouages des bras vus
@@ -20,9 +46,9 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   grisé, 13 s ; 24 contrôles grisés, seul Cancel actif ; build complet ensuite : 157 fichiers,
   150 347 776 o, identique. Exe figé rebâti à 0 h 09 (SHA-256 `7df14236…3cb7775`), autotest : 157 fichiers,
   150 347 776 o, 145 s. Zip `c1e354ae…5aa02a` recopié sur ses deux copies (racine du projet et `releases\`).
-- **Attend lui** : boîte Permissions de 20279, relecture de `NEXUS.md`, captures (sa capture
+- ~~**Attend lui** : boîte Permissions de 20279, relecture de `NEXUS.md`, captures (sa capture
   `releases\Ink Flow Interface.png` de 0 h 05 montre la fenêtre au repos : le verrou n'y change rien),
-  upload Nexus (zip + SHA-256 de l'exe), puis tag `v1.0.0`.
+  upload Nexus (zip + SHA-256 de l'exe), puis tag `v1.0.0`.~~ Publié dans la nuit (état du 02/11, 14 h 30).
 
 ## ~~État (2026-11-01, 23 h 45) : 1.0.0 + première personne bâtie, QA FPP attendue avant l'upload~~ remplacé (0 h 15)
 

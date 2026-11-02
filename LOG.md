@@ -93,3 +93,15 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   WolvenKit restant, sortie vide) ; build complet identique (157 fichiers, 150 347 776 o).
 - 0 h 09-0 h 12 : exe rebâti (`7df14236…`), autotest figé identique (145 s) ; zip `c1e354ae…`
   recopié sur ses deux copies.
+
+## 2026-11-02 (13 h → 14 h 30) — Retours Nexus : corps vanilla et EBBRB mesurés
+
+- Page Nexus en ligne (upload par lui dans la nuit) ; 15 messages le matin : trois EBBRB « slots
+  visibles, rien sur le corps », un .NET, un 2.3x, deux V masculin, une idée « dynamique ». Il a purgé
+  son jeu : Angel + têtes VTK + Ink Flow (9 archives), l'Ink Flow bâti la veille marche toujours.
+- Mesuré (ETUDE § 17) : corps vanilla pur = **bras refusés** par `shell()` (matériaux preload), corps
+  et tête OK ; EBBRB 5.0.0 téléchargé (Nexus 4654) : **tout passe** dans le moteur. Hypothèse pour les
+  trois EBBRB : le builder n'a pas vu le corps (REDmod, MO2, `modlist.txt`), coque vanilla sous un
+  corps à 91 k sommets. Correctifs (a)-(f) proposés, en attente de son go ; réponses Nexus rédigées.
+- Perf (sa mesure, setup minimal Angel + Ink Flow, appartement H10) : ≈ 100 fps en auto léger / moyen,
+  80-90 en high / ultra ; setup complet 50-60 avec micro-saccades. Mesures par piles à venir.
