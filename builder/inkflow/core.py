@@ -828,11 +828,16 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
             # "nipples type", `fpp_body_tattoo` links to `body_tattoo`), same option indexes, one FPP uiSlot per
             # companion ; listed in the FPP_Body group only, so the creator never draws the FPP shells.
             set_cname(s2, "link", f"inkflow_slot{n_}")
+            # The slot's switcher drives the link (vanilla : `body_tattoo` linkController 1, `fpp_body_tattoo` 0).
+            # Measured in game on 2026-11-02 with both at 0 (toolkit template) : the follower stays Off, the FPP
+            # shells are never requested and the TPP arm shells are drawn over the FPP arms (holes).
+            s2["linkController"] = 1
             fui = {f["code"]: f"inkflow_slot{n_}{f['suffix']}" for f in FPP_TARGETS}
             foff = {f["code"]: f"inkflow_slot{n_}_off{f['suffix']}" for f in FPP_TARGETS}
             s3 = copy.deepcopy(tk_switcher)
             set_cname(s3, "name", f"inkflow_slot{n_}_fpp")
             set_cname(s3, "link", f"inkflow_slot{n_}")
+            s3["linkController"] = 0
             s3["index"] = s.slot_index + FPP_INDEX_OFFSET + n_ - 1
             s3["localizedName"] = f"UI-Customization-inkflow_slot{n_}"
             set_cname(s3, "uiSlot", f"inkflow_slot{n_}_fpp_switcher")

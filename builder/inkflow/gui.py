@@ -31,7 +31,14 @@ T = {
     "wk_bad": "WolvenKit Console: not installed",
     "wk_download": "Download WolvenKit Console ({mb} MB)",
     "wk_locate": "Locate…",
-    "get_dotnet": "Get .NET {m}…",
+    "get_dotnet": "Install .NET Runtime {m} ({mb} MB)",
+    "dotnet_progress": "Downloading .NET Runtime {v}… {d}/{t} MB",
+    "dotnet_installing": "Installing .NET Runtime {v}… (accept the Windows elevation prompt)",
+    "dotnet_done": ".NET Runtime {v} installed.",
+    "dotnet_cancelled": "The .NET Runtime installation was cancelled at the Windows elevation prompt.",
+    "dotnet_fail": ("The .NET Runtime could not be installed automatically:\n\n{e}\n\n"
+                    "On the Microsoft page that will open, under \".NET Runtime {v}\" (NOT the SDK, ASP.NET Core or Desktop boxes),\n"
+                    "take the Windows → Installers → x64 link, run it, then press Detect."),
     "get_axl": "Get ArchiveXL…",
     "body_wait": "Body mesh: looking in the game folder…",
     "body_line": "Body mesh: {b}   |   arms: {a}   |   head: {h}",
@@ -94,7 +101,7 @@ T = {
     "dl_progress": "Downloading WolvenKit Console… {d}/{t} MB",
     "dl_fail": "The download failed:\n\n{e}\n\nYou can download WolvenKit Console {v} yourself from GitHub and use Locate….",
     "dl_dotnet": ("WolvenKit Console is installed but cannot start: it needs the .NET {m} runtime.\n\n"
-                  "Install \".NET Runtime {m}\" (x64) from the Microsoft page that will open, then press Detect."),
+                  "Install it now? (download from Microsoft, then a silent install with a Windows elevation prompt)"),
     "about_text": (f"{APP_NAME} {VERSION}\nInk Flow — VTK/UV CCXL Tattoo Loader\n\n"
                    "Builds ONE archive that adds your own VTK tattoo archives as slots of the character creator, "
                    "from the files you already own. Nothing from other authors is redistributed.\n\n"
@@ -187,7 +194,7 @@ class App(tk.Tk):
         act = ttk.Frame(f)
         act.grid(row=2, column=0, columnspan=4, sticky="ew", padx=6, pady=(0, 6))
         self.btn_axl = ttk.Button(act, text=T["get_axl"], command=lambda: webbrowser.open(env.ARCHIVEXL_URL))
-        self.btn_dotnet = ttk.Button(act, text=T["get_dotnet"].format(m=env.DOTNET_MAJOR), command=lambda: webbrowser.open(env.DOTNET_URL))
+        self.btn_dotnet = ttk.Button(act, text=T["get_dotnet"].format(m=env.DOTNET_MAJOR, mb=env.DOTNET_INSTALLER_SIZE // 1_000_000), command=self.install_dotnet)
         self.btn_wk = ttk.Button(act, text=T["wk_download"].format(mb=env.WOLVENKIT_SIZE // 1_000_000), command=self.download_wolvenkit)
         self.btn_wk_locate = ttk.Button(act, text=T["wk_locate"], command=self.locate_wolvenkit)
         self.btn_axl.grid(row=0, column=0, padx=(0, 6))
@@ -340,7 +347,10 @@ class App(tk.Tk):
         threading.Thread(target=work, daemon=True).start()
 
     def _show_bodies(self, game, who):
-        if game != self._bodies_game:
+        try:
+            if game != self._bodies_game or not self.lbl_body.winfo_exists():
+                return
+        except tk.TclError:          # the window is already destroyed (autotest exits as soon as the build is done)
             return
         if "error" in who:
             self.lbl_body.config(text=f"Body mesh: could not read the game archives ({who['error']})", foreground="#c0392b")
@@ -386,6 +396,28 @@ class App(tk.Tk):
             self.refresh_env()
             self._self_test_cli()
 
+    def install_dotnet(self):
+        """Download the pinned .NET Runtime installer and run it silently (same pattern as WolvenKit : size and SHA-256
+        checked). The installer shows the Windows elevation prompt itself."""
+        if self.busy:
+            return
+        self._set_busy(True, T["dotnet_progress"].format(v=env.DOTNET_VERSION, d=0, t=env.DOTNET_INSTALLER_SIZE // 1_000_000))
+
+        def prog(d, t):
+            self.q.put(("progress", 100.0 * d / max(t, 1), T["dotnet_progress"].format(v=env.DOTNET_VERSION, d=d // 1_000_000, t=t // 1_000_000)))
+
+        def work():
+            try:
+                exe = env.download_dotnet(prog)
+                self.q.put(("progress", 100.0, T["dotnet_installing"].format(v=env.DOTNET_VERSION)))
+                self.q.put(("log", f".NET Runtime installer: {exe}"))
+                code = env.install_dotnet(exe)
+                self.q.put(("dotnet_done", code))
+            except Exception as e:  # noqa: BLE001
+                self.q.put(("dotnet_error", str(e)))
+
+        threading.Thread(target=work, daemon=True).start()
+
     def download_wolvenkit(self):
         if self.busy:
             return
@@ -410,8 +442,8 @@ class App(tk.Tk):
         ok, out = core.Cli(self.cli, self._log).version()
         self._log(f"WolvenKit CLI {'OK' if ok else 'FAILED'}: {out.splitlines()[-1] if out else ''}")
         if not ok and not env.has_dotnet():
-            messagebox.showwarning(APP_NAME, T["dl_dotnet"].format(m=env.DOTNET_MAJOR))
-            webbrowser.open(env.DOTNET_URL)
+            if messagebox.askyesno(APP_NAME, T["dl_dotnet"].format(m=env.DOTNET_MAJOR)):
+                self.install_dotnet()
         self.status.config(text=T["ready"])
 
     # ------------------------------------------------------------------ tattoo list
@@ -801,6 +833,23 @@ class App(tk.Tk):
                     self._set_busy(False, T["ready"])
                     messagebox.showerror(T["err"], T["dl_fail"].format(e=args[0], v=env.WOLVENKIT_VERSION))
                     webbrowser.open(env.WOLVENKIT_PAGE)
+                elif kind == "dotnet_done":
+                    code = args[0]
+                    self._log(f".NET Runtime installer exit code: {code}")
+                    self._set_busy(False, T["ready"])
+                    self.refresh_env()
+                    if code in (0, 3010) and env.has_dotnet():
+                        self.status.config(text=T["dotnet_done"].format(v=env.DOTNET_VERSION))
+                        self._self_test_cli()
+                    elif code == 1602:
+                        messagebox.showwarning(APP_NAME, T["dotnet_cancelled"])
+                    else:
+                        messagebox.showerror(T["err"], T["dotnet_fail"].format(e=f"installer exit code {code}", v=env.DOTNET_VERSION))
+                        webbrowser.open(env.DOTNET_URL)
+                elif kind == "dotnet_error":
+                    self._set_busy(False, T["ready"])
+                    messagebox.showerror(T["err"], T["dotnet_fail"].format(e=args[0], v=env.DOTNET_VERSION))
+                    webbrowser.open(env.DOTNET_URL)
         except queue.Empty:
             pass
         self.after(100, self._poll)

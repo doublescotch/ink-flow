@@ -30,6 +30,14 @@ WOLVENKIT_PAGE = "https://github.com/WolvenKit/WolvenKit/releases"
 # WolvenKit Console 9.1.0 is framework-dependent : `WolvenKit.CLI.runtimeconfig.json` asks for Microsoft.NETCore.App 10.0.
 DOTNET_MAJOR = 10
 DOTNET_URL = "https://dotnet.microsoft.com/download/dotnet/10.0"
+# .NET Runtime installer (x64, Windows), version and SHA-256 pinned (downloaded and Authenticode-checked on 2026-11-02,
+# signer "CN=.NET, O=Microsoft Corporation"). The builder downloads it and runs it silently : the user never has to pick
+# the right file among the SDK / ASP.NET / Desktop / Runtime columns of the Microsoft page.
+DOTNET_VERSION = "10.0.14"
+DOTNET_INSTALLER_URL = f"https://builds.dotnet.microsoft.com/dotnet/Runtime/{DOTNET_VERSION}/dotnet-runtime-{DOTNET_VERSION}-win-x64.exe"
+DOTNET_INSTALLER_SIZE = 30653360
+DOTNET_INSTALLER_SHA256 = "53a67d2d68a74a892010191d70080a5b359f41ed7d0bb2f92f120c9f0e4e199d"
+DOTNET_DIR = os.path.join(APPDATA, "dotnet")
 ARCHIVEXL_URL = "https://www.nexusmods.com/cyberpunk2077/mods/4198"
 
 NO_WINDOW = 0x08000000 if os.name == "nt" else 0
@@ -165,36 +173,78 @@ def _safe_extract(zf, dest):
     zf.extractall(dest)
 
 
+def _download_pinned(url, size, sha256, tmp, what, page, progress=None, cancel=None):
+    """Stream `url` into the open file `tmp`, checking the pinned size and SHA-256. `progress(done, total)`,
+    `cancel()` -> True to abort. Raises RuntimeError with a message meant for the user."""
+    import hashlib
+    req = urllib.request.Request(url, headers={"User-Agent": "InkFlowBuilder"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        total = int(r.headers.get("Content-Length") or size)
+        done = 0
+        h = hashlib.sha256()
+        while True:
+            if cancel and cancel():
+                raise RuntimeError("download cancelled")
+            chunk = r.read(1 << 18)
+            if not chunk:
+                break
+            tmp.write(chunk)
+            h.update(chunk)
+            done += len(chunk)
+            if progress:
+                progress(done, total)
+    tmp.close()
+    if done != size:
+        raise RuntimeError(f"unexpected size: {done} bytes (expected {size}); the release may have changed, see {page}")
+    if sha256 and h.hexdigest() != sha256:
+        raise RuntimeError(f"SHA-256 mismatch: the downloaded file is not the pinned {what}")
+
+
+def download_dotnet(progress=None, cancel=None):
+    """Download the pinned .NET Runtime installer into %LOCALAPPDATA%\\InkFlow\\dotnet\\. Returns its path (kept : a second
+    attempt skips the download when the file already matches)."""
+    import hashlib
+    os.makedirs(DOTNET_DIR, exist_ok=True)
+    dest = os.path.join(DOTNET_DIR, os.path.basename(DOTNET_INSTALLER_URL))
+    if os.path.isfile(dest) and os.path.getsize(dest) == DOTNET_INSTALLER_SIZE:
+        with open(dest, "rb") as f:
+            if hashlib.sha256(f.read()).hexdigest() == DOTNET_INSTALLER_SHA256:
+                if progress:
+                    progress(DOTNET_INSTALLER_SIZE, DOTNET_INSTALLER_SIZE)
+                return dest
+    tmp = tempfile.NamedTemporaryFile(prefix="dotnet_", suffix=".exe", dir=DOTNET_DIR, delete=False)
+    tmp_path = tmp.name
+    try:
+        _download_pinned(DOTNET_INSTALLER_URL, DOTNET_INSTALLER_SIZE, DOTNET_INSTALLER_SHA256, tmp,
+                         f".NET Runtime {DOTNET_VERSION} installer", DOTNET_URL, progress, cancel)
+        os.replace(tmp_path, dest)
+    finally:
+        try:
+            tmp.close()
+        except OSError:
+            pass
+        if os.path.isfile(tmp_path):
+            os.remove(tmp_path)
+    return dest
+
+
+def install_dotnet(installer):
+    """Run the Microsoft installer silently (it asks for elevation itself). Returns its exit code : 0 = installed,
+    3010 = installed, reboot pending, 1602 = cancelled by the user at the elevation prompt."""
+    p = subprocess.run([installer, "/install", "/quiet", "/norestart"], timeout=1800)
+    return p.returncode
+
+
 def download_wolvenkit(progress=None, cancel=None):
     """Download the pinned WolvenKit Console zip into %LOCALAPPDATA%\\InkFlow\\wolvenkit\\<version>. `progress(done, total)`,
     `cancel()` -> True to abort. Returns the CLI path. Size (and SHA-256 when pinned) are verified before unzipping."""
-    import hashlib
     os.makedirs(WOLVENKIT_DIR, exist_ok=True)
     dest = os.path.join(WOLVENKIT_DIR, WOLVENKIT_VERSION)
     tmp = tempfile.NamedTemporaryFile(prefix="wkit_", suffix=".zip", dir=WOLVENKIT_DIR, delete=False)
     tmp_path = tmp.name
     try:
-        req = urllib.request.Request(WOLVENKIT_URL, headers={"User-Agent": "InkFlowBuilder"})
-        with urllib.request.urlopen(req, timeout=60) as r:
-            total = int(r.headers.get("Content-Length") or WOLVENKIT_SIZE)
-            done = 0
-            h = hashlib.sha256()
-            while True:
-                if cancel and cancel():
-                    raise RuntimeError("download cancelled")
-                chunk = r.read(1 << 18)
-                if not chunk:
-                    break
-                tmp.write(chunk)
-                h.update(chunk)
-                done += len(chunk)
-                if progress:
-                    progress(done, total)
-        tmp.close()
-        if done != WOLVENKIT_SIZE:
-            raise RuntimeError(f"unexpected size: {done} bytes (expected {WOLVENKIT_SIZE}); the release may have changed, see {WOLVENKIT_PAGE}")
-        if WOLVENKIT_SHA256 and h.hexdigest() != WOLVENKIT_SHA256:
-            raise RuntimeError("SHA-256 mismatch: the downloaded file is not the pinned WolvenKit Console release")
+        _download_pinned(WOLVENKIT_URL, WOLVENKIT_SIZE, WOLVENKIT_SHA256, tmp, "WolvenKit Console release",
+                         WOLVENKIT_PAGE, progress, cancel)
         if os.path.isdir(dest):
             import shutil
             shutil.rmtree(dest, ignore_errors=True)

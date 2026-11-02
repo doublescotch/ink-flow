@@ -8,14 +8,17 @@ Nothing made by other authors is redistributed.
 
 ## Requirements
 
-- Cyberpunk 2077 2.x on PC, with **ArchiveXL** (and its dependencies RED4ext, Redscript).
+- Cyberpunk 2077 2.x on PC, with **ArchiveXL** (and RED4ext, which it runs on). Redscript, Codeware and TweakXL are
+  not needed by Ink Flow.
 - **WolvenKit Console** 9.1.0: the builder downloads it from GitHub on first run (45 MB) into `%LOCALAPPDATA%\InkFlow`.
-- The **.NET 10 runtime** (x64), required by WolvenKit Console. The builder tells you if it is missing and opens the Microsoft page.
+- The **.NET 10 runtime** (x64), required by WolvenKit Console. The builder tells you if it is missing and installs it
+  for you (one button: Microsoft's installer is downloaded, version and SHA-256 checked, then run silently).
 - Female V. VTK tattoos only in this version (UV Framework tattoos are listed as "ignored").
 
 ## How to use
 
-1. Start `InkFlowBuilder.exe`. Check the four green lines of **Setup** (game folder, ArchiveXL, .NET, WolvenKit). Download WolvenKit Console if asked.
+1. Start `InkFlowBuilder.exe`. Check the four green lines of **Setup** (game folder, ArchiveXL, .NET, WolvenKit). The
+   red ones have a button: Install .NET Runtime 10, Download WolvenKit Console.
    The fifth line, **Body mesh**, names the body mod the builder sees (the shells are copied from it). Green = a body mod
    was found; red = the base game body, which is right only if you use no body mod (see Troubleshooting).
 2. **Scan game folder…** finds the VTK tattoo archives your game already loads (`archive\pc\mod` and REDmod), copies
@@ -87,8 +90,13 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 - **"unsupported body mod" at build time.** The active body or arm mesh stores its materials in a way the builder
   does not handle. Send `build.log` with the name of the body mod. (1.0.0 refused the vanilla arms for this reason;
   fixed in 1.0.1.)
-- **".NET 10 runtime: MISSING" although you installed it.** WolvenKit Console needs the **.NET Runtime 10 x64**
-  (bottom-left box of the Microsoft download page, "Windows x64"), not the SDK, not the Desktop runtime alone, not x86.
+- **".NET 10 runtime: MISSING" although you installed it.** WolvenKit Console needs the **.NET Runtime 10 x64**, not
+  the SDK, not the Desktop runtime alone, not x86. Press **Install .NET Runtime 10** in the Setup box: the builder
+  fetches the right installer itself (Windows asks for elevation once). If that fails, on the Microsoft page take the
+  ".NET Runtime" box → Windows → Installers → x64.
+- **First person: the arm tattoo shows holes or slides under the skin when the arms move** (1.0.0). The first-person
+  shells were never applied (the slot's switcher did not drive its hidden first-person companion), so the third-person
+  arm shells were drawn over the first-person arms. Fixed in 1.0.1: rebuild and install.
 - **Game 2.3x.** Not supported: the 2.5 bodies are different. Someone may fork the generator for 2.31 (MIT).
 
 ## Known limits of this first cut
