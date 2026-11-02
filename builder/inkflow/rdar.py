@@ -40,6 +40,20 @@ def hashes(archive):
     return out
 
 
+_INDEX = {}
+
+
+def index(archive):
+    """`hashes()` cached on (path, size, mtime) : the load-order lookups read every archive of the game several times
+    per build and per window refresh (600 archives = 600 index reads of a few KB ; cached, the second pass is free)."""
+    st = os.stat(archive)
+    key = (os.path.normcase(archive), st.st_size, st.st_mtime_ns)
+    hs = _INDEX.get(key)
+    if hs is None:
+        hs = _INDEX[key] = frozenset(hashes(archive))
+    return hs
+
+
 def content_id(archive):
     """Identite du CONTENU d'une archive : SHA-256 du fichier entier, 16 caracteres hexadecimaux. Survit a un
     renommage, change des qu'un octet change. (Le champ SHA-1 par entree de l'index est vide dans les archives

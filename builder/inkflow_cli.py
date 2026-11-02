@@ -1,6 +1,6 @@
 """Ink Flow Builder, command line (same engine as the GUI ; replaces tools/inkflow_build.py v0.3).
 
-  python -I inkflow_cli.py --in <folder> [--game <Cyberpunk 2077>] [--cli <WolvenKit.CLI.exe>] [--slots 2]
+  python -I inkflow_cli.py --in <folder> [--from-game] [--game <Cyberpunk 2077>] [--cli <WolvenKit.CLI.exe>] [--slots 2]
          [--slot-index 1041] [--slot-title "Ink {n}"] [--max-name 20] [--alpha 1.0] [--no-mirror] [--no-fpp] [--route1]
          [--out <dir>] [--work <dir>] [--catalogue <json>] [--name Ink_Flow] [--list] [--install]
 """
@@ -14,7 +14,8 @@ from inkflow import core, env  # noqa: E402
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--in", dest="inp", required=True, help="folder of the tattoo .archive files")
+    ap.add_argument("--in", dest="inp", default=None, help="folder of the tattoo .archive files")
+    ap.add_argument("--from-game", action="store_true", help="also take the pure VTK tattoo archives the game loads (archive\\pc\\mod, REDmod)")
     ap.add_argument("--game", default=None, help="game folder (default: detected)")
     ap.add_argument("--cli", default=None, help="WolvenKit.CLI.exe (default: the one the builder downloaded)")
     ap.add_argument("--work", default=env.WORK_DIR)
@@ -39,13 +40,22 @@ def main():
     cli = env.find_wolvenkit(a.cli)
     if not a.list and not cli:
         sys.exit("WolvenKit CLI not found; pass --cli or run the GUI once to download it")
-    if not os.path.isdir(a.inp):
+    if not a.inp and not a.from_game:
+        sys.exit("give --in <folder> and/or --from-game")
+    if a.inp and not os.path.isdir(a.inp):
         sys.exit("input folder not found: " + a.inp)
 
     log = lambda *x: print(*x, flush=True)  # noqa: E731
-    entries = core.scan_folder(a.inp)
+    paths = [os.path.join(a.inp, f) for f in os.listdir(a.inp)] if a.inp else []
+    if a.from_game:
+        found = core.find_tattoo_archives(game)
+        for label, full in found:
+            print(f"  game: {label}")
+        paths += [full for _, full in found]
+    entries = core.scan_files(paths)
     cat = core.Catalogue(a.catalogue)
-    cat.import_legacy(a.inp, entries, log)
+    if a.inp:
+        cat.import_legacy(a.inp, entries, log)
     cat.ensure(entries)
     if a.list:
         for e in entries:

@@ -17,6 +17,8 @@ WORK_DIR = os.path.join(APPDATA, "work")
 OUT_DIR = os.path.join(APPDATA, "out")
 BACKUP_DIR = os.path.join(APPDATA, "backup")
 WOLVENKIT_DIR = os.path.join(APPDATA, "wolvenkit")
+TATTOO_DIR = os.path.join(APPDATA, "tattoos")      # copies made by "Scan game folder" (the originals may be moved away)
+LOG_FILE = os.path.join(APPDATA, "build.log")      # the last build, for support
 
 # WolvenKit Console : version pinned, size pinned (GitHub release asset, read 2026-11-01). SHA-256 pinned after the
 # first verified download (see `WOLVENKIT_SHA256`) : a different file is refused.

@@ -33,9 +33,19 @@ T = {
     "wk_locate": "Locate…",
     "get_dotnet": "Get .NET {m}…",
     "get_axl": "Get ArchiveXL…",
+    "body_wait": "Body mesh: looking in the game folder…",
+    "body_line": "Body mesh: {b}   |   arms: {a}   |   head: {h}",
+    "body_vanilla": ("Body mesh: BASE GAME (vanilla). No body mod seen in archive\\pc\\mod or mods\\. Fine if you use none; "
+                     "if you DO use one, the builder cannot see it (Mod Organizer 2: run the builder through MO2) — see README."),
     "tattoos": "Tattoos (.archive files of VTK tattoos you own)",
     "add_files": "Add files…",
     "add_folder": "Add folder…",
+    "scan_game": "Scan game folder…",
+    "scan_result": ("{n} VTK tattoo archive(s) found in your game, copied to the builder's tattoo folder and added to the list:\n\n{l}\n\n"
+                    "At install time the builder will offer to move the originals to the backup folder "
+                    "(left in place they paint a permanent tattoo under the slots)."),
+    "scan_none": "No VTK tattoo archive found in archive\\pc\\mod or mods\\ (REDmod).",
+    "log_note": "\n\nThe full log is in build.log in the data folder (button \"Open data folder\").",
     "remove": "Remove",
     "rename": "Rename…",
     "check_all": "Check all",
@@ -184,6 +194,10 @@ class App(tk.Tk):
         self.btn_dotnet.grid(row=0, column=1, padx=(0, 6))
         self.btn_wk.grid(row=0, column=2, padx=(0, 6))
         self.btn_wk_locate.grid(row=0, column=3, padx=(0, 6))
+        # The body the shells will be copied from (1.0.1) : what the game loads for the body mesh, resolved in a thread.
+        self.lbl_body = ttk.Label(f, text="", wraplength=980, justify="left")
+        self.lbl_body.grid(row=3, column=0, columnspan=4, sticky="w", padx=6, pady=(0, 6))
+        self._bodies_game = None
 
         # --- tattoos
         f = ttk.LabelFrame(self, text=T["tattoos"])
@@ -210,7 +224,8 @@ class App(tk.Tk):
         bb = ttk.Frame(f)
         bb.grid(row=1, column=0, columnspan=2, sticky="ew", padx=6, pady=(0, 6))
         for i, (txt, cmd) in enumerate((
-                (T["add_files"], self.add_files), (T["add_folder"], self.add_folder), (T["remove"], self.remove_selected),
+                (T["add_files"], self.add_files), (T["add_folder"], self.add_folder), (T["scan_game"], self.scan_game),
+                (T["remove"], self.remove_selected),
                 (T["rename"], self.rename_selected), (T["check_all"], lambda: self._check_all(True)),
                 (T["uncheck_all"], lambda: self._check_all(False)))):
             ttk.Button(bb, text=txt, command=cmd).grid(row=0, column=i, padx=(0, 6))
@@ -302,6 +317,40 @@ class App(tk.Tk):
         self.cfg["cli"] = self.cli or ""
         self.ok_env = ok_game and bool(axl) and dn and bool(self.cli)
         self._update_buttons()
+        self.refresh_bodies(game if ok_game else None)
+
+    def refresh_bodies(self, game, force=False):
+        """Resolve, in a thread, which archive the game loads for the body, arms and head meshes (what the shells
+        will be copied from). Shown under the setup lines ; red when it is the base game."""
+        if game == self._bodies_game and not force:
+            return
+        self._bodies_game = game
+        if not game:
+            self.lbl_body.config(text="")
+            return
+        self.lbl_body.config(text=T["body_wait"], foreground="#555555")
+
+        def work():
+            try:
+                who = {c: w for c, (w, _) in core.active_owners(game, [t["code"] for t in core.TARGETS]).items()}
+            except Exception as e:  # noqa: BLE001
+                who = {"error": str(e)}
+            self.q.put(("bodies", game, who))
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _show_bodies(self, game, who):
+        if game != self._bodies_game:
+            return
+        if "error" in who:
+            self.lbl_body.config(text=f"Body mesh: could not read the game archives ({who['error']})", foreground="#c0392b")
+            return
+        arms = who["arm_l"] if who["arm_l"] == who["arm_r"] else f"{who['arm_l']} / {who['arm_r']}"
+        if who["body"] == core.BASE_GAME:
+            self.lbl_body.config(text=T["body_vanilla"], foreground="#c0392b")
+        else:
+            self.lbl_body.config(text=T["body_line"].format(b=who["body"], a=arms, h=who["head"]), foreground="#1a7f37")
+        self.bodies = who
 
     def _update_buttons(self):
         if self.building:            # the build button is the Cancel button while a build runs
@@ -378,6 +427,43 @@ class App(tk.Tk):
         if d:
             self.cfg["last_dir"] = d
             self._add_paths([os.path.join(d, f) for f in os.listdir(d) if f.lower().endswith(".archive")], legacy_dir=d)
+
+    def scan_game(self):
+        """Find the VTK tattoo archives the game currently loads (archive\\pc\\mod and REDmod), copy them into the
+        builder's tattoo folder (the originals will be offered for backup at install) and add the copies."""
+        if self.busy:
+            return
+        game = self.game_var.get().strip()
+        if not env.valid_game(game):
+            messagebox.showwarning(APP_NAME, T["game_bad"])
+            return
+        self.config(cursor="watch")
+        self.update_idletasks()
+        try:
+            found = core.find_tattoo_archives(game)
+            copied, lines = [], []
+            if found:
+                os.makedirs(env.TATTOO_DIR, exist_ok=True)
+            for label, full in found:
+                cid = core.rdar.content_id(full)
+                dst = os.path.join(env.TATTOO_DIR, os.path.basename(full))
+                if os.path.isfile(dst) and core.rdar.content_id(dst) != cid:
+                    stem, ext = os.path.splitext(os.path.basename(full))
+                    dst = os.path.join(env.TATTOO_DIR, f"{stem}__{cid[:8]}{ext}")
+                if not os.path.isfile(dst):
+                    shutil.copy2(full, dst)
+                copied.append(dst)
+                lines.append(label)
+        finally:
+            self.config(cursor="")
+        if not copied:
+            messagebox.showinfo(APP_NAME, T["scan_none"])
+            return
+        self._log(f"scan game folder: {len(copied)} VTK tattoo archive(s) copied to {env.TATTOO_DIR}")
+        for l in lines:
+            self._log("  " + l)
+        self._add_paths(copied)
+        messagebox.showinfo(APP_NAME, T["scan_result"].format(n=len(copied), l="\n".join(lines)))
 
     def _add_paths(self, paths, quiet=False, legacy_dir=None):
         self.config(cursor="watch")
@@ -550,6 +636,7 @@ class App(tk.Tk):
         self.cfg.save()
         self.result = None
         self._clear_log()
+        self._start_logfile(s, sel)
         self.cancel.clear()
         self.building = True
         self._set_busy(True, T["building"])
@@ -646,10 +733,32 @@ class App(tk.Tk):
         self.log.config(state="disabled")
 
     def _log(self, *a):
+        line = " ".join(str(x) for x in a)
         self.log.config(state="normal")
-        self.log.insert("end", " ".join(str(x) for x in a) + "\n")
+        self.log.insert("end", line + "\n")
         self.log.see("end")
         self.log.config(state="disabled")
+        try:
+            with open(env.LOG_FILE, "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except OSError:
+            pass
+
+    def _start_logfile(self, s, sel):
+        """`build.log` (data folder) starts over at each build : version, date, environment, settings, the body the
+        shells come from, then every log line. What a player sends when the tattoos do not show."""
+        import time
+        try:
+            os.makedirs(env.APPDATA, exist_ok=True)
+            with open(env.LOG_FILE, "w", encoding="utf-8") as f:
+                f.write(f"{APP_NAME} {VERSION}  {time.strftime('%Y-%m-%d %H:%M:%S')}  frozen={bool(getattr(sys, 'frozen', False))}\n")
+                f.write(f"game: {s.game}\ncli: {s.cli}\nout: {s.out}\n")
+                f.write(f"setup: {self.lbl_game['text']} | {self.lbl_axl['text']} | {self.lbl_dotnet['text']} | {self.lbl_wk['text']}\n")
+                f.write(f"{self.lbl_body['text']}\n")
+                f.write(f"settings: slots={s.slots} mirror={s.mirror} fpp={s.fpp} alpha={s.alpha} max_name={s.max_name}\n")
+                f.write(f"tattoos: {len(sel)} checked of {len(self.entries)}\n\n")
+        except OSError:
+            pass
 
     def _poll(self):
         try:
@@ -657,12 +766,15 @@ class App(tk.Tk):
                 kind, *args = self.q.get_nowait()
                 if kind == "log":
                     self._log(args[0])
+                elif kind == "bodies":
+                    self._show_bodies(args[0], args[1])
                 elif kind == "progress":
                     self.progress["value"] = args[0]
                     self.status.config(text=args[1])
                 elif kind == "built":
                     self.result = args[0]
                     self._set_busy(False, T["built"].format(name=MOD_NAME, mb=f"{self.result.size / 1e6:.1f}", n=len(self.result.listing), s=f"{self.result.seconds:.0f}"))
+                    self.refresh_bodies(self._bodies_game, force=True)     # a mesh may have been extracted from a new archive
                     if self.autotest:
                         self._autotest_done(True, self.status["text"])
                 elif kind == "build_error":
@@ -671,7 +783,7 @@ class App(tk.Tk):
                     if self.autotest:
                         self._autotest_done(False, args[0])
                     else:
-                        messagebox.showerror(T["err"], T["err_build"].format(e=args[0][:1500]))
+                        messagebox.showerror(T["err"], T["err_build"].format(e=args[0][:1500]) + T["log_note"])
                 elif kind == "cancelled":
                     self._log(T["cancelled"])
                     self._set_busy(False, T["cancelled"])
