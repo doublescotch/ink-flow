@@ -542,9 +542,29 @@ sont maintenant recouvertes par la coque FPP de même forme, le défaut n'est pl
 vanilla au PostLoad ne montre pas nos entrées (`inkflow=0`) : ArchiveXL fusionne après ce point ; notre ressource
 est chargée à part (531 options, groupes `FPP_Body` 252 / `TPP_Body` 279 / `character_creation` 279).
 
-**Non tranché** : le corps vanilla (QA du § 17) a été testé avec `linkController = 0` aussi ; le Confirm mort au
-miroir avec les coques FPP vanilla reste inexpliqué, à rejouer avec le correctif et la sonde. Bras cybernétique
-(lames Mantis…) : masque plein sur nos coques, jamais testé (question de Hell_Kaiser). Vanilla `t0_000_fpp__tattoo_01.app` :
+~~**Non tranché** : le corps vanilla (QA du § 17) a été testé avec `linkController = 0` aussi ; le Confirm mort au
+miroir avec les coques FPP vanilla reste inexpliqué, à rejouer avec le correctif et la sonde.~~ **Tranché le 02/11 à
+18 h 10 (passage 3, corps vanilla pur, sa décision « on va faire un test avec vanilla »)** : build vanilla pur avec le
+correctif (`tools\qa_2026-11-02\build_pure_link.py`, arbre factice, corps / bras / tête du jeu de base, 21 archives,
+9 slots, FPP : **530 fichiers, 73 248 768 o, SHA-256 `c0c4bbb4…`, 62 s**), posé à 17 h 56 (Angel, refits et 4 têtes
+parqués, `archive\pc\mod` = Ink Flow seul). **QA de Hell_Kaiser : validée sur les deux sauvegardes** : (1) sauvegarde
+faite sur Angel avec des tatouages posés : les tatouages sont **repris et affichés sur le corps vanilla au chargement**,
+sans passer par le miroir ; changement au miroir sans défaut ; Samurai (corps + 2 bras) suit la peau partout :
+modificateur, reflet, **FPP**, mode photo ; (2) sauvegarde sans slot actif : même résultat ; (3) créateur de nouvelle
+partie : affiche bien. Le Confirm n'est pas nommé dans son rapport mais les changements au miroir sont appliqués, ce qui
+le suppose. **Journal de la sonde (6 927 lignes, `tools\probe\logs\2026-11-02_181554`) : 0 `Failed`** ; le pantin
+`player_wa_fpp_ep1.ent` porte `inkflow_slot1_unknown_samurai_fpp`, `_fpp_arm_l`, `_fpp_arm_r`, `linkController=true`
+lu sur les maîtres. **Conclusion** : le miroir cassé et le Confirm mort du § 17 disparaissent avec le seul changement
+`linkController = 1` ; le mécanisme par lequel un suiveur non piloté tuait le Confirm sur le vanilla et pas sur Angel
+n'a pas été lu (non bloquant : plus reproductible). Le § 17 garde sa valeur de table des symptômes avec `linkController
+= 0`. Jeu remis à 18 h 15 (Angel, têtes, build de 17 h 28 `a6fd24c8…`, 9 archives) ; le build vanilla est gardé dans
+`C:\__DEV\cyberpunk\ink_flow\builds\vanilla_link_qa\`. **Sonde retirée du jeu à 18 h 15 (sa décision : « retire-la pour
+le build publiable, garde-la de côté pour d'autres corps »)**, source dans `tools\probe\`, Redscript 0.5.32 laissé en
+place. La sonde journalise seule (`Resource/Load`, `Entity/Reassemble`, `Session/*`) ; F9 n'écrit qu'un séparateur
+`MARK n`, inutile quand la question est binaire comme ici.
+
+**Reste non tranché** : bras cybernétique (lames Mantis…) : masque plein sur nos coques, jamais testé (question de
+Hell_Kaiser) ; EBBRB en jeu (accepté par le builder, § 17, jamais vu rendu). Vanilla `t0_000_fpp__tattoo_01.app` :
 un seul maillage dédié ; nous gardons corps + deux bras.
 
 **Builder, même séance (sa demande : « éviter les soucis de runtime »)** : bouton **Install .NET Runtime 10 (30 MB)** à

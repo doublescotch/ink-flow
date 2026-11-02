@@ -5,7 +5,29 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-02, 18 h 15) : FPP corrigée et prouvée sur Angel, .NET installable depuis le builder, 1.0.1 prête sauf QA vanilla
+## État (2026-11-02, 18 h 30) : QA vanilla validée, 1.0.1 publiable, page Nexus récrite dans `NEXUS.md`
+
+- **Dans le jeu** : Angel + refits + 4 têtes VTK + build Ink Flow corrigé de 17 h 28 (`a6fd24c8…`, 9 archives),
+  remis à 18 h 15 après la QA vanilla. **Sonde retirée** (sa décision), source dans `tools\probe\` pour les prochains
+  corps ; Redscript 0.5.32 laissé en place (prérequis d'ArchiveXL, il ne l'avait pas). Fichiers macOS `engine\tools\scc`,
+  `libscc_lib.dylib` : à lui de les supprimer.
+- **Prouvé (ETUDE § 18, passage 3)** : corps vanilla pur + correctif `linkController` : **QA validée par lui sur deux
+  sauvegardes et en nouvelle partie** (reprise des tatouages posés sur Angel, miroir, FPP, photo) ; sonde : 0 échec, 3
+  coques FPP attachées. Le Confirm mort du § 17 était ce défaut. Build gardé `C:\__DEV\cyberpunk\ink_flow\builds\vanilla_link_qa\`.
+- **Exe 1.0.1 inchangé** (`f32d59bc…7109`, zip `42fa8310…4ed2` dans `releases\`) : rien à rebâtir, le code n'a pas
+  bougé depuis 18 h 10. **À lui : upload Nexus** (zip, SHA-256 dans la description du fichier, 1.0.0 en ancienne
+  version, champ version 1.0.1), **coller `NEXUS.md`** (résumé, description, changelog : récrits sur SA page publiée, lue
+  par l'API ; détail des changements en tête du fichier), captures listées en fin de `NEXUS.md`, réponses de
+  `NEXUS_POSTS.md` (EBBRB ×3 : relire la réponse, elle doit maintenant pointer la ligne Body mesh et le dépannage de la
+  page), puis **tag `v1.0.1`** sur un go.
+- **Ce qui reste théorique, dit tel quel sur la page** : EBBRB (accepté par le builder, § 17, jamais vu rendu) ; autres
+  corps VTK = critère du builder (`shell()` : matériaux locaux, apparence de peau standard), pas une liste testée ; un
+  corps non mis à jour pour 2.5 reste cassé sous Ink Flow (coques = copies de ses maillages) ; bras cybernétique jamais
+  testé ; hypothèse REDmod / MO2 des trois EBBRB attend un `build.log`.
+- Scripts : `tools\qa_2026-11-02\build_pure_link.py` (build du passage 3), `tools\probe\logs\2026-11-02_181554`
+  (journaux, hors git). `gen\nexus_36814_desc.bbcode` = sa page telle que publiée (poste).
+
+## ~~État (2026-11-02, 18 h 15) : FPP corrigée et prouvée sur Angel, .NET installable depuis le builder, 1.0.1 prête sauf QA vanilla~~ dépassé (18 h 30)
 
 - **Dans le jeu** : Angel + refits + 4 têtes VTK, **build Ink Flow corrigé** (`linkController`, 170 Mo, 530 fichiers,
   bâti à 17 h 28 par `tools\probe\angel_build.py` sur sa config, 9 slots) ; l'ancien dans

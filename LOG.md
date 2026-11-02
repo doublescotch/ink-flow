@@ -161,3 +161,22 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   (elle surlignait le binaire Linux). Exe 1.0.1 rebâti `f32d59bc…`, autotest 157 fichiers, zip `42fa8310…`
   dans `releases\`. README, NEXUS.md à jour. Sa question : Redscript chez Angel = scripts d'ArchiveXL, pas requis
   par Ink Flow (ArchiveXL + RED4ext seuls) ; bras cybernétique jamais testé (passation).
+
+## 2026-11-02 (17 h 50 → 18 h 30) — QA corps vanilla avec le correctif : validée ; sonde retirée ; page Nexus récrite
+
+- 17 h 50 : reprise (Opus puis Fable) sur « test avec vanilla maintenant qu'Angel est revalidé ». Build vanilla pur avec
+  le correctif (`tools\qa_2026-11-02\build_pure_link.py`, 530 fichiers, 73,2 Mo, SHA `c0c4bbb4…`, 62 s) ; sur son
+  déverrouillage : Angel, refits, 4 têtes parqués, Ink Flow seul dans `archive\pc\mod` (17 h 56), ancien build dans
+  `backup\2026-11-02_175618`.
+- 17 h 57-18 h 10 : **QA de Hell_Kaiser validée** : sauvegarde Angel avec tatouages → repris et affichés sur le vanilla
+  au chargement, changement au miroir sans défaut, Samurai suit la peau partout (modificateur, reflet, FPP, photo) ;
+  sauvegarde sans slot : idem ; créateur de nouvelle partie OK. Sonde : 6 927 lignes, 0 échec, 3 coques FPP attachées
+  (ETUDE § 18, passage 3). Le Confirm mort du § 17 était le même défaut (`linkController = 0`).
+- 18 h 15 : jeu remis (Angel, têtes, build `a6fd24c8…` de 17 h 28, 9 archives) ; **sonde retirée** sur sa décision
+  (source gardée dans `tools\probe\`), journaux copiés dans `tools\probe\logs\2026-11-02_181554`.
+- 18 h 20 : page Nexus publiée (36814) lue par l'API (`gen\nexus_36814_desc.bbcode`) : sa version garde un bandeau
+  « UPDATE IN PROGRESS », des crédits, l'AppData, les captures. `NEXUS.md` récrit dessus : résumé avec FPP et 1 à 9,
+  prérequis (.NET installé par le builder), section **What works with what** (Angel et vanilla vus en jeu, EBBRB accepté
+  par le builder non vu, cyberarms non testés, corps à jour pour 2.5 requis), dépannage « Slots visible but nothing on
+  V? », changelog 1.0.1 avec la ligne vanilla. Ses questions : EBBRB = théorie seulement ; famille VTK = critère
+  technique du builder (matériaux locaux, apparence de peau standard), pas une liste ; un corps cassé sur 2.5 reste cassé.
