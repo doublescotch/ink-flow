@@ -143,3 +143,21 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   blob v20 sur les bras FPP vanilla, paramètres d'attache des bras FPP vanilla lus. Cause non trouvée.
 - 16 h 50 : décisions de Hell_Kaiser : **sonde / logger complet en jeu, dans une nouvelle session** ; jeu
   remis dans l'état d'hier soir (Angel, têtes, build Angel). 1.0.1 **non publiable** en l'état (passation).
+
+## 2026-11-02 (17 h → 18 h 15) — Sonde en jeu : la FPP n'était jamais appliquée, `linkController` ; .NET installable
+
+- 17 h : reprise (Fable). Redscript absent de son jeu (binaires macOS posés par WolvenKit, confirmé par lui :
+  déjà vu sur Redscript et TweakXL) ; posé depuis le zip 0.5.32 avec la sonde `InkFlow_Probe` (Codeware :
+  ressources, cycle de vie des pantins, composants de maillage, F9 = marqueur), compilée hors jeu d'abord
+  (ETUDE § 18). `ModLog` finit dans `cyber_engine_tweaks\gamelog.log`.
+- 17 h 12-17 h 17 : passage 1 sur Angel par lui (le premier F9 a fait un quickload : raccourci retiré). En FPP,
+  « tatouage sous la peau par endroits, démarcation qui bouge » ; journal : coques TPP attachées au pantin FPP,
+  aucune coque FPP jamais demandée. Cause lue dans le vanilla : `linkController = 1` sur le maître, 0 chez nous.
+- 17 h 25-17 h 45 : correctif `core.py` sur son go, build sur Angel (`tools\probe\angel_build.py`), installé,
+  sonde v2 (dump du `.inkcharcustomization`) ; passage 2 par lui : **bras corrects en FPP, mode photo bon** ;
+  journal : trois coques FPP attachées et chargées, `linkController=true` vu par le jeu.
+- 17 h 50-18 h 10 : sa demande « éviter les soucis de runtime » : bouton **Install .NET Runtime 10** (installeur
+  Microsoft x64 épinglé, silencieux ; redistribution permise mais inutile), capture `.10 Runtime.png` abandonnée
+  (elle surlignait le binaire Linux). Exe 1.0.1 rebâti `f32d59bc…`, autotest 157 fichiers, zip `42fa8310…`
+  dans `releases\`. README, NEXUS.md à jour. Sa question : Redscript chez Angel = scripts d'ArchiveXL, pas requis
+  par Ink Flow (ArchiveXL + RED4ext seuls) ; bras cybernétique jamais testé (passation).

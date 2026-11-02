@@ -497,3 +497,68 @@ composant / paramètres d'animation des bras FPP. En parallèle, option de livra
 ne pas bâtir de coques FPP quand le corps est le jeu de base (avertissement dans la fenêtre), et cacher les
 coques TPP de bras en FPP si le jeu offre un paramètre pour ça (à lire dans l'app TPP vanilla, non extraite :
 `t0_000_base__full.app` n'est pas dans `basegame_4_appearance`, chercher les autres `basegame_*`).
+
+## 18. Sonde Redscript/Codeware : la FPP n'était jamais appliquée, `linkController` (2026-11-02, 17 h → 18 h, Fable, « Reprends »)
+
+**Constat de reprise** : Redscript absent de son jeu (purge du 02/11 ; `engine\tools` ne contenait que `scc` et
+`libscc_lib.dylib`, binaires macOS posés par l'installateur WolvenKit qui se trompe de plateforme, déjà vu sur
+Redscript et TweakXL). Posé depuis le zip 0.5.32 de `1_Core\__WOLVENKIT` (`scripts.ini`, `scc.exe`, `scc_lib.dll`,
+`scc.toml`) ; RED4ext compile `r6\scripts` au lancement (« scc invoked successfully », `r6\cache\final.redscripts.modded`).
+
+**Sonde** `tools\probe\InkFlow_Probe\InkFlow_Probe.reds` (jetable, hors livraison ; `pose_probe.py check|pose|remove|logs`) :
+Codeware `Resource/Load` et `Resource/PostLoad` (CMesh, MorphTargetMesh, `.app`, `.ent`, `.inkcharcustomization`, filtrés
+sur `inkflow` / bras / corps / tête / FPP / tatouage / chemins non résolus), `Entity/Assemble|Reassemble|Attach|
+AfterAttach|Detach` des pantins (classe, gabarit, puis chaque composant de maillage : classe, nom, maillage, apparence,
+`chunkMask`, `renderingPlaneAnimationParam`, `visibilityAnimationParam`, activé, état du jeton au dépôt), `Session/*`,
+**F9 = marqueur** (`Input/Key`). v2 : dump du `.inkcharcustomization` au PostLoad (switchers avec `link`,
+`linkController`, `uiSlots` ; groupes ; `perspectiveInfo`). Compilée hors jeu avant la pose : `scc.exe -compile` sur une
+copie de `r6\scripts` + les `.reds` de Codeware + `final.redscripts` (80 s ; une boîte « Compilation error » s'affiche
+à l'écran même en ligne de commande). Codeware n'a pas de `Resource/Failed` : l'échec se lit par l'absence de LOAD et par
+`token.IsFailed()`. **`ModLog` écrit dans le journal du jeu, repris par CET dans
+`bin\x64\plugins\cyber_engine_tweaks\gamelog.log`** (tronqué à chaque lancement) ; rien dans `r6\logs` ni `red4ext\logs`.
+Les chemins non vanilla sortent en hash (registre Codeware) : décodés par FNV-1a 64 des chemins du pack (`rdar.fnv1a64`).
+
+**Passage 1 (Angel, build validé de la veille, Samurai sur le slot 1)** : le journal du pantin première personne
+(`player_wa_fpp_ep1.ent`, PlayerPuppet) après activation au miroir porte **les coques TPP** `inkflow_slot1_unknown_samurai`
+(morphtarget du corps, masque plein), `_arm_l`, `_arm_r` (copies des bras HQ, `renderPlane`) **et aucune coque FPP** ;
+aucun `.app` ni maillage `_fpp` n'est jamais demandé (LOAD) ; tout ce qui est attaché est `loaded=true failed=false`.
+Vu par lui au même moment : « tatouage sous la peau par endroits, démarcation qui bouge avec les bras » = coque HQ dessinée
+par-dessus les bras FPP vanilla, maillages d'une autre forme. **La QA FPP du 02/11 à 0 h n'avait pas vu ce défaut.**
+Les pantins miroir / photo sont des `NPCPuppet` (`player_wa_tpp_ep1.ent`, `player_wa_tpp_reflexion.ent`).
+
+**Cause** : dans le vanilla, le maître `body_tattoo` porte `linkController = 1` et le suiveur `fpp_body_tattoo`
+`linkController = 0` (même chose `nipples` / `fpp_nipples`) ; le gabarit du toolkit 20279 met 0 partout et le builder
+ne touchait pas ce champ : **sans contrôleur, le suiveur reste à Off**. Autres écarts relevés, non retenus : étiquettes
+du suiveur (vanilla `NewGame` seul ; les nôtres en ont trois) ; index 1041-1048 occupés en vanilla par les infos
+`body_tattoo_00..07` (sans effet mesuré). `perspectiveInfo` vanilla : `FPP_Body` ↔ `TPP_Body` ; notre fichier n'en a pas.
+
+**Correctif** (`core.py`, bloc `if s.fpp`) : `s2["linkController"] = 1` sur le maître, `0` sur le suiveur.
+**Passage 2 (même séquence, build rebâti sur Angel par `tools\probe\angel_build.py`, 170 Mo, 530 fichiers, 186 s)** :
+le pantin FPP porte `inkflow_slot1_unknown_samurai_fpp` (`unknown_samurai_pwa.mesh`, masque `…E0`),
+`_fpp_arm_l`, `_fpp_arm_r` (maillages `_pwa_fpp_arm_l/r.mesh`), tous chargés ; le jeu lit `linkController=true` sur
+`inkflow_slot1` et `false` sur `inkflow_slot1_fpp`. **QA de Hell_Kaiser : bras corrects en FPP depuis le miroir, mode
+photo bon.** Reste vrai : les coques TPP de bras restent aussi attachées au pantin FPP (comme avant) ; en FPP elles
+sont maintenant recouvertes par la coque FPP de même forme, le défaut n'est plus visible. Le dump du `female_cco_ep1`
+vanilla au PostLoad ne montre pas nos entrées (`inkflow=0`) : ArchiveXL fusionne après ce point ; notre ressource
+est chargée à part (531 options, groupes `FPP_Body` 252 / `TPP_Body` 279 / `character_creation` 279).
+
+**Non tranché** : le corps vanilla (QA du § 17) a été testé avec `linkController = 0` aussi ; le Confirm mort au
+miroir avec les coques FPP vanilla reste inexpliqué, à rejouer avec le correctif et la sonde. Bras cybernétique
+(lames Mantis…) : masque plein sur nos coques, jamais testé (question de Hell_Kaiser). Vanilla `t0_000_fpp__tattoo_01.app` :
+un seul maillage dédié ; nous gardons corps + deux bras.
+
+**Builder, même séance (sa demande : « éviter les soucis de runtime »)** : bouton **Install .NET Runtime 10 (30 MB)** à
+la place de « Get .NET 10… » : `env.download_dotnet` (installeur Microsoft x64 10.0.14 épinglé par taille et SHA-256
+`53a67d2d…`, signature Authenticode « CN=.NET, O=Microsoft Corporation » vérifiée le 02/11 ; téléchargement commun
+`_download_pinned` avec WolvenKit ; gardé dans `%LOCALAPPDATA%\InkFlow\dotnet\`, rappel sans retéléchargement),
+`env.install_dotnet` (`/install /quiet /norestart`, codes 0 / 3010 / 1602), fil + file d'attente comme WolvenKit,
+redétection, repli = page Microsoft avec la consigne « .NET Runtime → Windows → Installers → x64 ». La capture
+`.10 Runtime.png` de `releases\` n'est plus nécessaire (et son surlignage visait le binaire Linux). Redistribuer
+l'installeur serait permis (MIT, termes Microsoft) : écarté, le téléchargement épinglé suffit. Testé : téléchargement
+3 s, SHA OK, second appel 0 s ; fenêtre avec `.NET` forcé manquant capturée (`tests\gui_capture_dotnet.py`,
+`exe\gui_dotnet_missing.png`) : voyant rouge, bouton visible, Build grisé. L'installation elle-même n'a pas été jouée
+(runtime déjà présent sur le poste). Garde-fou `_show_bodies` quand la fenêtre est déjà détruite (trace de l'autotest).
+
+**Exe 1.0.1 rebâti** : SHA-256 `f32d59bc…7109` (11 951 071 o), autotest `exe\home` : 157 fichiers, 150 347 776 o,
+129 s (même taille que la 1.0.0 : le drapeau ne change pas la longueur du CR2W) ; zip `InkFlowBuilder-1.0.1.zip`
+SHA-256 `42fa8310…4ed2` (11 681 627 o), copie dans `releases\`. README, `NEXUS.md` (prérequis, étape 1, changelog) à jour.

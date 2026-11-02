@@ -5,7 +5,35 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-02, 17 h) : 1.0.1 NON publiable telle quelle, corps vanilla cassé au miroir, sonde à écrire
+## État (2026-11-02, 18 h 15) : FPP corrigée et prouvée sur Angel, .NET installable depuis le builder, 1.0.1 prête sauf QA vanilla
+
+- **Dans le jeu** : Angel + refits + 4 têtes VTK, **build Ink Flow corrigé** (`linkController`, 170 Mo, 530 fichiers,
+  bâti à 17 h 28 par `tools\probe\angel_build.py` sur sa config, 9 slots) ; l'ancien dans
+  `%LOCALAPPDATA%\InkFlow\backup\2026-11-02_172832`. **Redscript 0.5.32 posé** (4 fichiers, depuis le zip de
+  `1_Core\__WOLVENKIT`) et **sonde `r6\scripts\InkFlow_Probe\`** encore posée : `pose_probe.py remove` sur son go
+  (elle écrit ≈ 4 000 lignes par session dans `cyber_engine_tweaks\gamelog.log`). Fichiers macOS `engine\tools\scc`,
+  `libscc_lib.dylib` : inoffensifs, à lui de les supprimer.
+- **Prouvé (ETUDE § 18)** : la première personne de la 1.0.0 n'a jamais appliqué ses coques FPP (`linkController` à 0
+  sur le maître, gabarit du toolkit) : trous et démarcation mobile sur les bras en FPP, vus par lui à 17 h 15. Avec
+  `linkController = 1` : coques FPP attachées et chargées (journal), **QA validée par lui (17 h 45) : bras corrects
+  en FPP depuis le miroir, mode photo bon**.
+- **Exe 1.0.1** `C:\__DEV\cyberpunk\ink_flow\exe\dist\InkFlowBuilder.exe` SHA-256 `f32d59bc…7109`, zip
+  `InkFlowBuilder-1.0.1.zip` SHA-256 `42fa8310…4ed2` (copie `releases\`) : correctif FPP + bouton **Install .NET
+  Runtime 10** (installeur Microsoft épinglé, silencieux ; l'installation elle-même non jouée sur ce poste) + ordre de
+  chargement / bras vanilla / Body mesh / Scan / build.log du matin. README et `NEXUS.md` à jour (changelog).
+- **Avant l'upload, à trancher par lui** : (a) rejouer le **corps vanilla** (Angel et têtes parqués, build vanilla,
+  miroir, Confirm, FPP) avec le correctif et la sonde : le Confirm mort du § 17 a été mesuré avec `linkController = 0`,
+  il peut avoir disparu ou non ; sans ça, « or the vanilla body » reste une promesse non prouvée ; ou (b) publier
+  1.0.1 en l'état (Angel / EBBRB prouvés par la mesure, FPP réparée) et traiter le vanilla ensuite.
+- **Reste non prouvé** : hypothèse REDmod / MO2 des trois EBBRB (attend un `build.log`) ; bras cybernétique (lames
+  Mantis) sur nos coques à masque plein (sa question, jamais testé) ; le dump de la sonde le dirait.
+- **Prérequis Nexus (sa question de 18 h)** : Ink Flow n'exige que **ArchiveXL** (+ RED4ext) ; Redscript recommandé
+  (scripts d'ArchiveXL), Codeware et TweakXL inutiles ; Angel = « développé avec », pas requis. Page Nexus à sa main.
+- Sonde et scripts de la séance versionnés dans **`tools\probe\`** (`InkFlow_Probe\InkFlow_Probe.reds`,
+  `pose_probe.py`, `angel_build.py`) ; `tools\probe\logs\<date>\` = journaux des deux passages (2 × 1,2 Mo),
+  gardés sur le poste, **exclus du dépôt** avec `releases\` et les zips (`.gitignore`, 18 h 20).
+
+## ~~État (2026-11-02, 17 h) : 1.0.1 NON publiable telle quelle, corps vanilla cassé au miroir, sonde à écrire~~ dépassé (18 h 15)
 
 - **Jeu remis dans l'état d'hier soir** (sa décision, 16 h 50) : Angel + refits + 4 têtes VTK remis depuis le
   parc, **build bâti sur Angel reposé** (159 Mo, celui de la QA validée). Variantes du jour dans
@@ -21,7 +49,7 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   d'une erreur au build : **ne pas uploader** avant d'avoir, au choix de Hell_Kaiser : (a) la vraie cause
   (sonde), ou (b) le garde-fou « corps = jeu de base ⇒ pas de coques FPP + avertissement » (5 lignes dans
   `run_build`, README). Les correctifs REDmod / MO2 / Body mesh / Scan / build.log restent bons.
-- **Prochaine session = la sonde** (sa décision : « une sonde, un logger complet, nouvelle session ») :
+- ~~**Prochaine session = la sonde**~~ faite le 02/11 à 17 h-18 h (ETUDE § 18, `tools\probe\`) (sa décision : « une sonde, un logger complet, nouvelle session ») :
   Redscript + Codeware dans `r6\scripts\InkFlow_Probe\`, journal des `Resource/Load|Ready|Failed` sur
   `inkflow\…`, des événements du créateur et des composants attachés au joueur ; plan détaillé ETUDE § 17,
   dernier paragraphe. Codeware 1.21.2 est dans son jeu ; Redscript : vérifier `red4ext\plugins`

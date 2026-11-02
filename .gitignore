@@ -1,6 +1,10 @@
 # Ink Flow : depot ouvert. Rien qui appartienne a un autre auteur n'est versionne.
 # canari/ = archives de test baties avec des textures de tatouages tiers (76 Mo).
 canari/
+# tools/probe/logs/ = journaux de jeu de la sonde (1,2 Mo par passage) : gardes sur le poste, pas dans le depot.
+tools/probe/logs/
+releases/
+InkFlowBuilder-*.zip
 __pycache__/
 *.pyc
 *.exe

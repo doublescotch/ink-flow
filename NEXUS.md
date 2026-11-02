@@ -33,15 +33,15 @@ Because the tattoos are yours (the archives you already downloaded), Ink Flow sh
 
 [list]
 [*]Cyberpunk 2077 2.x (PC). Built and tested on 2.5.
-[*][url=https://www.nexusmods.com/cyberpunk2077/mods/4198]ArchiveXL[/url] and its requirements (RED4ext, Redscript).
-[*]The [url=https://dotnet.microsoft.com/download/dotnet/10.0]Microsoft .NET 10 runtime[/url] (x64): needed by WolvenKit Console, which the builder downloads from GitHub on first run (45 MB, version pinned and checked).
+[*][url=https://www.nexusmods.com/cyberpunk2077/mods/4198]ArchiveXL[/url] and the RED4ext it runs on. Nothing else: no Redscript, Codeware or TweakXL needed by Ink Flow itself (Redscript only serves ArchiveXL's optional script features).
+[*]The [url=https://dotnet.microsoft.com/download/dotnet/10.0]Microsoft .NET 10 runtime[/url] (x64): needed by WolvenKit Console. The builder installs it for you if it is missing (Microsoft's installer, 30 MB, version and SHA-256 checked, silent install), and downloads WolvenKit Console from GitHub on first run (45 MB, version pinned and checked).
 [*]Female V. A body mod of the VTK family (vanilla body, Angel, VTK Vanilla HD Head…) or the vanilla body.
 [/list]
 
 [size=5][b]How to use[/b][/size]
 
 [list=1]
-[*]Unzip, run [b]InkFlowBuilder.exe[/b]. The Setup box shows four lines: game folder, ArchiveXL, .NET 10, WolvenKit Console. Fix what is red (the buttons do it: Download, open the Microsoft page). The fifth line, [b]Body mesh[/b], names the body mod the builder sees: green = found, red = base game (right only if you use no body mod; Mod Organizer 2 users: start the builder through MO2).
+[*]Unzip, run [b]InkFlowBuilder.exe[/b]. The Setup box shows four lines: game folder, ArchiveXL, .NET 10, WolvenKit Console. Fix what is red (the buttons do it: Install .NET Runtime 10, Download WolvenKit Console). The fifth line, [b]Body mesh[/b], names the body mod the builder sees: green = found, red = base game (right only if you use no body mod; Mod Organizer 2 users: start the builder through MO2).
 [*][b]Scan game folder…[/b] finds the VTK tattoo archives your game already loads (archive\pc\mod and REDmod) and adds them. Or [b]Add files…[/b] / [b]Add folder…[/b] with .archive files from anywhere. The list shows what each file covers: Body, Arm L, Arm R, Head. Files Ink Flow cannot use are greyed out with the reason.
 [*]Double-click a name to rename it (20 characters max, that is what you read in the creator). Uncheck what you do not want.
 [*]Choose the number of slots (1 to 9, how many tattoos V wears at once), whether the slots also appear at the apartment mirror, and whether to build the first-person shells (on by default).
@@ -83,6 +83,8 @@ MIT. [url=https://github.com/doublescotch/ink-flow]github.com/doublescotch/ink-f
 
 ```
 1.0.1
+- First person fixed: the arm tattoos showed holes and slid under the skin when the arms moved, because the first-person shells were never applied (the slot's switcher did not drive its hidden first-person companion, as the game's own body_tattoo drives fpp_body_tattoo) and the third-person arm shells were drawn over the first-person arms. Rebuild and install.
+- .NET 10 runtime missing? One button installs it (Microsoft's x64 Runtime installer, 30 MB, version and SHA-256 checked, silent install with the usual Windows elevation prompt). No more hunting the right link among the SDK / ASP.NET / Desktop boxes.
 - Body detection follows the game's real load order: archive\pc\mod (modlist.txt honoured), then REDmod folders (mods\*\archives, MO2 order file honoured), then the base game. 1.0.0 only read archive\pc\mod alphabetically, so a body deployed as REDmod or seen through MO2's virtual folder was missed and the shells were built on the vanilla body (slots visible, nothing drawn).
 - The window shows which body / arms / head archives the shells will be copied from (red when it is the base game).
 - Vanilla body: arm tattoos build now (the vanilla arm meshes store their materials differently; 1.0.0 stopped with "unsupported body mod").
