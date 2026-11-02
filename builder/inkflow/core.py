@@ -584,11 +584,16 @@ def shell(active, tex, alpha, what):
         raise BuildError(f"{what}: no material {MESH_APPEARANCE}* in the active mesh")
     if not any(a["Data"]["name"]["$value"] == MESH_APPEARANCE for a in root["appearances"]):
         raise BuildError(f"{what}: no appearance {MESH_APPEARANCE} in the active mesh")
-    for i in range(len(mats)):
-        if kind == "buffer":
-            mats[i] = decal_material(tex, alpha)
-        else:
-            mats[i]["Data"] = decal_material(tex, alpha)      # keep the HandleId, replace the instance
+    # The decal instances always go into the EMBEDDED buffer, whatever store the source used : the vanilla arms keep
+    # theirs in `preloadLocalMaterialInstances`, and a shell left that way renders when the entity is loaded with the
+    # save but not when the slot is changed at the mirror (QA Hell_Kaiser 2026-11-02, ETUDE § 17). Body mods embed.
+    new = [decal_material(tex, alpha) for _ in mats]
+    buf = root.get("localMaterialBuffer") or {"$type": "meshMeshMaterialBuffer", "materials": [], "rawData": None, "rawDataHeaders": []}
+    buf["materials"] = new
+    root["localMaterialBuffer"] = buf
+    root["preloadLocalMaterialInstances"] = []
+    root["localMaterialInstances"] = []
+    mats = new
     root["castsRayTracedShadowsFromOriginalGeometry"] = 0
     chunks = root["renderResourceBlob"]["Data"]["header"]["renderChunkInfos"]
     return mesh, len(mats), sum(c["numVertices"] for c in chunks)

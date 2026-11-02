@@ -117,3 +117,29 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - README (Body mesh, Scan, MO2, Troubleshooting), `NEXUS.md` (étapes, « Slots visible but nothing on V ? »,
   changelog 1.0.1), `NEXUS_POSTS.md` (réponses à poster). Jetables : `dl\4654\ebbrb\` gardé comme fixture
   (zip supprimé), `gen\t101\` gardé (arbre factice vanilla + build de 71 Mo), `fakegameB` supprimé.
+- 14 h 28-14 h 37 : sa demande « enlève Angel et bâtis un Ink Flow vanilla » ; `WRITE_UNLOCK.txt` posé par
+  lui sur le dossier du jeu. Angel + refits parqués dans `C:\__DEV\cyberpunk\ink_flow\parked\…`, têtes VTK
+  gardées ; premier essai à vide (sa config pointait sur des archives déplacées dans `3_Bodies\__InkFlow\`),
+  second avec ce dossier : 21 archives, 9 slots, **530 fichiers, 82,6 Mo**, installé, ancien build en backup.
+  Code 1.0.1 commité et poussé (`4f6d9d9`). Il demande de relire sa description Nexus publiée (altérée par
+  lui) avant de retoucher `NEXUS.md` : URL de la page à obtenir.
+- 14 h 40-15 h : **QA du build vanilla (corps vanilla + têtes VTK) par Hell_Kaiser : ÉCHEC**, et c'est la
+  panne des utilisateurs EBBRB reproduite : au chargement de sa sauvegarde (faite sur Angel) les deux
+  bras Bedellia s'affichent, propres au miroir, en mode photo et dans le créateur ; en FPP directe la
+  coque de bras est « pleine de vides » (parties sous la peau) ; au miroir, un 3e slot n'affiche rien,
+  les bras décochés disparaissent et ne reviennent pas ; **Confirm du créateur mort, même tous slots Off**
+  (= cybercock2067). Mesuré pendant ce temps : aller-retour WolvenKit des maillages ET morphtargets
+  vanilla identique à l'octet ; app des bras FPP vanilla = `fpp__full_l/r` pour V féminine (HQ pour V
+  masculin) ; torse FPP vanilla = même géométrie que le corps (8 chunks, 4 641 sommets), autre table de
+  matériaux ; Angel et EBBRB ne livrent pas `arms\a0_000_fpp__full.app`. Journaux RED4ext / ArchiveXL /
+  Codeware : rien.
+- 15 h-15 h 10 : isolement (sa demande « vanilla pur », déverrouillage prolongé) : têtes VTK parquées avec
+  Angel, Ink Flow retiré, `archive\pc\mod` vide → yeux vides (option d'yeux venue des têtes VTK) mais
+  **Confirm passe**. Build vanilla pur (corps, bras, tête du jeu de base, 21 archives, 9 slots : 530
+  fichiers, 73,2 Mo, 92 s) posé à 15 h 10 ; QA en cours. Variante `--no-fpp` bâtie en réserve (`outD_nofpp`).
+- 15 h 10-16 h 45 : sept poses (tableau ETUDE § 17) : Confirm passe sur vanilla pur **sans** Ink Flow ;
+  build Angel sur corps vanilla : miroir OK ; vanilla FPP on : KO ; matériaux embarqués : KO ; **sans FPP :
+  OK** (bras décalés en FPP) ; FPP bras seuls : KO. Mesures : aller-retour WolvenKit à l'octet, os identiques,
+  blob v20 sur les bras FPP vanilla, paramètres d'attache des bras FPP vanilla lus. Cause non trouvée.
+- 16 h 50 : décisions de Hell_Kaiser : **sonde / logger complet en jeu, dans une nouvelle session** ; jeu
+  remis dans l'état d'hier soir (Angel, têtes, build Angel). 1.0.1 **non publiable** en l'état (passation).

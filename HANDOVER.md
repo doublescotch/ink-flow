@@ -5,7 +5,35 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-02, 15 h) : 1.0.1 bâtie et prouvée hors jeu, upload et QA vanilla à lui
+## État (2026-11-02, 17 h) : 1.0.1 NON publiable telle quelle, corps vanilla cassé au miroir, sonde à écrire
+
+- **Jeu remis dans l'état d'hier soir** (sa décision, 16 h 50) : Angel + refits + 4 têtes VTK remis depuis le
+  parc, **build bâti sur Angel reposé** (159 Mo, celui de la QA validée). Variantes du jour dans
+  `%LOCALAPPDATA%\InkFlow\backup\2026-11-02_*` et `C:\__DEV\cyberpunk\ink_flow\gen\t101\out*`. Sa config
+  du builder pointe sur `3_Bodies\__InkFlow` (21 archives).
+- **Ce que la QA du jour a prouvé (ETUDE § 17, tableau)** : la recette fonctionne sur le corps vanilla
+  **sans première personne** (créateur, miroir, Confirm, photo) ; **les coques FPP de bras bâties sur le
+  vanilla cassent l'attache à chaud au miroir** et laissent le créateur sans Confirm ; sans FPP, les coques
+  TPP de bras sont rendues en FPP et décalées sur les bras FPP vanilla ; la coque de tête vanilla ne
+  s'affiche pas en nouvelle partie. Matériaux preload : hors de cause. Cause exacte : **non trouvée**.
+- **Conséquence pour 1.0.1** : l'exe `fc33b615…` bâti à 14 h ne contient pas le changement « matériaux
+  embarqués » de 16 h (neutre) et, surtout, un joueur **sans mod de corps** aurait un miroir cassé au lieu
+  d'une erreur au build : **ne pas uploader** avant d'avoir, au choix de Hell_Kaiser : (a) la vraie cause
+  (sonde), ou (b) le garde-fou « corps = jeu de base ⇒ pas de coques FPP + avertissement » (5 lignes dans
+  `run_build`, README). Les correctifs REDmod / MO2 / Body mesh / Scan / build.log restent bons.
+- **Prochaine session = la sonde** (sa décision : « une sonde, un logger complet, nouvelle session ») :
+  Redscript + Codeware dans `r6\scripts\InkFlow_Probe\`, journal des `Resource/Load|Ready|Failed` sur
+  `inkflow\…`, des événements du créateur et des composants attachés au joueur ; plan détaillé ETUDE § 17,
+  dernier paragraphe. Codeware 1.21.2 est dans son jeu ; Redscript : vérifier `red4ext\plugins`
+  (`r6\scripts` n'existe pas encore). Le script de Hyst (`dl\4654\ebbrb\r6\scripts\VTK_Hyst_CC_Edit`) est
+  un bon modèle d'accroche `Resource/Load`.
+- Scripts jetables de la séance (scratchpad, à recopier dans `tools\` s'ils resservent) : `game_step.py`
+  (isolate / install / angelbuild / embed / nofpp / fpparms / fppbody / restore), `build_pure*.py`,
+  `build_fpp_bisect.py`, `vanilla_in_game.py`, `order_test.py`, `vanilla_test.py`, `ebbrb_test.py`.
+- **Durée du déverrouillage** : `UNLOCK_TTL_SECONDS` dans les deux hooks installés (lignes 67 et 85) et
+  dans `pipeline\hooks\` ; à lui (fichiers de règles).
+
+## ~~État (2026-11-02, 15 h) : 1.0.1 bâtie et prouvée hors jeu, upload et QA vanilla à lui~~ dépassé (17 h)
 
 - **1.0.1 livrée sur son go** (ETUDE § 17, « Livré ») : ordre de chargement réel (`modlist.txt`, REDmod, ordre
   MO2), bras vanilla, ligne **Body mesh** dans la fenêtre, bouton **Scan game folder…**, `build.log`,
@@ -14,10 +42,19 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 - **Prouvé** : tests d'ordre A → H ; build CLI complet sur corps vanilla (157 fichiers, 71,1 Mo, coque de
   bras vérifiée) ; exe figé sur Angel = 1.0.0 au bit près hors index (157 fichiers, 150 347 776 o) ; capture
   `builder\tests\gui_main_2026-11-02.png`. **Jeu non touché** (son Ink Flow de la veille reste posé).
-- **À lui** : (1) QA **corps vanilla** : retirer Angel, refits et têtes VTK de `archive\pc\mod` (les garder de
-  côté), exe 1.0.1 → la ligne Body mesh doit passer rouge « BASE GAME » → Build → Install → miroir : bras
-  tatoués visibles ; puis remettre les archives, Build, Install. (2) Upload Nexus 1.0.1 (zip + SHA-256,
-  changelog dans `NEXUS.md`), description : étapes 1-2 et le bloc « Slots visible but nothing on V ? ».
+- **Dans le jeu depuis 14 h 37 (sa demande, déverrouillage `WRITE_UNLOCK.txt` sur le dossier du jeu) :
+  build 1.0.1 sur le CORPS VANILLA** : Angel parqué (`006_Angel_Body.archive`, `.xl`, refits →
+  `C:\__DEV\cyberpunk\ink_flow\parked\2026-11-02_angel\`), têtes VTK HD laissées (son choix après coup :
+  « ça permet de tester le corps vanilla avec la seule tête VTK ») ; 21 archives de `3_Bodies\__InkFlow\`
+  (sa config `files` repointée dessus, les anciens chemins étaient morts), 9 slots, miroir, FPP ; corps,
+  bras, bras FPP = jeu de base, tête = `006_VTK_Vanilla_HD_Head_xBaebsae` ; **530 fichiers, 82,6 Mo, 139 s,
+  SHA-256 `b7330a9b…`** ; l'ancien Ink Flow (Angel) dans `%LOCALAPPDATA%\InkFlow\backup\2026-11-02_143536`.
+  Script : scratchpad `vanilla_in_game.py`. **Retour à Angel** = remettre les 3 fichiers parqués, Build,
+  Install (formule ou `WRITE_UNLOCK.txt`).
+- **À lui** : (1) QA **corps vanilla en jeu** : miroir, bras nus : tatouage de bras visible et collé à la
+  peau (Kala Japanese Arm L/R, Samurai) ; corps aussi ; FPP tête baissée ; le personnage garde ses slots.
+  (2) Upload Nexus 1.0.1 (zip + SHA-256, changelog dans `NEXUS.md`) **après** relecture de `NEXUS.md`
+  contre SA description publiée (il l'a altérée : à relire par moi, il doit me donner l'URL de la page).
   (3) Poster les réponses de `NEXUS_POSTS.md` (EBBRB ×3, 0xVyper). (4) Tag `v1.0.1` après l'upload, sur un go.
 - **Reste non prouvé** : l'hypothèse REDmod / MO2 pour les trois EBBRB (attend un `build.log`) ; le rendu
   d'une coque vanilla en jeu. Si un `build.log` EBBRB dit `Body : 05_Hyst_Refit…` et que rien ne s'affiche

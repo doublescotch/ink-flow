@@ -444,8 +444,56 @@ REDmod, bras vanilla, « send your build.log ». (f) Scan game folder : lot sép
   **Exe figé 1.0.1** (autotest `exe\home`, Angel) : **157 fichiers, 150 347 776 o, identiques à la 1.0.0**,
   207 s, `build.log` écrit. Fenêtre capturée (`builder\tests\gui_main_2026-11-02.png`) : ligne verte
   « Body mesh: 006_Angel_Body.archive | arms: … | head: 006_VTK_Vanilla_HD_Head_xBaebsae.archive ».
-  Exe final (après un changement de séparateur dans le libellé) : SHA-256 `fc33b615…9805`, zip
-  `InkFlowBuilder-1.0.1.zip` SHA-256 `8b38f547…`, copie dans `releases\`.
+  Exe final (après un changement de séparateur dans le libellé) : SHA-256 `fc33b615…9805`, autotest
+  rejoué : 157 fichiers, 150 347 776 o, 149 s ; zip `InkFlowBuilder-1.0.1.zip` SHA-256 `8b38f547…`, copie
+  dans `releases\`. **Build vanilla posé dans SON jeu** (14 h 37, Angel parqué, têtes VTK gardées, 21
+  archives, 9 slots) : 530 fichiers, 82,6 Mo, 139 s ; QA en jeu à lui.
 - **Non prouvé en jeu** : le rendu d'une coque de bras vanilla (QA à lui : Angel et têtes retirés, build,
   install, bras tatoués au miroir ; puis remettre Angel et rebâtir) ; et l'hypothèse REDmod / MO2 elle-même,
   qui attend le `build.log` d'un des trois utilisateurs EBBRB.
+
+**QA du corps vanilla en jeu (Hell_Kaiser, 14 h 40 → 16 h 45, sept poses successives, `game_step.py`)** :
+
+| Build posé (corps vanilla pur sauf mention) | Créateur nouvelle partie | Miroir sur sa sauvegarde (faite sur Angel) | Confirm |
+|---|---|---|---|
+| vanilla + têtes VTK, FPP on (14 h 37) | — | coques du chargement visibles, rien à l'activation, disparaissent | **mort** même tout Off |
+| rien (Ink Flow retiré, têtes parquées) | — | yeux vides (option d'yeux des têtes VTK) | passe |
+| vanilla pur, FPP on | corps et bras OK, **tête non** | rien à l'activation (Samurai = corps + 2 bras) | mort après activation |
+| **build d'hier bâti sur Angel**, corps vanilla | — | **Samurai apparaît** (débordant, attendu) | **passe** |
+| vanilla pur, FPP on, matériaux de bras embarqués | — | rien | mort |
+| vanilla pur, **sans FPP** | OK | **Bedellia bras G puis un corps : apparaissent, Confirm, reflet et mode photo OK** ; en FPP : corps OK, **bras troués / décalés** | **passe** |
+| vanilla pur, **FPP bras seuls** (pas de coque FPP corps) | OK | rien à l'activation, coques du chargement disparaissent | mort |
+
+**Conclusions** : (1) le Confirm mort de la première pose venait du mélange têtes VTK + corps vanilla +
+Ink Flow, pas du cœur ; (2) **les coques FPP de bras bâties sur `fpp\a0_000_pwa_fpp__full_l/r` vanilla
+cassent l'attache à chaud au miroir** (le créateur de nouvelle partie n'attache pas de FPP, il marche) ; la
+coque FPP du corps seule n'a pas été testée ; (3) **les matériaux preload ne sont pas la cause** (variante
+embarquée : même échec) ; le correctif « tout dans `localMaterialBuffer` » reste dans `shell()`, neutre ;
+(4) sans FPP, les coques TPP de bras (copies des bras HQ) sont **rendues en première personne** par-dessus
+des bras FPP vanilla d'une autre forme → trous et décalage ; chez Angel les deux maillages ont la même forme,
+rien à voir ; (5) la coque de **tête** vanilla ne s'affiche pas en nouvelle partie (non creusé).
+
+**Mesuré sans trouver la cause de (2)** : aller-retour WolvenKit identique à l'octet (maillages et
+morphtargets) ; os des bras FPP vanilla = ceux d'Angel (67 à gauche, 171 à droite, même ordre) ; structure
+des maillages identique hors densité. **Seules différences restantes** entre coque FPP vanilla et Angel :
+`renderResourceBlob.header.version` **20** (vanilla FPP) contre **18** (Angel, bras HQ vanilla, corps) ;
+`parameters` `meshMeshParamGarmentSupport` + `garmentMeshParamGarment` présents (absents chez Angel, mais
+présents sur le bras HQ vanilla qui marche) ; `renderBuffer.Flags` 7471104 contre 4063232 (idem bras HQ qui
+marche). Côté attache, le jeu pose ses bras FPP en **`entSkinnedMeshComponent`** avec
+`renderingPlaneAnimationParam` `renderPlaneLeftArm` / `renderPlane` et `visibilityAnimationParam`
+`visibilityLeftArm` / `visibilityRightArm` (noms croisés, tel quel dans `arms\a0_000_fpp__full.app`) ; le
+tatouage FPP vanilla (`t0_000_fpp__tattoo_01.app`) est un garment sur `renderPlane` **None**, visibilité
+None, maillage dédié de 3 296 sommets ; nos gabarits : garment, `renderPlane`, visibilité None. Journaux
+RED4ext, ArchiveXL, Codeware : muets.
+
+**Prochain geste (décision de Hell_Kaiser, 16 h 50 : « une sonde, un logger complet, nouvelle session »)** :
+un script Redscript + Codeware `InkFlow_Probe` posé dans `r6\scripts\` du jeu (jetable, hors livraison) qui
+journalise par `ModLog` : `Resource/Load` et `Resource/Ready|Failed` pour tout chemin `inkflow\…`,
+les événements du créateur (`gameuiCharacterCustomizationSystem` : option changée, apply, confirm), et les
+composants attachés / détachés sur le joueur (nom, maillage, visible) ; lecture dans
+`red4ext\plugins\Codeware\…log` ou `r6\logs\`. Puis rejouer : Angel (témoin), vanilla sans FPP, vanilla FPP
+bras seuls. Hypothèses à départager par la sonde : blob v20 refusé à chaud ; garment params ; type de
+composant / paramètres d'animation des bras FPP. En parallèle, option de livraison 1.0.1 **sans attendre** :
+ne pas bâtir de coques FPP quand le corps est le jeu de base (avertissement dans la fenêtre), et cacher les
+coques TPP de bras en FPP si le jeu offre un paramètre pour ça (à lire dans l'app TPP vanilla, non extraite :
+`t0_000_base__full.app` n'est pas dans `basegame_4_appearance`, chercher les autres `basegame_*`).
