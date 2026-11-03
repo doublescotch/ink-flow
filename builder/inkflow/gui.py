@@ -40,10 +40,15 @@ T = {
                     "On the Microsoft page that will open, under \".NET Runtime {v}\" (NOT the SDK, ASP.NET Core or Desktop boxes),\n"
                     "take the Windows → Installers → x64 link, run it, then press Detect."),
     "get_axl": "Get ArchiveXL…",
-    "body_wait": "Body mesh: looking in the game folder…",
-    "body_line": "Body mesh: {b}   |   arms: {a}   |   head: {h}",
-    "body_vanilla": ("Body mesh: BASE GAME (vanilla). No body mod seen in archive\\pc\\mod or mods\\. Fine if you use none; "
-                     "if you DO use one, the builder cannot see it (Mod Organizer 2: run the builder through MO2) — see README."),
+    "bodies": "Body meshes in use (the tattoo shells are copied from these)",
+    "body_wait": "Looking in the game folder…",
+    "body_error": "Could not read the game archives ({e})",
+    "body_cols": ("", "Female V", "Male V"),
+    "body_rows": (("body", "Body"), ("arm", "Arms"), ("head", "Head")),
+    "body_base": "base game",
+    "body_over": "over {l}",
+    "body_vanilla": ("No body mod seen in archive\\pc\\mod or mods\\: the shells are built on the base-game bodies. Fine if you "
+                     "use none; if you DO use one, the builder cannot see it (Mod Organizer 2: run the builder through MO2) — see README."),
     "tattoos": "Tattoos (.archive files of VTK tattoos you own)",
     "add_files": "Add files…",
     "add_folder": "Add folder…",
@@ -55,19 +60,24 @@ T = {
     "log_note": "\n\nThe full log is in build.log in the data folder (button \"Open data folder\").",
     "remove": "Remove",
     "rename": "Rename…",
+    "set_alpha": "Opacity…",
     "check_all": "Check all",
     "uncheck_all": "Uncheck all",
     "col_on": "✓",
     "col_file": "File",
     "col_targets": "Targets",
     "col_name": "Name in game",
+    "col_alpha": "Opacity",
     "col_note": "Note",
-    "hint_names": "Double-click a name to edit it (max {n} characters, shown in the character creator). Click ✓ to include or exclude.",
+    "hint_names": ("Double-click a name to edit it (max {n} characters, shown in the character creator), or an opacity "
+                   "(0.1 to 1.0; empty = the default opacity, shown in brackets). Click ✓ to include or exclude."),
+    "alpha_q": "Opacity of the {n} selected tattoo(s), 0.1 to 1.0.\nLeave empty to use the default opacity ({d}).",
+    "alpha_bad": "The opacity must be a number from 0.1 to 1.0 (or empty for the default).",
     "options": "Options",
     "slots": "Slots",
     "mirror": "Also available at the apartment mirror",
     "fpp": "First person (arms and body seen by V)",
-    "alpha": "Opacity",
+    "alpha": "Default opacity",
     "out": "Output folder",
     "open": "Open",
     "build": "Build",
@@ -128,6 +138,11 @@ def _open_folder(path):
         subprocess.Popen(["xdg-open", path])
 
 
+def _fmt_alpha(a):
+    """1.0, 0.6, 0.85 : one decimal at least, two when needed."""
+    return f"{a:.1f}" if round(a, 1) == a else f"{a:.2f}"
+
+
 def _dir_size(path):
     total = 0
     for d, _, files in os.walk(path):
@@ -144,7 +159,7 @@ class App(tk.Tk):
         super().__init__()
         self.title(T["title"])
         self.minsize(900, 640)
-        self.geometry("1040x760")
+        self.geometry("1060x840")
         self.cfg = Config()
         self.cat = core.Catalogue(env.CATALOGUE_FILE)
         self.entries = []            # core.Entry, display order
@@ -201,9 +216,17 @@ class App(tk.Tk):
         self.btn_dotnet.grid(row=0, column=1, padx=(0, 6))
         self.btn_wk.grid(row=0, column=2, padx=(0, 6))
         self.btn_wk_locate.grid(row=0, column=3, padx=(0, 6))
-        # The body the shells will be copied from (1.0.1) : what the game loads for the body mesh, resolved in a thread.
-        self.lbl_body = ttk.Label(f, text="", wraplength=980, justify="left")
-        self.lbl_body.grid(row=3, column=0, columnspan=4, sticky="w", padx=6, pady=(0, 6))
+        # The meshes the shells will be copied from (1.0.1) : what the game loads for body, arms and head, per gender,
+        # resolved in a thread and shown as a table (`_show_bodies`) ; `lbl_body` carries the waiting / warning line.
+        bf = ttk.LabelFrame(f, text=T["bodies"])
+        bf.grid(row=3, column=0, columnspan=4, sticky="ew", padx=6, pady=(0, 6))
+        bf.columnconfigure(0, weight=1)
+        self.body_table = ttk.Frame(bf)
+        self.body_table.grid(row=0, column=0, sticky="ew", padx=6, pady=(2, 0))
+        self.body_table.columnconfigure((1, 2), weight=1, uniform="gender")
+        self.lbl_body = ttk.Label(bf, text="", wraplength=980, justify="left")
+        self.lbl_body.grid(row=1, column=0, sticky="w", padx=6, pady=(0, 4))
+        self.bodies_text = ""        # plain-text form of the table, for build.log
         self._bodies_game = None
 
         # --- tattoos
@@ -211,13 +234,14 @@ class App(tk.Tk):
         f.grid(row=1, column=0, sticky="nsew", padx=8, pady=4)
         f.columnconfigure(0, weight=1)
         f.rowconfigure(0, weight=1)
-        cols = ("on", "file", "targets", "name", "note")
+        cols = ("on", "file", "targets", "name", "alpha", "note")
         self.tree = ttk.Treeview(f, columns=cols, show="headings", selectmode="extended")
-        heads = {"on": T["col_on"], "file": T["col_file"], "targets": T["col_targets"], "name": T["col_name"], "note": T["col_note"]}
-        widths = {"on": 32, "file": 360, "targets": 150, "name": 200, "note": 220}
+        heads = {"on": T["col_on"], "file": T["col_file"], "targets": T["col_targets"], "name": T["col_name"],
+                 "alpha": T["col_alpha"], "note": T["col_note"]}
+        widths = {"on": 32, "file": 340, "targets": 150, "name": 200, "alpha": 70, "note": 200}
         for c in cols:
             self.tree.heading(c, text=heads[c])
-            self.tree.column(c, width=widths[c], anchor="center" if c == "on" else "w", stretch=(c in ("file", "note")))
+            self.tree.column(c, width=widths[c], anchor="center" if c in ("on", "alpha") else "w", stretch=(c in ("file", "note")))
         self.tree.grid(row=0, column=0, sticky="nsew", padx=(6, 0), pady=6)
         sb = ttk.Scrollbar(f, orient="vertical", command=self.tree.yview)
         sb.grid(row=0, column=1, sticky="ns", pady=6)
@@ -233,7 +257,8 @@ class App(tk.Tk):
         for i, (txt, cmd) in enumerate((
                 (T["add_files"], self.add_files), (T["add_folder"], self.add_folder), (T["scan_game"], self.scan_game),
                 (T["remove"], self.remove_selected),
-                (T["rename"], self.rename_selected), (T["check_all"], lambda: self._check_all(True)),
+                (T["rename"], self.rename_selected), (T["set_alpha"], self.alpha_selected),
+                (T["check_all"], lambda: self._check_all(True)),
                 (T["uncheck_all"], lambda: self._check_all(False)))):
             ttk.Button(bb, text=txt, command=cmd).grid(row=0, column=i, padx=(0, 6))
         ttk.Label(f, text=T["hint_names"].format(n=self.cfg["max_name"]), foreground="#555555").grid(
@@ -253,6 +278,7 @@ class App(tk.Tk):
         ttk.Label(f, text=T["alpha"]).grid(row=0, column=4, sticky="w", padx=(18, 6))
         self.alpha_var = tk.DoubleVar(value=float(self.cfg["alpha"]))
         ttk.Spinbox(f, from_=0.1, to=1.0, increment=0.1, width=5, textvariable=self.alpha_var, format="%.1f").grid(row=0, column=5, sticky="w", **pad)
+        self.alpha_var.trace_add("write", lambda *_: self._refresh_alpha_cells())
         ttk.Label(f, text=T["out"]).grid(row=1, column=0, sticky="w", **pad)
         self.out_var = tk.StringVar(value=self.cfg["out"])
         ttk.Entry(f, textvariable=self.out_var).grid(row=1, column=1, columnspan=5, sticky="ew", **pad)
@@ -332,14 +358,17 @@ class App(tk.Tk):
         if game == self._bodies_game and not force:
             return
         self._bodies_game = game
+        self._fill_body_table(None)
         if not game:
             self.lbl_body.config(text="")
+            self.lbl_body.grid_remove()
             return
         self.lbl_body.config(text=T["body_wait"], foreground="#555555")
+        self.lbl_body.grid()
 
         def work():
             try:
-                who = {c: w for c, (w, _) in core.active_owners(game, [t["code"] for t in core.TARGETS]).items()}
+                who = {c: o for c, (_, o) in core.active_owners(game, [t["code"] for t in core.TARGETS]).items()}
             except Exception as e:  # noqa: BLE001
                 who = {"error": str(e)}
             self.q.put(("bodies", game, who))
@@ -347,25 +376,70 @@ class App(tk.Tk):
         threading.Thread(target=work, daemon=True).start()
 
     def _show_bodies(self, game, who):
+        """`who` : target code -> archives shipping its mesh, in load order (empty = base game)."""
         try:
             if game != self._bodies_game or not self.lbl_body.winfo_exists():
                 return
         except tk.TclError:          # the window is already destroyed (autotest exits as soon as the build is done)
             return
         if "error" in who:
-            self.lbl_body.config(text=f"Body mesh: could not read the game archives ({who['error']})", foreground="#c0392b")
+            self.lbl_body.config(text=T["body_error"].format(e=who["error"]), foreground="#c0392b")
+            self.bodies_text = self.lbl_body["text"]
             return
+        self._fill_body_table(who)
         lines = []
-        for p, label in (("", "Body mesh"), ("m_", "Male V body mesh")):
-            if who[p + "body"] == core.BASE_GAME:
-                continue
-            arms = who[p + "arm_l"] if who[p + "arm_l"] == who[p + "arm_r"] else f"{who[p + 'arm_l']} / {who[p + 'arm_r']}"
-            lines.append(T["body_line"].format(b=who[p + "body"], a=arms, h=who[p + "head"]).replace("Body mesh", label, 1))
-        if not lines:
+        for g, gname in zip(("", "m_"), T["body_cols"][1:]):
+            lines.append(f"{gname}: " + "   |   ".join(
+                f"{label}: " + (core.who_ships(who[g + code]) if code != "arm" else self._arms_text(who[g + "arm_l"], who[g + "arm_r"]))
+                for code, label in T["body_rows"]))
+        self.bodies_text = "\n".join(lines)
+        if not who["body"] and not who["m_body"]:
             self.lbl_body.config(text=T["body_vanilla"], foreground="#c0392b")
+            self.lbl_body.grid()
         else:
-            self.lbl_body.config(text="\n".join(lines), foreground="#1a7f37")
+            self.lbl_body.config(text="")
+            self.lbl_body.grid_remove()
         self.bodies = who
+
+    @staticmethod
+    def _arms_text(left, right):
+        if left == right:
+            return core.who_ships(left)
+        return f"L {core.who_ships(left)} / R {core.who_ships(right)}"
+
+    def _fill_body_table(self, who):
+        """Rows Body / Arms / Head, columns Female V / Male V. A cell = the archive the game loads (green), or "base game"
+        (grey), with the archives it wins over in small grey type underneath. `who` None = empty table."""
+        for w in self.body_table.winfo_children():
+            w.destroy()
+        if who is None:
+            return
+        bold = ("Segoe UI", 9, "bold")
+        small = ("Segoe UI", 8)
+        for c, text in enumerate(T["body_cols"]):
+            if text:
+                ttk.Label(self.body_table, text=text, font=bold).grid(row=0, column=c, sticky="w", padx=(0, 12))
+        ttk.Separator(self.body_table).grid(row=1, column=0, columnspan=3, sticky="ew", pady=(1, 2))
+
+        def owner(cell, owners, prefix=""):
+            ttk.Label(cell, text=prefix + (owners[0] if owners else T["body_base"]),
+                      foreground="#1a7f37" if owners else "#777777").pack(anchor="w")
+            if len(owners) > 1:
+                ttk.Label(cell, text=T["body_over"].format(l=", ".join(owners[1:])), foreground="#777777", font=small,
+                          wraplength=420, justify="left").pack(anchor="w")
+
+        for r, (code, label) in enumerate(T["body_rows"], 2):
+            ttk.Label(self.body_table, text=label, font=bold).grid(row=r, column=0, sticky="nw", padx=(0, 12), pady=1)
+            for c, g in enumerate(("", "m_"), 1):
+                cell = ttk.Frame(self.body_table)
+                cell.grid(row=r, column=c, sticky="nw", padx=(0, 12), pady=1)
+                if code != "arm":
+                    owner(cell, who[g + code])
+                elif who[g + "arm_l"] == who[g + "arm_r"]:
+                    owner(cell, who[g + "arm_l"])
+                else:
+                    owner(cell, who[g + "arm_l"], "L: ")
+                    owner(cell, who[g + "arm_r"], "R: ")
 
     def _update_buttons(self):
         if self.building:            # the build button is the Cancel button while a build runs
@@ -536,12 +610,60 @@ class App(tk.Tk):
                 on = "" if e.id in self.unchecked else "✔"
                 label, cut = core.option_label(self.cat.name(e), self.cfg["max_name"])
                 note = (f"ignored: {e.ignored_reason}" if (e.other or e.unknown) else "") + ("  [name cut]" if cut else "")
-                self.tree.insert("", "end", iid=e.id, values=(on, e.file, " + ".join(t["label"] for t in e.targets), label, note))
+                self.tree.insert("", "end", iid=e.id, values=(on, e.file, " + ".join(t["label"] for t in e.targets), label, self._alpha_cell(e), note))
             else:
-                self.tree.insert("", "end", iid=e.id or e.file, values=("", e.file, "—", "", f"ignored: {e.ignored_reason}"), tags=("ignored",))
+                self.tree.insert("", "end", iid=e.id or e.file, values=("", e.file, "—", "", "", f"ignored: {e.ignored_reason}"), tags=("ignored",))
         self.cfg["files"] = [e.path for e in self.entries]
         self.cfg["unchecked"] = sorted(self.unchecked)
         self._update_buttons()
+
+    def _default_alpha(self):
+        try:
+            return round(float(self.alpha_var.get()), 2)
+        except (tk.TclError, ValueError):     # the spinbox is being typed into
+            return round(float(self.cfg["alpha"]), 2)
+
+    def _alpha_cell(self, e):
+        """Own opacity as is ; the default one in brackets, so it reads as inherited."""
+        a = self.cat.alpha(e)
+        return _fmt_alpha(a) if a is not None else f"({_fmt_alpha(self._default_alpha())})"
+
+    def _refresh_alpha_cells(self):
+        for e in self.entries:
+            if e.supported and self.tree.exists(e.id):
+                self.tree.set(e.id, "alpha", self._alpha_cell(e))
+
+    def _parse_alpha(self, text):
+        """'' -> None (default) ; '0.6' / '0,6' -> 0.6 ; out of 0.1-1.0 or not a number -> ValueError."""
+        text = text.strip().strip("()").replace(",", ".")
+        if not text:
+            return None
+        a = round(float(text), 2)
+        if not 0.1 <= a <= 1.0:
+            raise ValueError(text)
+        return a
+
+    def _set_alpha(self, entries, text):
+        try:
+            a = self._parse_alpha(text)
+        except ValueError:
+            messagebox.showwarning(APP_NAME, T["alpha_bad"])
+            return
+        for e in entries:
+            self.cat.set_alpha(e, a)
+        self.cat.save()
+        self._refresh_alpha_cells()
+
+    def alpha_selected(self):
+        sel = [e for e in (self._entry(i) for i in self.tree.selection()) if e and e.supported]
+        if self.busy or not sel:
+            return
+        own = {self.cat.alpha(e) for e in sel}
+        init = _fmt_alpha(own.pop()) if len(own) == 1 and None not in own else ""
+        new = simpledialog.askstring(T["col_alpha"], T["alpha_q"].format(n=len(sel), d=_fmt_alpha(self._default_alpha())),
+                                     initialvalue=init, parent=self)
+        if new is not None:
+            self._set_alpha(sel, new)
 
     def _entry(self, iid):
         return next((e for e in self.entries if (e.id or e.file) == iid), None)
@@ -561,9 +683,12 @@ class App(tk.Tk):
         if self.tree.identify_region(ev.x, ev.y) != "cell":
             return
         iid = self.tree.identify_row(ev.y)
-        if self.tree.identify_column(ev.x) == "#4":
+        col = self.tree.identify_column(ev.x)
+        if col == "#4":
             self._edit_name(iid)
-        elif self.tree.identify_column(ev.x) != "#1":
+        elif col == "#5":
+            self._edit_alpha(iid)
+        elif col != "#1":
             self._toggle(iid)
 
     def _toggle(self, iid):
@@ -628,6 +753,33 @@ class App(tk.Tk):
         ed.bind("<Return>", commit)
         ed.bind("<FocusOut>", commit)
         ed.bind("<Escape>", lambda _ev: self._close_editor())
+        self._editor = ed
+
+    def _edit_alpha(self, iid):
+        """In-cell spinbox over the Opacity column : empty = back to the default opacity."""
+        e = self._entry(iid)
+        if self.busy or not e or not e.supported:
+            return
+        self._close_editor()
+        x, y, w, h = self.tree.bbox(iid, "#5")
+        a = self.cat.alpha(e)
+        var = tk.StringVar(value=f"{a:.1f}" if a is not None else "")
+        ed = ttk.Spinbox(self.tree, from_=0.1, to=1.0, increment=0.1, format="%.1f", textvariable=var)
+        ed.place(x=x, y=y, width=max(w, 70), height=h)
+        ed.focus_set()
+        ed.select_range(0, "end")
+        done = []
+
+        def commit(_ev=None):
+            if done:                 # Return then FocusOut : once
+                return
+            done.append(1)
+            self._close_editor()
+            self._set_alpha([e], var.get())
+
+        ed.bind("<Return>", commit)
+        ed.bind("<FocusOut>", commit)
+        ed.bind("<Escape>", lambda _ev: (done.append(1), self._close_editor()))
         self._editor = ed
 
     def _close_editor(self):
@@ -791,7 +943,7 @@ class App(tk.Tk):
                 f.write(f"{APP_NAME} {VERSION}  {time.strftime('%Y-%m-%d %H:%M:%S')}  frozen={bool(getattr(sys, 'frozen', False))}\n")
                 f.write(f"game: {s.game}\ncli: {s.cli}\nout: {s.out}\n")
                 f.write(f"setup: {self.lbl_game['text']} | {self.lbl_axl['text']} | {self.lbl_dotnet['text']} | {self.lbl_wk['text']}\n")
-                f.write(f"{self.lbl_body['text']}\n")
+                f.write(f"{self.bodies_text}\n")
                 f.write(f"settings: slots={s.slots} mirror={s.mirror} fpp={s.fpp} alpha={s.alpha} max_name={s.max_name}\n")
                 f.write(f"tattoos: {len(sel)} checked of {len(self.entries)}\n\n")
         except OSError:
