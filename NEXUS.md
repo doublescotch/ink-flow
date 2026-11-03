@@ -1,10 +1,16 @@
-# Nexus page — Ink Flow (page 36814, 1.1.0 male V, 2026-11-03 ; 1.0.1 rewrite of 2026-11-02 below)
+# Nexus page — Ink Flow (page 36814, 1.2.0 of 2026-11-04 ; 1.1.0 male V, 1.0.1 rewrite below)
 
 Fields to paste on https://www.nexusmods.com/cyberpunk2077/mods/36814. Written for the Nexus
 page (English). Rewritten from the **published** text (read through the API on 2026-11-02 at
 18 h 20, copy in `C:\__DEV\cyberpunk\ink_flow\gen\nexus_36814_desc.bbcode`): Hell_Kaiser's
 additions (credits, AppData, screenshots, "in addition to vanilla ones") are kept, the "UPDATE IN
 PROGRESS" banner goes, and every claim below is one we measured or he saw in game.
+
+## What changes on the page for 1.2.0 (2026-11-04)
+
+- How to use, step 1: the Body mesh line becomes the "Body meshes in use" table (female V / male V).
+- How to use, step 3: the per-tattoo Opacity column (a user's request).
+- "Slots visible but nothing on V?": "Body mesh line" → "Body meshes in use table". Changelog 1.2.0.
 
 ## What changes on the page for 1.1.0 (2026-11-03)
 
@@ -70,9 +76,9 @@ Ink Flow ships [b]no tattoo[/b]. It ships a small Windows builder: you drop your
 [size=5][b]How to use[/b][/size]
 
 [list=1]
-[*]Unzip, run [b]InkFlowBuilder.exe[/b]. The Setup box shows: game folder, ArchiveXL, .NET 10, WolvenKit Console. Fix what is red (the buttons do it: Install .NET Runtime 10, Download WolvenKit Console). The last line, [b]Body mesh[/b], names the body mod the builder sees: green = a body mod found, red = base game. Red is right only if you really play on the vanilla body; if you use a body mod and the line is red, see "Slots visible but nothing on V?" below before building.
+[*]Unzip, run [b]InkFlowBuilder.exe[/b]. The Setup box shows: game folder, ArchiveXL, .NET 10, WolvenKit Console. Fix what is red (the buttons do it: Install .NET Runtime 10, Download WolvenKit Console). Under it, the [b]Body meshes in use[/b] table names, for female V and male V, the archive your game loads for the body, the arms and the head (the shells are copied from these): green = a mod archive, grey "base game" = the vanilla mesh. A red line under the table means no body mod was seen at all: right only if you really play on the vanilla body; if you use a body mod, see "Slots visible but nothing on V?" below before building.
 [*][b]Scan game folder…[/b] finds the VTK tattoo archives your game already loads (archive\pc\mod and REDmod folders) and adds them. Or [b]Add files…[/b] / [b]Add folder…[/b] with .archive files from anywhere. The list shows what each file covers: Body, Arm L, Arm R, Head. Files Ink Flow cannot use are greyed out with the reason.
-[*]Double-click a name to rename it (20 characters max, that is what you read in the creator). Uncheck what you do not want.
+[*]Double-click a name to rename it (20 characters max, that is what you read in the creator). Uncheck what you do not want. The [b]Opacity[/b] column sets one tattoo's opacity (double-click, 0.1 to 1.0, or select several rows and press Opacity…); empty = the Default opacity of the options, shown in brackets.
 [*]Choose the number of slots (1 to 9: how many tattoos V wears at once, in addition to the vanilla ones), whether the slots also appear at the apartment mirror, and whether to build the first-person shells (on by default).
 [*][b]Build[/b] (about two minutes for 18 tattoos the first time, less afterwards), then [b]Install into game[/b] with the game closed. If the original tattoo archives are still in archive\pc\mod the builder tells you and can move them to a backup folder (left in place, they paint a permanent tattoo under the slots).
 [*]In game: character creator, ripperdoc, mirror → "Ink 1", "Ink 2" under Body Tattoos.
@@ -84,7 +90,7 @@ Add tattoos later? Add the files, Build, Install. Your character keeps the tatto
 
 [size=5][b]Slots visible but nothing on V?[/b][/size]
 
-The shells are copies of the body mesh the builder saw when you built. If the Body mesh line said BASE GAME while you play with a body mod, the shells are vanilla-shaped and hide under the skin of your body: the slots are there, nothing is drawn. Make the line show your body mod, then Build and Install:
+The shells are copies of the body mesh the builder saw when you built. If the Body meshes in use table said "base game" while you play with a body mod, the shells are vanilla-shaped and hide under the skin of your body: the slots are there, nothing is drawn. Make the table show your body mod, then Build and Install:
 [list]
 [*]Mod Organizer 2: start the builder through MO2 (add it as an executable), otherwise it does not see MO2's virtual folder.
 [*]REDmod (mods\<name>\archives): read since 1.0.1, in the game's order (mods.json / REDmod load order).
@@ -121,6 +127,15 @@ MIT. [url=https://github.com/doublescotch/ink-flow]github.com/doublescotch/ink-f
 thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCXL Tattoo Toolkit[/url], the template resource whose switcher layout Ink Flow follows. psiberx for ArchiveXL and RED4ext. The WolvenKit team for WolvenKit Console (downloaded by the builder, not shipped).
 ```
 
+## Changelog 1.2.0 (Nexus "Changelogs" tab, 2026-11-04)
+
+```
+1.2.0
+- Per-tattoo opacity (requested in the posts): a new Opacity column in the tattoo list. Double-click a cell (0.1 to 1.0), or select several rows and press Opacity…. Empty = the Default opacity of the options (the old Opacity setting), shown in brackets. The value applies to all of that tattoo's shells (body, arms, head, first person). Rebuild and install.
+- The detected body meshes are now a table: female V and male V side by side, one row each for body, arms and head, the archives they win over in small grey type underneath. Same detection as before, easier to read.
+- Nothing else changes: with no per-tattoo opacity set, a build is the same as with 1.1.0.
+```
+
 ## Changelog 1.1.0 (Nexus "Changelogs" tab, 2026-11-03)
 
 ```
@@ -155,7 +170,10 @@ thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCX
 
 ## Files to upload
 
-- 1.1.0 (2026-11-03) : `Ink_Flow_Builder-1.1.0.zip` (`releases\`, SHA-256 `43f0f655…6427`):
+- 1.2.0 (2026-11-04) : `Ink_Flow_Builder-1.2.0.zip` (`releases\`, SHA-256 `3e1f13f9…6a46`):
+  `InkFlowBuilder.exe` (SHA-256 `4e3f15d1…9bb6`) + `README.md` + `LICENSE`. Same file description as
+  below. Mark 1.1.0 as old version. Mod version field: 1.2.0.
+- 1.1.0 (2026-11-03, uploaded) : `Ink_Flow_Builder-1.1.0.zip` (`releases\`, SHA-256 `43f0f655…6427`):
   `InkFlowBuilder.exe` (SHA-256 `24434274…5c05`) + `README.md` + `LICENSE`. Same file description as
   below. Mark 1.0.1 as old version. Mod version field: 1.1.0.
 - 1.0.1 (2026-11-02, uploaded) : `InkFlowBuilder-1.0.1.zip` (`releases\`, SHA-256 `42fa8310…4ed2`): `InkFlowBuilder.exe` (SHA-256
@@ -166,7 +184,8 @@ thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCX
 
 ## Screenshots (Hell_Kaiser, second screen, see FEEDBACK captures)
 
-Already on the page: builder window, .NET page with the runtime box, Angel setup archives. To
+1.2.0: the builder window is new (Body meshes in use table, Opacity column): its screenshot is to
+redo. Already on the page: builder window, .NET page with the runtime box, Angel setup archives. To
 redo or add for 1.0.1: (1) the builder window with the **Body mesh** line green (Angel) and the
 **Install .NET Runtime 10** button visible, (2) a first-person shot with arm tattoos, (3) the
 vanilla body with Samurai at the mirror.

@@ -5,7 +5,21 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-03, 20 h 30) : 1.1.0 = V masculin (vanilla + Gymfiend) + ré-encodage des mips tronqués, prête
+## État (2026-11-04) : 1.2.0 = tableau des corps détectés + opacité par tatouage, prête
+
+- **1.2.0 bâtie et commitée** (ETUDE § 20) : cadre « Body meshes in use » (Female V / Male V × Body / Arms / Head),
+  colonne **Opacity** par tatouage (catalogue ; vide = **Default opacity**). Exe `4e3f15d1…9bb6`, zip
+  `releases\Ink_Flow_Builder-1.2.0.zip` `3e1f13f9…6a46`. Non-régression 488/488 contre la 1.1.0. **À lui** :
+  upload Nexus (1.1.0 en ancienne version, champ version 1.2.0), coller de `NEXUS.md` les étapes 1 et 3, le
+  dépannage et le changelog 1.2.0, refaire la capture de la fenêtre, répondre à l'utilisateur qui a demandé
+  l'opacité ; tag `v1.2.0` sur go. 1.1.0 uploadée par lui (sa réponse du 04/11). **Tags : seul `v1.0.0` existe** (local
+  et GitHub, mesuré le 04/11) : `v1.0.1` (`b69e9b1`/`d86e5ab`) et `v1.1.0` (`546200f`) à poser aussi, sur son go.
+- **Point de QA annoncé** : une coque à opacité propre rend comme le réglage général à la même valeur (même champ
+  `DiffuseAlpha`), jamais vu en jeu ; à regarder au créateur avec deux tatouages à 0,5 et 1,0.
+- **Prochaine séance (inchangée)** : tête vanilla, tête du V masculin, miroir / FPP / photo du V masculin (bloc
+  du 03/11 ci-dessous, points (1) à (3)).
+
+## ~~État (2026-11-03, 20 h 30) : 1.1.0 = V masculin (vanilla + Gymfiend) + ré-encodage des mips tronqués, prête~~ dépassé (04/11, 1.2.0)
 
 - **1.1.0 bâtie et commitée** (ETUDE § 19) : V masculin (table `m_*`, `inkflow_pma` sous `male:`, pas de suiveur
   FPP), ré-encodage WolvenKit des seules textures à chaîne de mips tronquée. Exe `24434274…5c05`, zip

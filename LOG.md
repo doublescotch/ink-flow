@@ -212,3 +212,13 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   Vanilla HD reported working, tête vanilla en limite, changelog), version 1.1.0, exe `24434274…` (autotest figé
   `exe\home` + Kala V2 masc : 19 tatouages, 162 fichiers, 75,6 Mo, ré-encodage au journal), zip `43f0f655…` dans
   `releases\`, ETUDE § 19, passation. Jeu nettoyé sur sa demande (`game_pose.py remove`).
+
+## 2026-11-03 (soir) → 04 — 1.2.0 : tableau des corps détectés, opacité par tatouage
+
+- Sa demande : récapitulatif des corps lisible (féminin / masculin, éléments de corps, tableau) ; opacité par
+  tatouage demandée par un utilisateur. Livré dans `gui.py` (cadre « Body meshes in use », colonne Opacity, bouton
+  Opacity…, « Default opacity ») et `core.py` (`Catalogue.alpha`, `Item.alpha`) ; README à jour (ETUDE § 20).
+- Preuves : coques re-sérialisées (0,6 / 0,85 / 1,0 selon le catalogue) ; exe figé autotesté (157 fichiers,
+  Samurai à 0,6) ; non-régression 488/488 et `.xl` identiques contre la 1.1.0 ; captures de la fenêtre.
+- Sa réponse : 1.1.0 déjà uploadée ⇒ **1.2.0** : version, exe `4e3f15d1…`, zip `3e1f13f9…` dans `releases\`,
+  `NEXUS.md` (étapes 1 et 3, dépannage, changelog 1.2.0, fichier à envoyer, capture de la fenêtre à refaire).

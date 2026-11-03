@@ -622,3 +622,28 @@ au créateur** : Kala Japanese V2 masculin propre sur corps vanilla puis sur Gym
 HD) ; tête masculine jamais vue (pack visage 7414 dans `3_Bodies\__RAM`) ; miroir, FPP, photo du V masculin
 (il n'a pas de sauvegarde masculine) ; tatouage d'un genre forcé sur l'autre (patrons UV non comparés) ; Hyst EBB
 décompressé, non passé au moteur.
+
+## 20. Tableau des corps détectés et opacité par tatouage : 1.2.0 (2026-11-03 → 04, Opus, demande de Hell_Kaiser)
+
+**Demande** : (1) le récapitulatif des corps détectés était illisible (deux lignes longues, « over … » mêlé aux
+noms) : séparer V féminine / V masculin et les éléments de corps, en tableau ; (2) un utilisateur Nexus demande une
+opacité réglable tatouage par tatouage, en plus de l'opacité générale.
+
+**Interface** : cadre « Body meshes in use » dans Setup : colonnes Female V / Male V, lignes Body / Arms / Head ;
+cellule = archive gagnante (vert) ou « base game » (gris), archives écrasées en petit gris dessous ; bras G ≠ D =
+deux lignes `L:` / `R:`. Ligne rouge sous le tableau seulement si aucun corps moddé n'est vu (ni féminin ni
+masculin). `build.log` reçoit la forme texte (`bodies_text`). Colonne **Opacity** dans la liste : valeur propre, ou
+celle par défaut entre parenthèses ; double-clic = champ à flèches, bouton **Opacity…** pour une sélection ; vide =
+retour au défaut ; « 0,6 » accepté ; bornes 0,1-1,0. Le réglage général devient **Default opacity**.
+
+**Moteur** : `alpha` rangé dans le catalogue par empreinte de contenu (à côté du nom), absent = `Settings.alpha` ;
+`Item.alpha`, appliqué à toutes les coques du tatouage (TPP, FPP ; la FPP du corps réutilise la coque du corps).
+Le slug ne change pas : un personnage garde ses slots. La CLI en profite par le catalogue.
+
+**Preuves** : build CLI réel (3 tatouages, Angel) re-sérialisé : `DiffuseAlpha` 0,6 sur bras G TPP et FPP, 0,85 sur
+le corps, 1,0 sur le bras droit sans valeur propre. Exe figé 1.2.0 (`4e3f15d1…9bb6`), autotest `exe\home` avec
+Samurai à 0,6 : 18 tatouages, 157 fichiers, 150 347 776 o, 218 s, Samurai à 0,6 sur ses six coques au journal.
+Non-régression (`tools\qa_2026-11-03\regress_female.py`, HEAD 1.1.0 contre arbre de travail, sa config, 9 slots) :
+**488/488 fichiers identiques, `.xl` identique**. Captures de la fenêtre (cas réel Angel + Gymfiend, cas fabriqué
+sans corps moddé avec bras G/D différents) : lisibles. Zip `3e1f13f9…6a46` (`releases\Ink_Flow_Builder-1.2.0.zip`).
+Non vu en jeu : une coque à 0,6 rend comme le réglage général à 0,6 (même champ du même matériau).

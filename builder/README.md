@@ -21,13 +21,17 @@ Nothing made by other authors is redistributed.
 
 1. Start `InkFlowBuilder.exe`. Check the four green lines of **Setup** (game folder, ArchiveXL, .NET, WolvenKit). The
    red ones have a button: Install .NET Runtime 10, Download WolvenKit Console.
-   The fifth line, **Body mesh**, names the body mod the builder sees (the shells are copied from it). Green = a body mod
-   was found; red = the base game body, which is right only if you use no body mod (see Troubleshooting).
+   Under them, the **Body meshes in use** table names, for female V and male V, the archive the game loads for the body,
+   the arms and the head (the shells are copied from these), with the archives it wins over in small grey type. Green =
+   a mod archive; grey "base game" = the vanilla mesh. A red line under the table means no body mod was seen at all,
+   which is right only if you use none (see Troubleshooting).
 2. **Scan game folder…** finds the VTK tattoo archives your game already loads (`archive\pc\mod` and REDmod), copies
    them into the builder's tattoo folder and adds them. Or **Add files…** / **Add folder…** with `.archive` files from
    anywhere. The builder reads each file and shows what it covers: Body, Arm L, Arm R, Head. Unsupported files are
    greyed out with the reason.
 3. Give each tattoo the **name** you want to read in the creator (double-click, 20 characters max). Uncheck the ones you do not want.
+   The **Opacity** column sets one tattoo's opacity (double-click, 0.1 to 1.0; or select several rows and press
+   **Opacity…**). Empty = the **Default opacity** of the options, shown in brackets. Rebuild to apply.
 4. Choose the number of **slots** (1 to 9: how many tattoos V can wear at once), whether the slots also show at the **apartment mirror**,
    and whether to build the **first person** shells (on by default: the body and arms V sees of herself; about 1 MB more per arm tattoo).
 5. **Build** (about 2 minutes for 18 tattoos the first time, faster afterwards: the extractions are cached), then **Install into game** with the game closed.
@@ -53,7 +57,7 @@ uses: for each part (body, left arm, right arm, head) the builder walks the game
 archive that delivers the vanilla mesh: `archive\pc\mod` (in the order of `modlist.txt` if that file exists, else
 alphabetical, case-insensitive), then the REDmod folders `mods\<name>\archives` (in the order of
 `r6\cache\modded\MO_REDmod_load_order.txt` if present, else alphabetical by folder; legacy archives load before
-REDmods), and falls back to the base game. The window shows it (**Body mesh** line) and the build log names it
+REDmods), and falls back to the base game. The window shows it (**Body meshes in use** table) and the build log names it
 (`Body : 006_Angel_Body.archive (over …)`). Any body mod whose mesh keeps local materials and the standard skin
 appearance works, and so does the vanilla body; otherwise the builder stops with "unsupported body mod". The head
 shell carries a copy of the face morph target so it follows face sculpting.
@@ -69,8 +73,8 @@ the `FPP_Body`, `TPP_Body` and `character_creation` groups, as the vanilla male 
 own `inkflow_pma.inkcharcustomization` (ArchiveXL `male:` key), same indexes (1041-1049, free for both).
 
 **Mod Organizer 2**: MO2 shows the game a virtual folder; a program started outside MO2 sees an empty or partial
-`archive\pc\mod`. Add `InkFlowBuilder.exe` as an executable in MO2 and start it from there, so the Body mesh line
-shows your body mod. With Vortex (hardlink deployment, or REDmod deployment) nothing special is needed.
+`archive\pc\mod`. Add `InkFlowBuilder.exe` as an executable in MO2 and start it from there, so the Body meshes in
+use table shows your body mod. With Vortex (hardlink deployment, or REDmod deployment) nothing special is needed.
 
 First person follows the vanilla pattern: each slot gets a hidden companion switcher linked to it (the way the game's
 own `fpp_body_tattoo` follows `body_tattoo`), listed in the `FPP_Body` group only, that drives the first-person shells:
@@ -95,8 +99,8 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 ## Troubleshooting
 
 - **The Ink slots show in the creator but nothing appears on V.** The shells were copied from a body that is not the
-  one you play with (the window said "Body mesh: BASE GAME" while you use a body mod, or you changed body since).
-  Make the Body mesh line show your body mod (MO2: start the builder through MO2), Build, Install. Still wrong? Open
+  one you play with (the Body meshes in use table said "base game" while you use a body mod, or you changed body
+  since). Make the table show your body mod (MO2: start the builder through MO2), Build, Install. Still wrong? Open
   the data folder and send `build.log` (posts tab or GitHub issue): its second block says which archive each mesh
   came from.
 - **"unsupported body mod" at build time.** The active body or arm mesh stores its materials in a way the builder

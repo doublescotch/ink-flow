@@ -357,6 +357,17 @@ class Catalogue:
     def set_name(self, e, name):
         self.data[e.id]["name"] = name.strip()
 
+    def alpha(self, e):
+        """Opacity of this tattoo's shells, or None = the build's default (`Settings.alpha`)."""
+        a = self.data.get(e.id, {}).get("alpha")
+        return float(a) if isinstance(a, (int, float)) else None
+
+    def set_alpha(self, e, alpha):
+        if alpha is None:
+            self.data[e.id].pop("alpha", None)
+        else:
+            self.data[e.id]["alpha"] = round(float(alpha), 2)
+
     def save(self):
         if not self.path:
             return
@@ -734,6 +745,7 @@ class Item:
     slug: str
     name: str
     texdir: str = ""
+    alpha: float = None          # per-tattoo opacity (catalogue) ; None = Settings.alpha
 
     @property
     def targets(self):
@@ -872,6 +884,7 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
 
     for it in items:
         slug = it.slug
+        alpha = s.alpha if it.alpha is None else it.alpha
         parts = []
         for t in it.targets:
             pp = Paths(slug, t)
@@ -881,7 +894,7 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
             dst = os.path.join(src, pp.tex)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copyfile(src_tex, dst)
-            mesh, nm, nv = shell(meshes[t["code"]], pp.tex, s.alpha, f"[{slug}] {t['code']}")
+            mesh, nm, nv = shell(meshes[t["code"]], pp.tex, alpha, f"[{slug}] {t['code']}")
             save(pp.mesh, mesh)
             expected.append(pp.mesh)
             nt = 0
@@ -903,7 +916,7 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
                     continue
                 pt, pf = Paths(slug, t), Paths(slug, f)
                 if f["mesh"]:
-                    mesh, nm, nv = shell(meshes[f["code"]], pt.tex, s.alpha, f"[{slug}] {f['code']}")
+                    mesh, nm, nv = shell(meshes[f["code"]], pt.tex, alpha, f"[{slug}] {f['code']}")
                     save(pf.mesh, mesh)
                     expected.append(pf.mesh)
                     resource, mask = pf.mesh, None
@@ -914,7 +927,7 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
                 for n_ in slots:
                     save(pf.slot_app(n_), make_app(tpls[f["tpl"]], f, resource, f"inkflow_slot{n_}_{slug}{f['suffix']}", f"w__{slug}{f['suffix']}", mask))
                     expected.append(pf.slot_app(n_))
-        log(f"  [{slug}] \"{it.name}\": " + " ; ".join(parts))
+        log(f"  [{slug}] \"{it.name}\" (opacity {alpha:g}): " + " ; ".join(parts))
 
     tpl_cc = load(os.path.join(tdir, "your_tattoo_pwa.inkcharcustomization.json"))
     opts = tpl_cc["Data"]["RootChunk"]["bodyCustomizationOptions"]
@@ -1036,9 +1049,11 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
         if cut:
             log(f"  ! name too long ({len(catalogue.name(e))} > {s.max_name}), cut: \"{catalogue.name(e)}\" -> \"{label}\"")
         names_seen.setdefault(label, []).append(e.file)
+        a = catalogue.alpha(e)
         log(f"  + {e.file}  ->  {catalogue.slug(e)}, \"{label}\": {' + '.join(t['label'] for t in e.targets)}"
+            + (f", opacity {a:g}" if a is not None else "")
             + (f"  (ignored: {e.ignored_reason})" if e.other or e.unknown else ""))
-        built.append(Item(e, catalogue.slug(e), label))
+        built.append(Item(e, catalogue.slug(e), label, alpha=a))
     dup = {n: f for n, f in names_seen.items() if len(f) > 1}
     if dup:
         log("  ! duplicate labels (rename them): " + "; ".join(f"\"{n}\" = {', '.join(f)}" for n, f in dup.items()))
@@ -1075,7 +1090,7 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     log(f"\nDONE in {time.time() - t0:.0f} s: {arc} ({size / 1e6:.1f} MB, {len(listing)} files) + {os.path.basename(xl)}")
     log(f"  {len(built)} tattoo(s), {s.slots} slot(s), mirror {'on' if s.mirror else 'off'}, first person {'on' if s.fpp else 'off'}")
     for it in built:
-        log(f"    {it.slug:40s} \"{it.name}\"  [{', '.join(it.entry.target_codes)}]")
+        log(f"    {it.slug:40s} \"{it.name}\"  [{', '.join(it.entry.target_codes)}]" + (f"  opacity {it.alpha:g}" if it.alpha is not None else ""))
     step(total, "Done")
     return BuildResult(arc, xl, listing, built, time.time() - t0, size)
 
