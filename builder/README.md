@@ -13,7 +13,9 @@ Nothing made by other authors is redistributed.
 - **WolvenKit Console** 9.1.0: the builder downloads it from GitHub on first run (45 MB) into `%LOCALAPPDATA%\InkFlow`.
 - The **.NET 10 runtime** (x64), required by WolvenKit Console. The builder tells you if it is missing and installs it
   for you (one button: Microsoft's installer is downloaded, version and SHA-256 checked, then run silently).
-- Female V. VTK tattoos only in this version (UV Framework tattoos are listed as "ignored").
+- Female or male V (since 1.1.0). VTK tattoos only in this version (UV Framework tattoos are listed as "ignored").
+  A tattoo archive is female or male by the files it replaces (`v_overlay` / `femme_arm_*` / `pwa` head, or
+  `v_masc_overlay` / `masculine_arm_*` / `pma` head); one build carries both.
 
 ## How to use
 
@@ -54,7 +56,17 @@ alphabetical, case-insensitive), then the REDmod folders `mods\<name>\archives` 
 REDmods), and falls back to the base game. The window shows it (**Body mesh** line) and the build log names it
 (`Body : 006_Angel_Body.archive (over …)`). Any body mod whose mesh keeps local materials and the standard skin
 appearance works, and so does the vanilla body; otherwise the builder stops with "unsupported body mod". The head
-shell carries a copy of the face morph target so it follows face sculpting. Textures are copied byte for byte.
+shell carries a copy of the face morph target so it follows face sculpting.
+
+Textures are copied byte for byte, with one exception: a texture whose mip chain stops before 1x1 (11 levels on a
+4096, as in several male packs) renders as broken stripes through the decal material, so the builder re-encodes it
+with WolvenKit (export, then import: full mip chain). The re-encoded texture is uncompressed: about 4 MB in the
+archive, about 85 MB of video memory while a 4096 tattoo is worn. The build log names every re-encoded file.
+
+**Male V** (1.1.0): the game builds him differently. His body is a plain mesh (no morph target), and in first person
+the game shows his third-person body and arms, so the male shells need no first-person companion: they are listed in
+the `FPP_Body`, `TPP_Body` and `character_creation` groups, as the vanilla male tattoos are. His slots live in their
+own `inkflow_pma.inkcharcustomization` (ArchiveXL `male:` key), same indexes (1041-1049, free for both).
 
 **Mod Organizer 2**: MO2 shows the game a virtual folder; a program started outside MO2 sees an empty or partial
 `archive\pc\mod`. Add `InkFlowBuilder.exe` as an executable in MO2 and start it from there, so the Body mesh line
@@ -97,11 +109,17 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 - **First person: the arm tattoo shows holes or slides under the skin when the arms move** (1.0.0). The first-person
   shells were never applied (the slot's switcher did not drive its hidden first-person companion), so the third-person
   arm shells were drawn over the first-person arms. Fixed in 1.0.1: rebuild and install.
+- **A tattoo shows as rows of dashes, or not at all** (1.0.x, mostly male packs): its texture had a truncated mip
+  chain. Fixed in 1.1.0: the builder re-encodes such textures. Rebuild and install.
+- **Head tattoo not visible on a vanilla head** (no VTK head mod): known, under investigation. Head tattoos are drawn
+  for VTK HD heads and work with one (seen with VTK Vanilla HD Head).
 - **Game 2.3x.** Not supported: the 2.5 bodies are different. Someone may fork the generator for 2.31 (MIT).
 
 ## Known limits of this first cut
 
-- Female V only. UV Framework tattoos (Solo-type bodies) not supported yet. No icons in the creator (text options).
+- UV Framework tattoos (Solo-type bodies) not supported yet. No icons in the creator (text options).
+- Male V (vanilla body, Gymfiend VTK 1.4.3 + MV Head VTK) seen in the character creator only so far; mirror, first
+  person and photo mode not seen in game yet. Head tattoos on a vanilla head (female or male): see Troubleshooting.
 - Face sculpting changed at the ripperdoc after a build has not been QA'd yet (the head shell follows the face morphs
   on an already sculpted face).
 - Single-file PyInstaller executables are sometimes flagged by antivirus heuristics. The source is here; you can run `python InkFlowBuilder.py` instead.

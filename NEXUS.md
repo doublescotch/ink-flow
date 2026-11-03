@@ -1,4 +1,4 @@
-# Nexus page — Ink Flow (page 36814, rewrite for 1.0.1, 2026-11-02)
+# Nexus page — Ink Flow (page 36814, 1.1.0 male V, 2026-11-03 ; 1.0.1 rewrite of 2026-11-02 below)
 
 Fields to paste on https://www.nexusmods.com/cyberpunk2077/mods/36814. Written for the Nexus
 page (English). Rewritten from the **published** text (read through the API on 2026-11-02 at
@@ -6,7 +6,17 @@ page (English). Rewritten from the **published** text (read through the API on 2
 additions (credits, AppData, screenshots, "in addition to vanilla ones") are kept, the "UPDATE IN
 PROGRESS" banner goes, and every claim below is one we measured or he saw in game.
 
-## What changes on the page, in short
+## What changes on the page for 1.1.0 (2026-11-03)
+
+- Summary and "What it does": male V.
+- Requirements: female or male V, with the bodies seen in game.
+- "What works with what (1.1.0)": male vanilla body and Gymfiend VTK 1.4.3 + MV Head VTK seen in the
+  creator; VTK Vanilla HD reported working by a user (and passes the builder's checks); head tattoos
+  on a vanilla head not shown (known, next).
+- How it works: re-encoded textures. Known limits: "Female V only" goes, male V scope and vanilla
+  head added. Changelog 1.1.0.
+
+## What changed on the page for 1.0.1 (2026-11-02)
 
 - Summary: first person and "1 to 9" added (was "Body, arms and head").
 - Requirements: the builder now installs .NET 10 itself (the "bottom left corner" screenshot
@@ -22,9 +32,9 @@ PROGRESS" banner goes, and every claim below is one we measured or he saw in gam
 
 Ink Flow - VTK CCXL Tattoo Loader
 
-## Summary (250 characters max; this one is 247)
+## Summary (250 characters max; this one is 241)
 
-Turn every VTK tattoo archive you own into stackable slots ("Ink 1" to "Ink 9", you choose how many) in the character creator, ripperdoc and mirror. Body, arms, head, first person. Built on your PC; nothing from other authors is redistributed.
+Turn every VTK tattoo archive you own into stackable slots ("Ink 1" to "Ink 9") in the character creator, ripperdoc and mirror. Female and male V; body, arms, head, first person. Built on your PC; nothing from other authors is redistributed.
 
 ## Description
 
@@ -33,7 +43,7 @@ Paste as is: one line per paragraph or per `[*]`, never wrapped (Nexus keeps the
 ```bbcode
 [size=5][b]What it does[/b][/size]
 
-VTK tattoos normally replace the vanilla body tattoo texture: one tattoo file, one look, and two tattoo mods fight for the same slot. Ink Flow adds its own slots to the character creator ("Ink 1", "Ink 2", … up to 9), and each slot lists [b]every[/b] VTK tattoo archive you include in the build. Pick one per slot, stack them, change them at the ripperdoc or at the apartment mirror. Body, left arm, right arm and head tattoos are all handled, and a tattoo that only covers the head or one arm stays on that part. The tattoos follow V in first person (arms, and the body when you look down).
+VTK tattoos normally replace the vanilla body tattoo texture: one tattoo file, one look, and two tattoo mods fight for the same slot. Ink Flow adds its own slots to the character creator ("Ink 1", "Ink 2", … up to 9), and each slot lists [b]every[/b] VTK tattoo archive you include in the build. Pick one per slot, stack them, change them at the ripperdoc or at the apartment mirror. Body, left arm, right arm and head tattoos are all handled, and a tattoo that only covers the head or one arm stays on that part. The tattoos follow V in first person (arms, and the body when you look down). Female and male V (since 1.1.0): a male tattoo pack goes to male V's slots, a female one to female V's, from the same build.
 
 Ink Flow ships [b]no tattoo[/b]. It ships a small Windows builder: you drop your tattoo archives in, give each one the name you want to read in the creator, click Build, click Install. The result is one [b]Ink_Flow.archive[/b] + [b].xl[/b] in your game, built on your machine from your files.
 
@@ -43,16 +53,18 @@ Ink Flow ships [b]no tattoo[/b]. It ships a small Windows builder: you drop your
 [*]Cyberpunk 2077 2.x (PC). Built and tested on 2.5.
 [*][url=https://www.nexusmods.com/cyberpunk2077/mods/4198]ArchiveXL[/url] and what its page asks for (RED4ext; Redscript for ArchiveXL's script features). Ink Flow itself needs nothing else: no Codeware, no TweakXL, no CET.
 [*]The [url=https://dotnet.microsoft.com/download/dotnet/10.0]Microsoft .NET 10 runtime[/url] (x64), needed by WolvenKit Console. Since 1.0.1 the builder installs it for you: one button, Microsoft's own installer (30 MB, version and SHA-256 checked, silent install, the usual Windows elevation prompt). If you prefer the manual way: on Microsoft's page take the bottom-left box ".NET Runtime", Windows, x64 Installer, not the SDK or the Desktop runtime (see screenshot). WolvenKit Console is downloaded from GitHub on first run (45 MB, version pinned and checked).
-[*]Female V, with either the vanilla body or a body mod of the VTK family (Angel, EBBRB…, see "What works with what" below). The screenshot shows the archives of an Angel setup.
+[*]Female V with the vanilla body or a body mod of the VTK family (Angel, EBBRB…), or male V with the vanilla body or Gymfiend VTK: see "What works with what" below. The screenshot shows the archives of an Angel setup.
 [/list]
 
-[size=5][b]What works with what (1.0.1)[/b][/size]
+[size=5][b]What works with what (1.1.0)[/b][/size]
 
 [list]
 [*][b]Angel body[/b] (+ Vanilla Refits, VTK Vanilla HD Head): seen in game, every feature: creator, ripperdoc, mirror, first person, photo mode, body / arms / head tattoos, stacking. This is the setup Ink Flow was developed on.
-[*][b]Vanilla body[/b] (no body mod at all): seen in game, same features. Head tattoos use the vanilla head: a tattoo drawn for a VTK HD head may sit slightly differently.
+[*][b]Vanilla body[/b] (no body mod at all): seen in game, same features for body and arms. Head tattoos on the vanilla head (no VTK head mod) do not show: known, being looked at; with a VTK HD head they work.
+[*][b]VTK Vanilla HD body[/b]: reported working by a user, and passes the builder's checks entirely (body, arms, first-person arms).
+[*][b]Male V, vanilla body[/b] and [b]Gymfiend VTK 1.4.3 + MV Head VTK[/b]: seen in the character creator (body tattoos, stacking). Mirror, first person and photo mode not seen in game yet; male head tattoos not tested yet.
 [*][b]Other VTK bodies[/b]: the builder reads the body, arm and head meshes your game actually loads and copies them. EBBRB 5.0 passes the builder's checks (measured on its archive, not seen in game yet). Any body mod whose meshes keep local materials and the standard skin appearance passes; a body mod that does not pass stops the build with "unsupported body mod" rather than producing a broken result. The body mod must itself work on your game version: the tattoo shells are copies of its meshes, so a body not updated for 2.5 will not get better under Ink Flow.
-[*][b]Not tested[/b]: cyberarms (Mantis Blades, Gorilla Arms… the tattoo shells cover the arms fully; what happens on a cyberarm has not been looked at), male V (not supported), UV Framework tattoos (ignored by the builder for now).
+[*][b]Not tested[/b]: cyberarms (Mantis Blades, Gorilla Arms… the tattoo shells cover the arms fully; what happens on a cyberarm has not been looked at), UV Framework tattoos (ignored by the builder for now).
 [/list]
 
 [size=5][b]How to use[/b][/size]
@@ -82,12 +94,13 @@ Still wrong? Open the data folder and post [b]build.log[/b] from a fresh build: 
 
 [size=5][b]How it works[/b][/size]
 
-For each tattoo file the builder extracts the texture(s), copies your active body / arm / head meshes with their skin materials replaced by the vanilla tattoo decal material, points the decal at the tattoo texture, and writes one appearance per tattoo and per slot plus the character-creator entries (CCXL). The head shell carries a copy of the face morph target, so it follows face sculpting. First person works like the vanilla tattoos: a hidden companion of each slot drives first-person shells (the body shell through the first-person chunk mask, copies of your first-person arm meshes). The textures are copied byte for byte: what you see is the author's tattoo, unchanged. Everything is generated by WolvenKit Console from JSON; the source of the builder is public.
+For each tattoo file the builder extracts the texture(s), copies your active body / arm / head meshes with their skin materials replaced by the vanilla tattoo decal material, points the decal at the tattoo texture, and writes one appearance per tattoo and per slot plus the character-creator entries (CCXL). The head shell carries a copy of the face morph target, so it follows face sculpting. First person works like the vanilla tattoos: a hidden companion of each slot drives first-person shells (the body shell through the first-person chunk mask, copies of your first-person arm meshes). Male V needs no companion: the game shows his third-person body and arms in first person, so his shells are listed for both views, as the vanilla male tattoos are. The textures are copied byte for byte (what you see is the author's tattoo, unchanged), except those whose mip chain stops early (several male packs): they render as broken stripes through the decal, so the builder re-encodes them with WolvenKit (same image, full mip chain, uncompressed: about 4 MB in the archive, about 85 MB of video memory while a 4096 tattoo is worn). The build log lists them. Everything is generated by WolvenKit Console from JSON; the source of the builder is public.
 
-[size=5][b]Known limits (1.0.1)[/b][/size]
+[size=5][b]Known limits (1.1.0)[/b][/size]
 
 [list]
-[*]Female V only.
+[*]Head tattoos on a vanilla head (no VTK head mod) do not show yet.
+[*]Male V: seen in the character creator only so far (vanilla body, Gymfiend VTK).
 [*]VTK family only. UV Framework tattoos (Solo-type bodies) are listed as "ignored" for now, planned.
 [*]Cyberarms not tested (see above).
 [*]Text options in the creator, no icons yet.
@@ -106,6 +119,16 @@ MIT. [url=https://github.com/doublescotch/ink-flow]github.com/doublescotch/ink-f
 
 [url=https://www.patreon.com/kalahira]Kala[/url], [url=https://www.nexusmods.com/profile/bedellia?gameId=3333]Bedellia[/url] and [url=https://www.nexusmods.com/profile/shivakoko]Shivakoko[/url] for the tattoos in the screenshots. Please help me find the authors of the Samurai and Garden Bloom tattoos, they are listed as "Unknown" in the names. Amazing works; this project would not exist without their art to give it a point.
 thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCXL Tattoo Toolkit[/url], the template resource whose switcher layout Ink Flow follows. psiberx for ArchiveXL and RED4ext. The WolvenKit team for WolvenKit Console (downloaded by the builder, not shipped).
+```
+
+## Changelog 1.1.0 (Nexus "Changelogs" tab, 2026-11-03)
+
+```
+1.1.0
+- Male V: male VTK tattoo packs (v_masc_overlay, masculine arms, male head) get their own Ink slots in male V's character creator, built from the same window, alongside the female ones. Seen in game on the vanilla male body and on Gymfiend VTK 1.4.3 + MV Head VTK (character creator).
+- Tattoos showing as rows of dashes or not at all: their texture had a truncated mip chain (several male packs). The builder now re-encodes such textures with WolvenKit (full mip chain); every other texture is still copied byte for byte. Rebuild and install.
+- The Body mesh line shows the male body mod too when one is found.
+- Female builds are unchanged (same files, byte for byte, as 1.0.1 for the same tattoos).
 ```
 
 ## Changelog 1.0.1 (Nexus "Changelogs" tab, 2026-11-02)
@@ -132,7 +155,10 @@ thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCX
 
 ## Files to upload
 
-- `InkFlowBuilder-1.0.1.zip` (`releases\`, SHA-256 `42fa8310…4ed2`): `InkFlowBuilder.exe` (SHA-256
+- 1.1.0 (2026-11-03) : `Ink_Flow_Builder-1.1.0.zip` (`releases\`, SHA-256 `43f0f655…6427`):
+  `InkFlowBuilder.exe` (SHA-256 `24434274…5c05`) + `README.md` + `LICENSE`. Same file description as
+  below. Mark 1.0.1 as old version. Mod version field: 1.1.0.
+- 1.0.1 (2026-11-02, uploaded) : `InkFlowBuilder-1.0.1.zip` (`releases\`, SHA-256 `42fa8310…4ed2`): `InkFlowBuilder.exe` (SHA-256
   `f32d59bc…7109`) + `README.md` + `LICENSE`. File description: version, SHA-256 of the exe,
   "downloads WolvenKit Console 9.1.0 from GitHub on first run, installs .NET 10 Runtime on request".
   Mark 1.0.0 as old version (the published MAIN is 172045; 172010 is already archived).

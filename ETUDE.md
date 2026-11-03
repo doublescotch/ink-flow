@@ -582,3 +582,43 @@ l'installeur serait permis (MIT, termes Microsoft) : écarté, le téléchargeme
 **Exe 1.0.1 rebâti** : SHA-256 `f32d59bc…7109` (11 951 071 o), autotest `exe\home` : 157 fichiers, 150 347 776 o,
 129 s (même taille que la 1.0.0 : le drapeau ne change pas la longueur du CR2W) ; zip `InkFlowBuilder-1.0.1.zip`
 SHA-256 `42fa8310…4ed2` (11 681 627 o), copie dans `releases\`. README, `NEXUS.md` (prérequis, étape 1, changelog) à jour.
+
+## 19. V masculin et textures à chaîne de mips tronquée (2026-11-03, 17 h 30 → 20 h 30, Opus, go de Hell_Kaiser)
+
+**Mesures (jeu de base en lecture, `x\male\`, `tools\qa_2026-11-03\`)** : V masculin = `player_man_average`,
+textures `v_masc_overlay`, `masculine_arm_{left,right}_01_overlay`, tête `h0_001_pma_c__basehead_overlay`. Corps
+`t0_000_pma_base__full.mesh` **sans morphtarget**, composant `entGarmentSkinnedMeshComponent` (8 chunks, 4 648
+sommets, 38 matériaux en `localMaterialBuffer`) ; bras HQ en `preloadLocalMaterialInstances` ; tête 7 190 sommets,
+64 matériaux, morphtarget 100 cibles. **Pas de maillage FPP masculin** : `t0_000_fpp__full.app` montre le corps TPP
+sans masque, `arms\a0_000_fpp__full.app` les bras HQ. `male_cco` : `body_tattoo` (1040, contrôleur 1) **sans
+suiveur**, ses options listées dans FPP_Body, TPP_Body et character_creation ; sélecteurs 1020, 1040, 1060, 1090… :
+1041-1049 et 1066-1074 libres. Gymfiend VTK 1.4.3 : corps 6 357 sommets, mêmes stockages ; MV Head VTK livre tête +
+morphtarget. VTK Vanilla HD (7054) : `shell()` accepte tout (corps 91 362 sommets, bras, bras FPP, masque `…E0`).
+
+**Moteur 1.1.0** : `TARGETS` porte un genre (`m_body`, `m_arm_l/r`, `m_head`, suffixes `_m*`, fichiers `_pma`) ;
+`gender_customization()` écrit un `.inkcharcustomization` par genre présent (`inkflow_pma` sous `male:`), suiveurs
+FPP pour la V féminine seulement, coques masculines listées dans les trois groupes ; préfixe de noms étendu aux
+formes `002_Tattoos_Masc_V_VTK_` et `00_MV_[VTK]_` (les slugs des noms déjà reconnus ne changent pas) ; ligne Body
+mesh par genre. **Non-régression** : 20 tatouages féminins, moteur du dernier commit contre nouveau = 500/500
+fichiers identiques au SHA-256, `.xl` identique (`regress_female.py`, rejouée après le ré-encodage).
+
+**QA 1 de Hell_Kaiser (créateur, nouvelle partie, corps vanilla)** : sur 14 tatouages masculins, bandes trouées ou
+rien sur 9, propres sur 5, et la règle est sans exception : **texture à 1 mip ou à chaîne complète = propre, chaîne
+tronquée (11 mips sur 4096, arrêt à 4×4, `allowTextureDowngrade` 1, `platformMipBiasPC` 1) = cassée**, sur la même
+coque. La texture décodée (export DDS) est saine. Canari : la même image réimportée par WolvenKit (13 mips, non
+compressée) : **propre en jeu**, l'original troué. Pourquoi ces textures passent dans la peau VTK et cassent dans le
+décal : non mesuré.
+
+**Correctif** : `reencode_truncated()` dans `extract_textures` : export du dossier de textures du tatouage
+(`-gp` jeu), mips lus dans l'en-tête DDS, import des seules chaînes ni 1 ni complètes (`max(w,h).bit_length()`),
+ligne au journal ; clé de cache `|mips1`. Coût : texture non compressée (≈ 4 Mo dans l'archive, ≈ 85 Mo de mémoire
+vidéo pour une 4096 portée) ; garder le BC7 demanderait un encodeur que le CLI n'a pas. **QA 2 et 3 validées par lui
+au créateur** : Kala Japanese V2 masculin propre sur corps vanilla puis sur Gymfiend + MV Head ; V féminine inchangée.
+
+**Exe 1.1.0** : SHA-256 `24434274…5c05`, autotest figé `exe\home` + Kala V2 masculin : 19 tatouages, 162 fichiers,
+75,6 Mo, 406 s, ré-encodage au journal ; zip `43f0f655…6427` (`releases\Ink_Flow_Builder-1.1.0.zip`).
+
+**Reste ouvert** : têtes sur tête vanilla (Kala head, Finn : rien au créateur, déjà vu § 17 ; marche sur tête VTK
+HD) ; tête masculine jamais vue (pack visage 7414 dans `3_Bodies\__RAM`) ; miroir, FPP, photo du V masculin
+(il n'a pas de sauvegarde masculine) ; tatouage d'un genre forcé sur l'autre (patrons UV non comparés) ; Hyst EBB
+décompressé, non passé au moteur.

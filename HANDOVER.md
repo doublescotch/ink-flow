@@ -5,7 +5,26 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-02, 18 h 30) : QA vanilla validée, 1.0.1 publiable, page Nexus récrite dans `NEXUS.md`
+## État (2026-11-03, 20 h 30) : 1.1.0 = V masculin (vanilla + Gymfiend) + ré-encodage des mips tronqués, prête
+
+- **1.1.0 bâtie et commitée** (ETUDE § 19) : V masculin (table `m_*`, `inkflow_pma` sous `male:`, pas de suiveur
+  FPP), ré-encodage WolvenKit des seules textures à chaîne de mips tronquée. Exe `24434274…5c05`, zip
+  `releases\Ink_Flow_Builder-1.1.0.zip` `43f0f655…6427`. Non-régression féminine 500/500. **À lui** : upload Nexus
+  (1.0.1 en ancienne version), coller `NEXUS.md` (résumé, What works with what 1.1.0, changelog), tag `v1.1.0` sur go.
+- **QA validée par lui au créateur** (nouvelle partie) : V masculin corps vanilla puis Gymfiend VTK 1.4.3 + MV Head
+  (Kala Japanese V2 masculin propre après ré-encodage) ; V féminine inchangée (tout bon sauf têtes sur tête vanilla).
+- **Jeu** : remis par lui aux piles 1-2 ; tout ce que j'avais posé retiré (`tools\qa_2026-11-03\game_pose.py remove`,
+  20 h 15). Gymfiend et MV Head dépaquetés dans `C:\__DEV\cyberpunk\ink_flow\dl\6423_*`.
+- **Prochaine séance (sa demande)** : (1) **tête vanilla** : la coque de tête ne s'affiche pas sur tête vanilla
+  (Kala head, Finn, V féminine, créateur ; déjà vu § 17) ; vérifier d'abord qu'elle est toujours présente sur Angel +
+  tête VTK HD ; (2) **tête du V masculin** : pack visage `FACE TATTOOS-7414-V2-KALA-MALEV-VTK` + Kala Faded Face dans
+  `3_Bodies\__RAM`, sur Gymfiend + MV Head ; (3) miroir / FPP / photo du V masculin quand il aura une sauvegarde.
+- Idées notées, non tranchées : option de test « forcer un tatouage sur l'autre genre » (patrons UV femme / homme
+  non comparés) ; garder le BC7 après ré-encodage (encodeur à trouver) ; Hyst EBB (4654) à passer au moteur.
+- Plantage à la sortie du 03/11 18 h 33 (DEP après déchargement de RED4ext, 1 sortie sur 5) : hors Ink Flow ;
+  candidat non prouvé audioware 1.10.1-rc.0.
+
+## ~~État (2026-11-02, 18 h 30) : QA vanilla validée, 1.0.1 publiable, page Nexus récrite dans `NEXUS.md`~~ dépassé (03/11, 1.1.0)
 
 - **Dans le jeu** : Angel + refits + 4 têtes VTK + build Ink Flow corrigé de 17 h 28 (`a6fd24c8…`, 9 archives),
   remis à 18 h 15 après la QA vanilla. **Sonde retirée** (sa décision), source dans `tools\probe\` pour les prochains

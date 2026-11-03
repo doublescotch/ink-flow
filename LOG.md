@@ -180,3 +180,35 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   par le builder non vu, cyberarms non testés, corps à jour pour 2.5 requis), dépannage « Slots visible but nothing on
   V? », changelog 1.0.1 avec la ligne vanilla. Ses questions : EBBRB = théorie seulement ; famille VTK = critère
   technique du builder (matériaux locaux, apparence de peau standard), pas une liste ; un corps cassé sur 2.5 reste cassé.
+
+## 2026-11-03 (17 h 30 → 18 h 45) — V masculin : mesures, moteur, builds hors jeu, pose vanilla pour QA
+
+- Reprise (Opus) sur « miroir pour V masc vanilla puis Gymfiend ». Téléchargés par lui dans `3_Bodies\__RAM` :
+  Gymfiend VTK 1.4.3 + MV Head VTK + options (6423), Hyst EBB 5.0, VTK Vanilla HD 7054, Kala Japanese Faded MV
+  (7414) ; décompressés dans `C:\__DEV\cyberpunk\ink_flow\dl\{6423_*,4654_ebb,7054_vtkhd,7414_kala_mv}`.
+- Mesuré (jeu de base, lecture seule) : V masculin = chemins `player_man_average` / `masculine` / `pma`, corps SANS
+  morphtarget (composant garment), FPP = maillages TPP (corps sans masque, bras HQ), `male_cco` liste `body_tattoo`
+  dans FPP_Body + TPP_Body + character_creation (pas de suiveur), index 1041-1049 libres. `shell()` accepte vanilla
+  masculin, Gymfiend (corps 6 357 sommets) et MV Head (100 morphs). VTK Vanilla HD : accepté en entier (91 362).
+- Moteur (son go) : table masculine (`m_body`, `m_arm_l/r`, `m_head`), `inkflow_pma.inkcharcustomization` sous
+  `male:`, `gender_customization()`, préfixe de noms étendu aux formes MV, ligne Body mesh par genre. Non-régression :
+  20 tatouages féminins, HEAD contre nouveau moteur = 500/500 fichiers identiques, `.xl` identique
+  (`tools\qa_2026-11-03\regress_female.py`). Builds : vanilla masculin 14 tatouages 51,1 Mo ; Gymfiend 42,9 Mo ;
+  mixte 34 tatouages 119,7 Mo (`male_build.py`, `check_mixed.py`).
+- 18 h 33 : plantage à la sortie de son jeu (DEP après le déchargement de RED4ext, 1 sortie sur 5) : module non
+  identifiable dans le dump ; candidat non prouvé audioware 1.10.1-rc.0.
+- 18 h 45 : instance remise par lui aux piles 1-2 ; sur son go, build masculin vanilla posé
+  (`tools\qa_2026-11-03\game_pose.py vanilla`, SHA `05dd72c8…`). QA attendue : nouvelle partie, V masculin, créateur.
+- 19 h-19 h 40 : QA 1 de lui (V masc vanilla) : bandes trouées ou rien sur 9 tatouages, propres sur 5 ; règle sans
+  exception sur 14 : texture à 1 mip ou chaîne complète = propre, chaîne tronquée (11 mips sur 4096) = cassée, même
+  coque. Texture décodée saine. Canari (Kala V2 masc ré-encodé par WolvenKit export → import, 13 mips) : **propre en
+  jeu**, l'original troué. Côté V féminine (même build) : tout bon sauf têtes Kala et Finn sur tête vanilla (défaut
+  connu § 17, chantier à part sur sa décision). Sur sa consigne, jeu de test = ses 3 `002_Tattoos_Masc_V_` (seul le
+  VTK est pris) + VTK féminins, plus de Kala Faded ni de vanilla Gymfiend.
+- 19 h 40 : sur son go, `reencode_truncated()` dans `extract_textures` (export du dossier, mips lus dans l'en-tête
+  DDS, import des seules chaînes tronquées) ; non-régression féminine 500/500 rejouée ; build vanilla posé
+  (81,4 Mo, SHA `4d878353…`). QA attendue : Kala Japanese V2 masculin propre.
+- 20 h-20 h 30 : sur son go « tout, 1.1.0 » : README, NEXUS.md (1.1.0 : V masculin, What works with what, VTK
+  Vanilla HD reported working, tête vanilla en limite, changelog), version 1.1.0, exe `24434274…` (autotest figé
+  `exe\home` + Kala V2 masc : 19 tatouages, 162 fichiers, 75,6 Mo, ré-encodage au journal), zip `43f0f655…` dans
+  `releases\`, ETUDE § 19, passation. Jeu nettoyé sur sa demande (`game_pose.py remove`).
