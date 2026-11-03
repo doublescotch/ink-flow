@@ -11,9 +11,11 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   colonne **Opacity** par tatouage (catalogue ; vide = **Default opacity**). Exe `4e3f15d1…9bb6`, zip
   `releases\Ink_Flow_Builder-1.2.0.zip` `3e1f13f9…6a46`. Non-régression 488/488 contre la 1.1.0. **À lui** :
   upload Nexus (1.1.0 en ancienne version, champ version 1.2.0), coller de `NEXUS.md` les étapes 1 et 3, le
-  dépannage et le changelog 1.2.0, refaire la capture de la fenêtre, répondre à l'utilisateur qui a demandé
-  l'opacité ; tag `v1.2.0` sur go. 1.1.0 uploadée par lui (sa réponse du 04/11). **Tags : seul `v1.0.0` existe** (local
-  et GitHub, mesuré le 04/11) : `v1.0.1` (`b69e9b1`/`d86e5ab`) et `v1.1.0` (`546200f`) à poser aussi, sur son go.
+  dépannage et le changelog 1.2.0, refaire la capture de la fenêtre, poster le **sticky 1.2.0** de
+  `NEXUS_POSTS.md` (il remercie le demandeur de l'opacité). 1.1.0 uploadée par lui (sa réponse du 04/11).
+  ~~Tags : seul `v1.0.0` existe~~ posés et poussés sur son go (04/11) : `v1.0.1` = `d86e5ab`, `v1.1.0` = `546200f`,
+  `v1.2.0` = commit du sticky 1.2.0 (dernier commit de chaque version, comme `v1.0.0` = `dcf165a`).
+  Réponses individuelles du 02/11 retirées de `NEXUS_POSTS.md` à sa demande (postées, historique git).
 - **Point de QA annoncé** : une coque à opacité propre rend comme le réglage général à la même valeur (même champ
   `DiffuseAlpha`), jamais vu en jeu ; à regarder au créateur avec deux tatouages à 0,5 et 1,0.
 - **Prochaine séance (inchangée)** : tête vanilla, tête du V masculin, miroir / FPP / photo du V masculin (bloc

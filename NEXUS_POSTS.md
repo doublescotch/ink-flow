@@ -1,53 +1,33 @@
 # Nexus posts — drafts (English, Hell_Kaiser posts them)
 
-Written 2026-11-02 after the first 15 comments (ETUDE § 17). One block per reply ; paste as is or trim.
+One block per post; paste as is or trim. The individual replies of 2026-11-02 (EBBRB ×3, 0xVyper,
+vanilla body) were removed on 2026-11-04 at Hell_Kaiser's request: posted, and superseded by the
+stickies (they stay in git history, commit `546200f` and before).
 
-## To the three EBBRB reports (Lorasyl, Bransburk, cybercock2067) — one reply each, or one sticky
+## Sticky 1.2.0 (replaces the 1.1.0 one below, to post with the 1.2.0 upload, 2026-11-04)
 
-Thanks for the report. I downloaded Hyst's EBBRB 5.0.0 and ran it through the builder's engine: it is
-accepted exactly like Angel (same mesh layout, same materials), so the recipe itself is not the problem.
+```
+1.2.0 IS OUT: per-tattoo opacity, and a clearer view of the bodies the builder found. Update, Build again, Install.
 
-What I suspect instead: the builder did not SEE your body mod when it built, and fell back to the
-vanilla body. The tattoo shells are copies of the body mesh that was active at build time; a vanilla
-shell sits under the skin of a bigger body, so the slots show up but nothing is drawn. This happens
-when the body is not in archive\pc\mod as a real file at build time:
-- Vortex with "REDmod deployment" (the body lives in <game>\mods\...): not read by 1.0.0.
-- Mod Organizer 2: the game folder is virtual; run InkFlowBuilder.exe THROUGH MO2 (add it as an
-  executable) so it sees your mods.
-- A modlist.txt in archive\pc\mod: 1.0.0 ignores it.
+What's new (full list in the Changelogs tab):
+- Per-tattoo opacity (thanks for the request!): the tattoo list has a new Opacity column. Double-click a cell and set 0.1 to 1.0, or select several rows and press "Opacity…". Leave it empty to use the Default opacity of the options (shown in brackets). It applies to all of that tattoo's parts: body, arms, head, first person. Rebuild to apply.
+- The detected bodies are now a table at the top of the window: Female V and Male V side by side, one row each for Body, Arms and Head. Green = the body mod archive the shells will be copied from, grey "base game" = vanilla. A red line under the table means the builder sees no body mod at all.
+- Nothing else changes: if you set no per-tattoo opacity, your build is the same as with 1.1.0, file for file.
 
-~~Could you paste the "2. active meshes" lines of the builder log (the text box under the list,
-right after Build)? They look like "Body : 006_Angel_Body.archive". If yours says "Body : base game",
-that is it. Also tell me which mod manager you use. 1.0.1 will read REDmod folders and modlist.txt,
-show the detected body in the window (red when it is the vanilla one), and write a build.log you can
-send.~~ (wording for 1.0.0 ; replaced below once 1.0.1 is uploaded, 2026-11-02 18 h 30)
+Check the table before you build: if you play with a body mod (Angel, Gymfiend...) and its column says "base game", the builder does not see it and the tattoos will show nothing on V. MO2 users: start InkFlowBuilder.exe THROUGH MO2 (add it as an executable).
 
-Please update to 1.0.1: it reads REDmod folders and modlist.txt, and the window now has a "Body mesh"
-line that names the body archive the shells will be copied from. If that line is red ("base game")
-while you play with EBBRB, the builder does not see your body: MO2 users, start the builder through
-MO2; otherwise tell me where your EBBRB archive lives. If the line is green with your EBBRB archive,
-Build, Install, and if nothing shows still, post the build.log from the data folder (button "Open data
-folder"): its second block says which archive each mesh came from. I have not seen EBBRB in game
-myself, only checked that its meshes pass the builder, so your log is what will settle it.
+Tested in game (2.5): female V on Angel (+ VTK Vanilla HD Head) and on the vanilla body; male V on the vanilla body and on Gymfiend VTK 1.4.3 + MV Head VTK (character creator so far: mirror, first person and photo mode on male V not checked yet). VTK Vanilla HD body: reported working by a user.
 
-## To 0xVyper (dynamic / no rebuild)
+Known issue: head tattoos on a VANILLA head (no VTK head mod) do not show yet. With a VTK HD head they work. That is what I am working on next.
 
-Thanks, I looked into it before building this. The blocker is on the engine side: a resource is
-addressed by the hash of its path, and every VTK tattoo ships the same path (v_overlay.xbm). Nothing at
-runtime, ArchiveXL included, can say "this archive goes in slot 2": each tattoo needs its own path, and
-the shells need a copy of your actual body mesh, which only WolvenKit can write. So some packing step
-stays. What I can do in that direction: a "Scan game folder" button that finds the VTK tattoo archives
-you already have (archive\pc\mod and REDmod), lists them, and moves them aside at install, so there is
-nothing to collect by hand. Rebuild stays a one-click step when you add a tattoo.
+Ink Flow only needs ArchiveXL (and the RED4ext it runs on). Codeware, TweakXL, CET: not needed by Ink Flow.
 
-## Vanilla body (to add to the sticky / description once 1.0.1 is out)
+Still nothing on V? Post your build.log here (button "Open data folder"), with your body mod and your mod manager.
 
-Known issue in 1.0.0: with NO body mod at all (pure vanilla body), arm tattoos stop the build with
-"unsupported body mod" (the vanilla arm meshes store their materials differently), and the first-person
-shells break the mirror. Fixed in 1.0.1: the vanilla body was played in game (creator, mirror, first
-person, photo mode, 2026-11-02). Update, Build, Install.
+Still planned: vanilla head, male head tattoos, cyberarms (not tested yet), UV tattoos. A video of the full process is coming.
+```
 
-## Sticky 1.1.0 (replaces the 1.0.1 one below, to post with the 1.1.0 upload, 2026-11-03)
+## ~~Sticky 1.1.0~~ replaced by the 1.2.0 one above (posted with the 1.1.0 upload, 2026-11-03)
 
 ```
 1.1.0 IS OUT: MALE V is supported. Update, Build again, Install.
@@ -71,7 +51,7 @@ Still nothing on V? Post your build.log here (button "Open data folder"), with y
 Still planned: male head tattoos (testing next), vanilla head, cyberarms (not tested yet), UV tattoos. A video of the full process is coming.
 ```
 
-## Sticky 1.0.1 (replaced by the 1.1.0 one above ; replaced the one of 2026-11-02 7:55 AM)
+## ~~Sticky 1.0.1~~ replaced by the 1.1.0 one (replaced the one of 2026-11-02 7:55 AM)
 
 ```
 1.0.1 IS OUT: update, Build again, Install. Your old 1.0.0 build has a first-person bug, rebuilding fixes it.
