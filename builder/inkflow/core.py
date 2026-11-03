@@ -26,6 +26,7 @@ import json
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import time
@@ -46,6 +47,16 @@ FPP_APP = r"base\characters\common\player_base_bodies\appearances\l0_000_fpp__fu
 FPP_TORSO_MESH = FPP_DIR + r"\t0_000_pwa_fpp__torso.mesh"
 FPP_TORSO_MASK = "18446744073709551584"     # 0xFFFFFFFFFFFFFFE0 : body chunks 5-7, what the vanilla/Angel FPP app shows (measured 2026-11-01)
 FPP_INDEX_OFFSET = 25                       # follower switchers at 1066-1074 : free in vanilla (1065 = last body_scars entry, 1090 = genitals)
+# Male V (ETUDE § 19, measured 2026-11-03 in the base game, Gymfiend VTK 1.4.3 and MV Head VTK) : other paths, a body
+# WITHOUT morphtarget (plain garment component), and no dedicated FPP meshes : the FPP apps show the TPP body (no
+# mask) and the HQ arms, and `male_cco` lists the same `body_tattoo` options in FPP_Body, TPP_Body and
+# character_creation. So the male shells are listed in every group and need no follower. Slot indexes 1041-1049 are
+# free in `male_cco` too (its switchers : 1020, 1040, 1060, 1090...).
+M_BODY_DIR = r"base\characters\common\player_base_bodies\player_man_average"
+M_ARMS_TEX = r"base\characters\player\masculine\body\arms\textures"
+M_HEAD_DIR = r"base\characters\head\player_base_heads\player_man_average"
+GENDERS = (("f", "female", "pwa"), ("m", "male", "pma"))   # code, ArchiveXL customization key, file tag
+GENDER_TAG = {g: tag for g, _, tag in GENDERS}
 
 TARGETS = [
     dict(code="body", label="Body", tex=r"base\v_textures\body\v_overlay.xbm",
@@ -64,7 +75,25 @@ TARGETS = [
          mesh=HEAD_DIR + r"\h0_000_pwa_c__basehead\h0_000_pwa_c__basehead.mesh", morph=HEAD_DIR + r"\h0_000_pwa__morphs.morphtarget",
          tpl="chest_tattoo.app.json", keep="w__chest_tattoo", ctype="entMorphTargetSkinnedMeshComponent",
          old=r"your_name\ccxl\chest_tattoo_demo\meshes\chest_tattoo\your_chest_tattoo_pwa.morphtarget", suffix="_head"),
+    dict(code="m_body", gender="m", label="M body", tex=r"base\v_textures\body\v_masc_overlay.xbm",
+         mesh=M_BODY_DIR + r"\t0_000_pma_base__full.mesh", morph=None,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_m"),
+    dict(code="m_arm_l", gender="m", label="M arm L", tex=M_ARMS_TEX + r"\masculine_arm_left_01_overlay.xbm",
+         mesh=M_BODY_DIR + r"\arms_hq\a0_000_pma_base_hq__l.mesh", morph=None,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_m_arm_l"),
+    dict(code="m_arm_r", gender="m", label="M arm R", tex=M_ARMS_TEX + r"\masculine_arm_right_01_overlay.xbm",
+         mesh=M_BODY_DIR + r"\arms_hq\a0_000_pma_base_hq__r.mesh", morph=None,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_right", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_right_pwa.mesh", suffix="_m_arm_r"),
+    dict(code="m_head", gender="m", label="M head", tex=M_HEAD_DIR + r"\h0_000_pma_c__basehead\textures\h0_001_pma_c__basehead_overlay.xbm",
+         mesh=M_HEAD_DIR + r"\h0_000_pma_c__basehead\h0_000_pma_c__basehead.mesh", morph=M_HEAD_DIR + r"\h0_000_pma__morphs.morphtarget",
+         tpl="chest_tattoo.app.json", keep="w__chest_tattoo", ctype="entMorphTargetSkinnedMeshComponent",
+         old=r"your_name\ccxl\chest_tattoo_demo\meshes\chest_tattoo\your_chest_tattoo_pwa.morphtarget", suffix="_m_head"),
 ]
+for _t in TARGETS:
+    _t.setdefault("gender", "f")
 TARGET_BY_CODE = {t["code"]: t for t in TARGETS}
 # First person (ETUDE § 16). What V sees of herself in first person : the FPP torso, a byte-identical copy of the TPP
 # body mesh shown through a chunk mask (so the body shell is reused, masked the same way), and two dedicated FPP arm
@@ -92,7 +121,9 @@ KNOWN_OTHER = {
 HASH_PATH = {rdar.fnv1a64(p): p for p in list(TARGET_BY_TEX) + list(KNOWN_OTHER)}
 TARGET_HASHES = {rdar.fnv1a64(t["tex"]) for t in TARGETS}
 TEX_REGEX = "(" + "|".join(re.escape(os.path.basename(t["tex"])) for t in TARGETS) + r"|\d+\.bin)$"
-NAME_PREFIX = re.compile(r"^\d+_Tattoos?_(VTK|UV)_", re.I)
+# `002_Tattoos_VTK_`, and the male forms `002_Tattoos_Masc_V_VTK_`, `00_MV_[VTK]_` (Gymfiend family) : same slugs as
+# 1.0.1 for every name the old pattern matched
+NAME_PREFIX = re.compile(r"^\d+_(Tattoos?_(Masc_V_)?|MV_\[)(VTK|UV)\]?_", re.I)
 LEGACY_TABLE = "inkflow_slugs.json"             # v0.1-v0.3 catalogue, next to the archives : imported once
 CANARI = ("Ink_Flow_Canari.archive", "Ink_Flow_Canari.archive.xl")
 
@@ -510,11 +541,54 @@ def fpp_torso_mask(cli, game, work, log):
 
 
 # ----------------------------------------------------------------------------- 3. textures
-def extract_textures(cli, archive, slug, work, log):
-    """All target textures of one tattoo archive -> work\\tex\\<slug>\\<game path> (cached)."""
+def dds_mips(path):
+    """(width, height, mip count) of a DDS file header."""
+    with open(path, "rb") as f:
+        head = f.read(32)
+    h, w = struct.unpack_from("<II", head, 12)
+    return w, h, max(1, struct.unpack_from("<I", head, 28)[0])
+
+
+def reencode_truncated(cli, game, d, log):
+    """Textures whose mip chain stops before 1x1 (11 levels on a 4096 : the male Kala / Gymfiend packs) render as
+    stripes or not at all through the decal material, while the same image with one level or a full chain is clean
+    (QA Hell_Kaiser 2026-11-03, 14 textures out of 14, canary ETUDE § 19). Those, and only those, go through
+    WolvenKit export -> import, which writes a full chain (uncompressed). Healthy textures are left byte for byte."""
+    xbms = [os.path.join(r, f) for r, _, fs in os.walk(d) for f in fs if f.endswith(".xbm")]
+    if not xbms:
+        return
+    tmp = d + ".dds"
+    shutil.rmtree(tmp, ignore_errors=True)
+    os.makedirs(tmp)
+    try:
+        cli.run("export", d, "-o", tmp, "-gp", game, what="export textures (mip check)")
+        for x in xbms:
+            dds = os.path.join(tmp, os.path.relpath(x, d))[:-4] + ".dds"
+            if not os.path.isfile(dds):
+                raise BuildError("texture not exported for the mip check: " + x)
+            w, h, mips = dds_mips(dds)
+            full = max(w, h).bit_length()
+            if mips in (1, full):
+                continue
+            out = os.path.join(tmp, "import")
+            shutil.rmtree(out, ignore_errors=True)
+            os.makedirs(out)
+            cli.run("import", dds, "-o", out, what="re-encode texture")
+            new = os.path.join(out, os.path.basename(x))
+            if not os.path.isfile(new):
+                raise BuildError("re-encoded texture not produced: " + new)
+            shutil.move(new, x)
+            log(f"  texture re-encoded ({w}x{h}, {mips} mips -> full chain of {full}): {os.path.relpath(x, d)}")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def extract_textures(cli, game, archive, slug, work, log):
+    """All target textures of one tattoo archive -> work\\tex\\<slug>\\<game path> (cached), truncated mip chains
+    re-encoded (`reencode_truncated`)."""
     d = os.path.join(work, "tex", slug)
     marker = os.path.join(d, ".src")
-    key = stamp(archive) + "|" + TEX_REGEX
+    key = stamp(archive) + "|" + TEX_REGEX + "|mips1"
     if not cached(marker, key):
         shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d)
@@ -526,6 +600,7 @@ def extract_textures(cli, archive, slug, work, log):
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 shutil.move(os.path.join(d, f), dst)
                 log(f"  path restored from its hash: {HASH_PATH[int(m.group(1))]}")
+        reencode_truncated(cli, game, d, log)
         with open(marker, "w") as f:
             f.write(key)
     return d
@@ -537,8 +612,9 @@ class Paths:
         d = rf"{P}\tattoos\{slug}"
         s = t["suffix"]
         self.tex = rf"{d}\{slug}{s}.xbm"
-        self.mesh = rf"{d}\{slug}_pwa{s}.mesh"
-        self.morph = rf"{d}\{slug}_pwa{s}.morphtarget"
+        tag = GENDER_TAG[t.get("gender", "f")]
+        self.mesh = rf"{d}\{slug}_{tag}{s}.mesh"
+        self.morph = rf"{d}\{slug}_{tag}{s}.morphtarget"
         self.app = rf"{d}\{slug}{s}.app"                           # route 1
         self.slot_app = lambda n: rf"{d}\{slug}_slot{n}{s}.app"    # route 2
         self.resource = self.morph if t["morph"] else self.mesh
@@ -674,6 +750,105 @@ class BuildResult:
     size: int
 
 
+def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, option, info, off):
+    """The .inkcharcustomization (JSON) of one gender : per slot a switcher driving one uiSlot per target of that
+    gender, options Off + one per tattoo ; V female with first person : a hidden follower per slot (ETUDE § 16, 18) ;
+    route 1 (female only). Male V needs no follower : its FPP shows the TPP meshes (§ 19)."""
+    cc = copy.deepcopy(tpl_cc)
+    root = cc["Data"]["RootChunk"]
+    targets = [t for t in TARGETS if t["gender"] == gender]
+    followers = s.fpp and gender == "f"
+    entries, names_all, names_fpp = [], [], []
+    body_t = TARGETS[0]
+
+    with_body = [it for it in items if body_t in it.targets]
+    if s.route1 and gender == "f" and with_body:
+        s1 = copy.deepcopy(tk_switcher)
+        set_cname(s1, "name", "None")
+        set_cname(s1, "link", "body_tattoo")
+        s1["index"] = 0
+        s1["localizedName"] = ""
+        set_cname(s1, "uiSlot", "None")
+        s1["uiSlots"] = []
+        s1["switchVisibility"] = 0
+        s1["editTags"] = []
+        s1["options"] = [option(i, f"UI-Customization-inkflow_{it.slug}_v", [f"inkflow_{it.slug}"]) for i, it in enumerate(with_body)]
+        entries.append(s1)
+        for it in with_body:
+            entries.append(info(f"inkflow_{it.slug}", "body_tattoo", Paths(it.slug, body_t).app, f"w__{it.slug}"))
+            names_all.append(f"inkflow_{it.slug}")
+
+    for n_ in slots:
+        ui = {t["code"]: f"inkflow_slot{n_}{t['suffix']}" for t in targets}
+        off_name = {t["code"]: f"inkflow_slot{n_}_off{t['suffix']}" for t in targets}
+        s2 = copy.deepcopy(tk_switcher)
+        set_cname(s2, "name", f"inkflow_slot{n_}")
+        s2["index"] = s.slot_index + n_ - 1
+        s2["localizedName"] = f"UI-Customization-inkflow_slot{n_}"
+        set_cname(s2, "uiSlot", f"inkflow_slot{n_}_switcher")
+        s2["editTags"] = list(tags)
+        s2["uiSlots"] = [cname(ui[t["code"]]) for t in targets]
+        s2["options"] = [copy.deepcopy(tk_switcher["options"][0])]
+        s2["options"][0]["names"] = [cname(off_name[t["code"]]) for t in targets]
+        offs = [off(off_name[t["code"]], ui[t["code"]]) for t in targets]
+        infos = []
+        for i, it in enumerate(items, 1):
+            names = []
+            for t in targets:
+                if t in it.targets:
+                    nm = f"inkflow_slot{n_}_{it.slug}{t['suffix']}"
+                    infos.append(info(nm, ui[t["code"]], Paths(it.slug, t).slot_app(n_), f"w__{it.slug}{t['suffix']}"))
+                    names.append(nm)
+                else:
+                    names.append(off_name[t["code"]])
+            s2["options"].append(option(i, f"UI-Customization-inkflow_{it.slug}", names))
+        entries += [s2] + offs + infos
+        names_all += [f"inkflow_slot{n_}"] + [o["name"]["$value"] for o in offs] + [x["name"]["$value"] for x in infos]
+        if followers:
+            # Follower switcher : same link key as the slot's switcher (vanilla `nipples` / `fpp_nipples` share
+            # "nipples type", `fpp_body_tattoo` links to `body_tattoo`), same option indexes, one FPP uiSlot per
+            # companion ; listed in the FPP_Body group only, so the creator never draws the FPP shells.
+            set_cname(s2, "link", f"inkflow_slot{n_}")
+            # The slot's switcher drives the link (vanilla : `body_tattoo` linkController 1, `fpp_body_tattoo` 0).
+            # Measured in game on 2026-11-02 with both at 0 (toolkit template) : the follower stays Off, the FPP
+            # shells are never requested and the TPP arm shells are drawn over the FPP arms (holes).
+            s2["linkController"] = 1
+            fui = {f["code"]: f"inkflow_slot{n_}{f['suffix']}" for f in FPP_TARGETS}
+            foff = {f["code"]: f"inkflow_slot{n_}_off{f['suffix']}" for f in FPP_TARGETS}
+            s3 = copy.deepcopy(tk_switcher)
+            set_cname(s3, "name", f"inkflow_slot{n_}_fpp")
+            set_cname(s3, "link", f"inkflow_slot{n_}")
+            s3["linkController"] = 0
+            s3["index"] = s.slot_index + FPP_INDEX_OFFSET + n_ - 1
+            s3["localizedName"] = f"UI-Customization-inkflow_slot{n_}"
+            set_cname(s3, "uiSlot", f"inkflow_slot{n_}_fpp_switcher")
+            s3["editTags"] = list(tags)
+            s3["uiSlots"] = [cname(fui[f["code"]]) for f in FPP_TARGETS]
+            s3["options"] = [copy.deepcopy(tk_switcher["options"][0])]
+            s3["options"][0]["names"] = [cname(foff[f["code"]]) for f in FPP_TARGETS]
+            foffs = [off(foff[f["code"]], fui[f["code"]]) for f in FPP_TARGETS]
+            finfos = []
+            for i, it in enumerate(items, 1):
+                names = []
+                for f in FPP_TARGETS:
+                    if TARGET_BY_CODE[f["parent"]] in it.targets:
+                        nm = f"inkflow_slot{n_}_{it.slug}{f['suffix']}"
+                        finfos.append(info(nm, fui[f["code"]], Paths(it.slug, f).slot_app(n_), f"w__{it.slug}{f['suffix']}"))
+                        names.append(nm)
+                    else:
+                        names.append(foff[f["code"]])
+                s3["options"].append(option(i, f"UI-Customization-inkflow_{it.slug}", names))
+            entries += [s3] + foffs + finfos
+            names_fpp += [f"inkflow_slot{n_}_fpp"] + [o["name"]["$value"] for o in foffs] + [x["name"]["$value"] for x in finfos]
+
+    root["bodyCustomizationOptions"] = [{"HandleId": str(i), "Data": d} for i, d in enumerate(entries)]
+    for grp in root["bodyGroups"]:
+        fpp_group = followers and grp["name"]["$value"] == "FPP_Body"
+        grp["options"] = [cname(x) for x in (names_fpp if fpp_group else names_all)]
+    return cc
+
+
+
 def build_archive(s, cli, items, active, log, fpp_mask=None):
     """items: list of Item ; active: target code -> (mesh json, morph json) ; fpp_mask: chunk mask of the FPP body shell
     (`fpp_torso_mask`, when `s.fpp`). -> (archive, xl, listing)."""
@@ -741,9 +916,8 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
                     expected.append(pf.slot_app(n_))
         log(f"  [{slug}] \"{it.name}\": " + " ; ".join(parts))
 
-    cc = load(os.path.join(tdir, "your_tattoo_pwa.inkcharcustomization.json"))
-    root = cc["Data"]["RootChunk"]
-    opts = root["bodyCustomizationOptions"]
+    tpl_cc = load(os.path.join(tdir, "your_tattoo_pwa.inkcharcustomization.json"))
+    opts = tpl_cc["Data"]["RootChunk"]["bodyCustomizationOptions"]
     tk_switcher = next(h["Data"] for h in opts if h["Data"]["$type"] == "gameuiSwitcherInfo")
     tk_off = next(h["Data"] for h in opts if h["Data"]["name"]["$value"] == "chest_tattoo_off")
     tk_info = next(h["Data"] for h in opts if h["Data"]["name"]["$value"] == "your_chest_tattoo")
@@ -772,101 +946,22 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
         d["editTags"] = list(tags)
         return d
 
-    entries, names_all, names_fpp, loc_entries = [], [], [], []
+    loc_entries = []
     for it in items:
         loc_entries.append((f"UI-Customization-inkflow_{it.slug}", it.name))
         if s.route1:
             loc_entries.append((f"UI-Customization-inkflow_{it.slug}_v", f"{it.name} (Ink Flow)"))
-    body_t = TARGETS[0]
-
-    with_body = [it for it in items if body_t in it.targets]
-    if s.route1 and with_body:
-        s1 = copy.deepcopy(tk_switcher)
-        set_cname(s1, "name", "None")
-        set_cname(s1, "link", "body_tattoo")
-        s1["index"] = 0
-        s1["localizedName"] = ""
-        set_cname(s1, "uiSlot", "None")
-        s1["uiSlots"] = []
-        s1["switchVisibility"] = 0
-        s1["editTags"] = []
-        s1["options"] = [option(i, f"UI-Customization-inkflow_{it.slug}_v", [f"inkflow_{it.slug}"]) for i, it in enumerate(with_body)]
-        entries.append(s1)
-        for it in with_body:
-            entries.append(info(f"inkflow_{it.slug}", "body_tattoo", Paths(it.slug, body_t).app, f"w__{it.slug}"))
-            names_all.append(f"inkflow_{it.slug}")
-
     for n_ in slots:
-        ui = {t["code"]: f"inkflow_slot{n_}{t['suffix']}" for t in TARGETS}
-        off_name = {t["code"]: f"inkflow_slot{n_}_off{t['suffix']}" for t in TARGETS}
-        s2 = copy.deepcopy(tk_switcher)
-        set_cname(s2, "name", f"inkflow_slot{n_}")
-        s2["index"] = s.slot_index + n_ - 1
-        s2["localizedName"] = f"UI-Customization-inkflow_slot{n_}"
-        set_cname(s2, "uiSlot", f"inkflow_slot{n_}_switcher")
-        s2["editTags"] = list(tags)
-        s2["uiSlots"] = [cname(ui[t["code"]]) for t in TARGETS]
-        s2["options"] = [copy.deepcopy(tk_switcher["options"][0])]
-        s2["options"][0]["names"] = [cname(off_name[t["code"]]) for t in TARGETS]
-        offs = [off(off_name[t["code"]], ui[t["code"]]) for t in TARGETS]
-        infos = []
-        for i, it in enumerate(items, 1):
-            names = []
-            for t in TARGETS:
-                if t in it.targets:
-                    nm = f"inkflow_slot{n_}_{it.slug}{t['suffix']}"
-                    infos.append(info(nm, ui[t["code"]], Paths(it.slug, t).slot_app(n_), f"w__{it.slug}{t['suffix']}"))
-                    names.append(nm)
-                else:
-                    names.append(off_name[t["code"]])
-            s2["options"].append(option(i, f"UI-Customization-inkflow_{it.slug}", names))
-        entries += [s2] + offs + infos
-        names_all += [f"inkflow_slot{n_}"] + [o["name"]["$value"] for o in offs] + [x["name"]["$value"] for x in infos]
         loc_entries.append((f"UI-Customization-inkflow_slot{n_}", s.slot_title.replace("{n}", str(n_))))
-        if s.fpp:
-            # Follower switcher : same link key as the slot's switcher (vanilla `nipples` / `fpp_nipples` share
-            # "nipples type", `fpp_body_tattoo` links to `body_tattoo`), same option indexes, one FPP uiSlot per
-            # companion ; listed in the FPP_Body group only, so the creator never draws the FPP shells.
-            set_cname(s2, "link", f"inkflow_slot{n_}")
-            # The slot's switcher drives the link (vanilla : `body_tattoo` linkController 1, `fpp_body_tattoo` 0).
-            # Measured in game on 2026-11-02 with both at 0 (toolkit template) : the follower stays Off, the FPP
-            # shells are never requested and the TPP arm shells are drawn over the FPP arms (holes).
-            s2["linkController"] = 1
-            fui = {f["code"]: f"inkflow_slot{n_}{f['suffix']}" for f in FPP_TARGETS}
-            foff = {f["code"]: f"inkflow_slot{n_}_off{f['suffix']}" for f in FPP_TARGETS}
-            s3 = copy.deepcopy(tk_switcher)
-            set_cname(s3, "name", f"inkflow_slot{n_}_fpp")
-            set_cname(s3, "link", f"inkflow_slot{n_}")
-            s3["linkController"] = 0
-            s3["index"] = s.slot_index + FPP_INDEX_OFFSET + n_ - 1
-            s3["localizedName"] = f"UI-Customization-inkflow_slot{n_}"
-            set_cname(s3, "uiSlot", f"inkflow_slot{n_}_fpp_switcher")
-            s3["editTags"] = list(tags)
-            s3["uiSlots"] = [cname(fui[f["code"]]) for f in FPP_TARGETS]
-            s3["options"] = [copy.deepcopy(tk_switcher["options"][0])]
-            s3["options"][0]["names"] = [cname(foff[f["code"]]) for f in FPP_TARGETS]
-            foffs = [off(foff[f["code"]], fui[f["code"]]) for f in FPP_TARGETS]
-            finfos = []
-            for i, it in enumerate(items, 1):
-                names = []
-                for f in FPP_TARGETS:
-                    if TARGET_BY_CODE[f["parent"]] in it.targets:
-                        nm = f"inkflow_slot{n_}_{it.slug}{f['suffix']}"
-                        finfos.append(info(nm, fui[f["code"]], Paths(it.slug, f).slot_app(n_), f"w__{it.slug}{f['suffix']}"))
-                        names.append(nm)
-                    else:
-                        names.append(foff[f["code"]])
-                s3["options"].append(option(i, f"UI-Customization-inkflow_{it.slug}", names))
-            entries += [s3] + foffs + finfos
-            names_fpp += [f"inkflow_slot{n_}_fpp"] + [o["name"]["$value"] for o in foffs] + [x["name"]["$value"] for x in finfos]
 
-    root["bodyCustomizationOptions"] = [{"HandleId": str(i), "Data": d} for i, d in enumerate(entries)]
-    for g in root["bodyGroups"]:
-        fpp_group = s.fpp and g["name"]["$value"] == "FPP_Body"
-        g["options"] = [cname(x) for x in (names_fpp if fpp_group else names_all)]
-    inkcc = rf"{P}\inkflow_pwa.inkcharcustomization"
-    save(inkcc, cc)
-    expected.append(inkcc)
+    customizations = []      # (ArchiveXL key, path) : one .inkcharcustomization per gender that has tattoos
+    for gender, key, tag in GENDERS:
+        g_items = [it for it in items if any(t["gender"] == gender for t in it.targets)]
+        if g_items:
+            inkcc = rf"{P}\inkflow_{tag}.inkcharcustomization"
+            save(inkcc, gender_customization(s, tpl_cc, tk_switcher, gender, g_items, slots, tags, option, info, off))
+            expected.append(inkcc)
+            customizations.append((key, inkcc))
 
     loc = load(os.path.join(tdir, "localization.json.json"))
     lentries = loc["Data"]["RootChunk"]["root"]["Data"]["entries"]
@@ -896,7 +991,8 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
     xl = os.path.join(s.out, s.name + ".archive.xl")
     with open(xl, "w", encoding="utf-8", newline="\n") as f:
         f.write("customizations:\n")
-        f.write(f"  female: {inkcc}\n")
+        for key, path in customizations:
+            f.write(f"  {key}: {path}\n")
         f.write("localization:\n  onscreens:\n")
         f.write(f"    en-us: {locp}\n")
     arc = os.path.join(s.out, s.name + ".archive")
@@ -963,7 +1059,7 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     log("3. textures")
     for i, it in enumerate(built):
         step(2 + i, f"Extracting texture {i + 1}/{len(built)}: {it.name}")
-        it.texdir = extract_textures(cli, it.entry.path, it.slug, s.work, log)
+        it.texdir = extract_textures(cli, s.game, it.entry.path, it.slug, s.work, log)
 
     step(2 + len(built), "Building the archive")
     log("4. build")

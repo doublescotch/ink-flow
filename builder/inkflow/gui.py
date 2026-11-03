@@ -355,11 +355,16 @@ class App(tk.Tk):
         if "error" in who:
             self.lbl_body.config(text=f"Body mesh: could not read the game archives ({who['error']})", foreground="#c0392b")
             return
-        arms = who["arm_l"] if who["arm_l"] == who["arm_r"] else f"{who['arm_l']} / {who['arm_r']}"
-        if who["body"] == core.BASE_GAME:
+        lines = []
+        for p, label in (("", "Body mesh"), ("m_", "Male V body mesh")):
+            if who[p + "body"] == core.BASE_GAME:
+                continue
+            arms = who[p + "arm_l"] if who[p + "arm_l"] == who[p + "arm_r"] else f"{who[p + 'arm_l']} / {who[p + 'arm_r']}"
+            lines.append(T["body_line"].format(b=who[p + "body"], a=arms, h=who[p + "head"]).replace("Body mesh", label, 1))
+        if not lines:
             self.lbl_body.config(text=T["body_vanilla"], foreground="#c0392b")
         else:
-            self.lbl_body.config(text=T["body_line"].format(b=who["body"], a=arms, h=who["head"]), foreground="#1a7f37")
+            self.lbl_body.config(text="\n".join(lines), foreground="#1a7f37")
         self.bodies = who
 
     def _update_buttons(self):
