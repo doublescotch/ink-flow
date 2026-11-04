@@ -21,8 +21,18 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   version). Réponse au demandeur : en attendant, l'opacité générale à 1,5 marche, la par-tatouage viendra.
 - **Point de QA annoncé** : une coque à opacité propre rend comme le réglage général à la même valeur (même champ
   `DiffuseAlpha`), jamais vu en jeu ; à regarder au créateur avec deux tatouages à 0,5 et 1,0.
-- **Prochaine séance (inchangée)** : tête vanilla, tête du V masculin, miroir / FPP / photo du V masculin (bloc
-  du 03/11 ci-dessous, points (1) à (3)).
+- **Prochaine séance = support UV** (sa décision du 04/11 ; Fable, mesure et architecture). Cadrage relu, rien
+  mesuré : (a) **moteur** : `fullbody_overlay_d01.xbm` (`KNOWN_OTHER`, « not supported yet ») est UNE texture pour
+  corps + bras, alors que `TARGET_BY_TEX` mappe une texture vers une seule cible : passer à « une texture, plusieurs
+  coques » ; masculin `ma_fullbody_overlay_d01`, tête `wa_head_overlay_d01` (Garden Bloom) ; (b) **coque** : la
+  piste A règle la mise à plat UV par construction (copie du corps UV actif, ETUDE § 8), MAIS le framework UV 3.2.1
+  branche le calque par une chaîne de `.mi` (§ 2) : si le maillage UV a des matériaux externes, `shell()` le refuse
+  aujourd'hui (« external materials ») ; (c) **mélange** : tatouage UV sur corps VTK (Angel) = mises à plat
+  différentes, à refuser proprement ou à convertir (§ 11, question « conversion UV ↔ VTK ») ; (d) **banc** : il faut
+  un corps UV en jeu (Solo 2.0, UV 3.2.1, bras Songbird UV sont dans `3_Bodies\V's Body.zip`). **Premier geste** :
+  dépaqueter UV 3.2.1 + Solo, lire leurs matériaux (locaux / externes) et comparer les UV des corps vanilla / Solo /
+  Angel, avant une ligne de code.
+- Ensuite : tête vanilla, tête du V masculin, miroir / FPP / photo du V masculin (bloc du 03/11 ci-dessous, (1)-(3)).
 
 ## ~~État (2026-11-03, 20 h 30) : 1.1.0 = V masculin (vanilla + Gymfiend) + ré-encodage des mips tronqués, prête~~ dépassé (04/11, 1.2.0)
 
