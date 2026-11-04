@@ -350,3 +350,13 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   au créateur (corps + deux bras, VTK convertis compris).
 - 19 h 44 : sa formule reçue, jeu fermé : `solo_bench.py install`, build Solo complet (348,1 Mo) dans son jeu, canari 2
   dans `backup\2026-11-04_194421`. À lui : QA Solo au créateur puis FPP, miroir, photo, TPP.
+
+## 2026-11-04 (19 h 45 → 20 h 15) — QA Solo : Samurai VTK validé, plantage au miroir ; rapports lus, télémétrie posée (Fable)
+
+- Son QA : Samurai VTK propre partout (créateur, miroir, FPP au miroir) ; FPP hors miroir = ventre nu (masque FPP
+  vanilla, § 21, à corriger) ; plantage en défilant au miroir avant les UV. Sa position : « ça vient de nous ».
+- Rapports : 4 plantages 18 h 13-19 h 50 (gel 120 s ; 2 × `memcpy` de texture `exe+0x196A3CC` source perdue ;
+  `D3D12Core` lit `0x98`). Carrés de 1 980 / 2 204 unités de 16 o dans la pile : aucune texture du build ni de
+  Solo / framework (70 en-têtes exportés, toutes puissances de deux). 24 rapports depuis le 28/10, 20 avant Ink Flow.
+- Poste au repos : VRAM 3,0 / 8 Go, RAM 19,9 / 32 Go. Télémétrie `vram_log.py` posée (1 s) ; test à jouer : même
+  défilé au miroir, puis le même sans `Ink_Flow.archive`. Remèdes mémoire listés, rien codé avant la mesure.

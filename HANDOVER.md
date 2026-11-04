@@ -5,7 +5,39 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 19 h 45) : build Solo complet refait avec le correctif, non-régression 947/947 ; installation et QA Solo à faire, puis Angel
+## État (2026-11-04, 20 h 15) : build Solo installé, Samurai VTK validé ; PLANTAGES = le chantier, télémétrie posée, test à jouer
+
+- **Son QA Solo (19 h 45-19 h 50)** : Samurai VTK = corps + deux manches partout (créateur, miroir, FPP au miroir) ;
+  les VTK défilés au miroir tous bons. **Pas vu** : les UV (plantage avant d'y arriver), FPP ventre, photo, TPP.
+  **FPP hors miroir : ventre sans tatouage** sur Solo : le masque FPP du torse est le masque vanilla (`.app` de Solo
+  illisible au CLI, § 21) ; à corriger (lire les masques de chunks de Solo autrement), après les plantages.
+- **Plantage 19 h 50 en jeu actif**, au miroir en défilant les tatouages : l'hypothèse « jeu en arrière-plan » est
+  morte. Sa position : « ça doit venir de nous, le créateur ne coupait pas comme ça avant ». Quatre plantages de
+  18 h 13 à 19 h 50, tous avec le banc Solo + un build 1.4.0 (le canari de 2 tatouages compris).
+- **Lu dans les rapports** (`%LOCALAPPDATA%\REDEngine\ReportQueue\`, sondes ARP `red4ext\plugins\AppearanceRuntime
+  Plugin\Logs\crash-*.txt`) : 18 h 13 = gel 120 s ; 18 h 34 et 19 h 50 = **même signature**, `memcpy` dans
+  `Cyberpunk2077.exe+0x196A3CC` appelé de `+0x343451`, copie d'une texture dont la source est partie (19 h 50 : dès le
+  premier octet ; 18 h 34 : au-delà d'un tampon de 1,4 Mo) ; 19 h 13 = `D3D12Core.dll+0x52044` lit `0x98` (pointeur
+  nul, déjà vu le 29/10). Dimensions dans la pile : carrés de 1 980 et 2 204 unités de 16 o (62,7 et 77,7 Mo) avec
+  chaîne de mips : **aucune texture du build ni de Solo / framework n'a ces tailles** (46 + 24 en-têtes exportés,
+  toutes en puissances de deux, 8K BC7 pour les bras convertis). Texture non identifiée, dump sans symboles.
+- **Historique** : 24 rapports depuis le 28/10, 20 avant tout Ink Flow (7 « GPU crash » le 28/10, gels, IRF le
+  01/11, Red Profiler à la sortie). Son jeu plante déjà ; ce qui est nouveau = plante en minutes au miroir.
+- **Poste au repos, jeu fermé** (nvidia-smi, 20 h 09) : **VRAM 3,0 Go / 8 pris** (Opera, Claude, VS Code, Edge,
+  Outlook…), **RAM 19,9 Go / 32 pris**, commit 33 Go. Le jeu à 3840 × 1600 a 5 Go de VRAM et 12 Go de RAM.
+  Hypothèse de travail : pression mémoire (VRAM ou RAM) et textures 8K par tatouage porté (corps 8K + deux bras 8K
+  convertis = 3 × 64 Mo BC7 + mips par VTK), le défilé au miroir en charge des dizaines en secondes.
+- **Télémétrie posée** : `scratchpad\vram_log.py` → `vram_2026-11-04.csv` (VRAM, GPU %, jeu, RAM, commit, 1 s,
+  90 min ou fichier `.stop`). **Test à jouer par lui** : même geste (miroir, défilé des tatouages jusqu'aux UV) ;
+  je lis la courbe au plantage. Puis canari discriminant : même geste **sans** `Ink_Flow.archive` (+ `.xl`) dans
+  `archive\pc\mod` (lui, ou formule) : plante → le banc Solo / le jeu ; ne plante pas → nous.
+- **Remèdes mémoire prêts à coder si la courbe le dit** : une seule texture pour les deux bras convertis (moitié
+  basse = G, moitié haute = D, comme les peintres UV : −64 Mo par VTK porté) ; conversion en 4K au lieu de 8K
+  (la bande = 22 % de la largeur) ; textures FPP partagées (déjà). Rien codé avant la mesure.
+- Reste inchangé : Angel après ce banc (`solo_bench.py restore`, formule), QA Angel, statuts entre crochets de
+  `NEXUS.md` / README, exe + zip, upload, tags sur go. Jetables : `scratchpad\tex_pack`, `tex_bodies` (exports DDS).
+
+## ~~État (2026-11-04, 19 h 45) : build Solo complet refait avec le correctif, non-régression 947/947 ; installation et QA Solo à faire, puis Angel~~ dépassé (20 h 15 : installé, Samurai VTK validé, plantages = le chantier)
 
 - **Prêt, pas installé** : `gen\uv104\out_solo_game\Ink_Flow.archive` (348,1 Mo, SHA `6bf974d1…`, `.xl` 194 o), sa
   config + 16 UV, 35 tatouages, 13 bras VTK convertis vers la bande avec le `v` corrigé (Samurai 68 % du bras
