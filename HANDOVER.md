@@ -12,29 +12,31 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-04, 22 h 15) : canari Angel (mêmes 2 tatouages, jeu minimal) posé dans son jeu, verdict attendu
+## État (2026-11-04, 22 h 45) : canari Angel tenu, Solo parqué sur sa décision ; gels = greffon NVIDIA Reflex ; jeu encore minimal
 
-- **Le chantier = les plantages du 04/11** (ETUDE § 25) : signature `memcpy` (`exe+0x196A3CC` ←
-  `+0x343451`, source illisible, `D3D12Core` dans la pile) à 18 h 34, 19 h 50, 20 h 14, 20 h 30 et
-  21 h 57, toutes avec le banc Solo + un build 1.4.0. L'en-tête de texture faux chez Kala est réel
-  et corrigé (`3ff9324`, à garder) mais la passe 2 corrigée a planté pareil : **cause ouverte**.
-- **Posé à 22 h 12** (son `WRITE_UNLOCK.txt` re-enregistré à 22 h 09) : `solo_bench.py restore`
-  (Solo + bras UV retirés, Angel + `.xl` + refits revenus), `canari3.py build` sur Angel (132 s,
-  33,1 Mo, SHA `14f05dc1…`, `gen\uv104\out_canari3`), `canari3.py install` ; canari Solo passe 2
-  dans `backup\2026-11-04_221234`. Jeu **minimal** : Angel (3 fichiers) + framework 3.2.1 + Ink
-  Flow, 420 archives parquées dans `archive\pc\mod__parked_2026-11-04`.
-- **Contenu du canari Angel** : Kala V2 UV = corps seul, bande des bras effacée (réimport, en-tête
-  réécrit), Kala sans encre aux bras (sautés) ; Samurai VTK = corps 8K + bras VTK tels quels.
-  **Aucun bras converti 8K**, contrairement au canari Solo (deux bras convertis importés).
-- **Lecture du verdict** (3 chargements + défilé au miroir, par lui ; télémétrie
-  `vram_2026-11-04_c.csv` en cours, scratchpad de la session) : plante avec la signature `memcpy`
-  ⇒ nous, hors conversion (corps Samurai 8K ou Kala reconstruite : canari Samurai seul, puis Kala
-  seule). Tient ⇒ **Solo ou les bras convertis 8K**, à départager : Solo remis avec Samurai seul et
-  bras convertis en 4K (remède mémoire déjà listé), ou Solo sans aucun tatouage.
-- **Retour à son jeu normal** (sa formule, jeu fermé) : `minimal_bench.py unpark_all`, puis
-  rebuild complet moteur corrigé (≈ 20 min, toutes textures re-extraites, clé `mips2`) + `install`,
-  ou remise à la main du build Angel de `backup\2026-11-04_175841` (conversions retournées, jamais
-  planté).
+- **Plantages `memcpy` (ETUDE § 25)** : 5 sur 5 avec Solo dans le jeu ; le canari Angel (mêmes 2
+  tatouages, aucun bras converti, jeu minimal) a tenu 3 chargements et de longues bascules de slots
+  (sa QA, 22 h 20-22 h 32). Reste indistinct : Solo ou les bras convertis 8K (Solo seulement).
+  **Sa décision (22 h 35) : Solo parqué, on n'y revient pas pour l'instant** ; priorité = corps VTK
+  (Hyst, Angel, Eve, EBB, EBBRB) et tatouages UV sur VTK, déjà vus bons. En-tête Kala : corrigé.
+- **Gels watchdog 120 s (4 sur 4, dumps lus)** : fil principal bloqué dans le greffon **NVIDIA
+  Reflex** (`sl.reflex.dll`, chargé sous `170_E658703.dll`, `+0x3C43D`, chemin de présentation),
+  Reflex pourtant Disabled dans ses réglages ; mémoire plate ; pas Ink Flow (le canari de 33 Mo gèle
+  comme le jeu complet). ReShade, overlay NVIDIA, GPU Tweak III hors pile (GPU Tweak = aucune DLL
+  dans le jeu, effet par le pilote possible, non prouvable). **Test à lui** : GPU Tweak fermé, Alt-Tab
+  3 min ; puis overlay NVIDIA coupé ; puis `sl.reflex.dll` renommé (à sa main). ETUDE § 25, fin.
+- **Son jeu maintenant : minimal** (Angel + refits + framework 3.2.1 + canari Angel 33,1 Mo, SHA
+  `14f05dc1…`, 420 archives parquées). Sauvegardes `backup\` : `_175841` Angel 1.4.0 (conversions
+  retournées, jamais planté), `_205556` Solo complet, `_215048` passe 1, `_221234` passe 2 Solo.
+- **Retour à son jeu normal** (sa formule, jeu fermé) : `minimal_bench.py unpark_all`, puis rebuild
+  complet moteur corrigé sur Angel (≈ 20 min, textures re-extraites, clé `mips2`) + `install`. Puis
+  QA Angel (section Ouvert) et publication 1.4.0 (section Attend).
+- **Réponse à sa question UV (22 h 40)** : un tatouage UV sur corps VTK = le corps marche sans le
+  framework (même mise à plat que vanilla) ; ses bras sont **convertis au build** vers la mise à plat
+  des bras VTK, et cette conversion lit le maillage de bras du framework **présent dans le jeu au
+  moment du build** (`arm_refs`) ; sans lui, bras sautés, raison au journal. L'archive produite est
+  autonome : rien ne pointe vers le framework en jeu.
+- Télémétrie `vram_2026-11-04_c.csv` (scratchpad de la session) tourne jusqu'à 23 h 44.
 - Lancement lent : sans objet (66 s jusqu'au menu, jeu complet comme minimal ; audioware 18 s).
 
 ## Ouvert (non tranché, non mesuré)

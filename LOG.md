@@ -387,3 +387,12 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - 22 h 09-22 h 12 : `solo_bench.py restore` (Angel revenu, Solo parti), `canari3.py build` sur Angel (132 s, 33,1 Mo,
   Kala sans encre aux bras donc aucune conversion, Samurai VTK tel quel), `install` ; jeu minimal gardé. Verdict à lui :
   plante ⇒ nous hors conversion ; tient ⇒ Solo ou les bras convertis 8K (à départager ensuite).
+- 22 h 30 : passation réécrite sur sa remarque (« log d'état ») : 22 blocs État barrés retirés, 796 → 111 lignes ;
+  `cp:HANDOVER.md` § 1 réduit au renvoi. Mémoire : 3e rappel sur le barré dans la passation.
+- 22 h 20-22 h 32, sa QA du canari Angel : 3 chargements + longues bascules de slots, **aucun plantage `memcpy`** ;
+  **sa décision : Solo parqué, priorité aux corps VTK**. 22 h 32 : gel watchdog, jeu en arrière-plan pendant qu'il
+  écrivait, mémoire plate.
+- Dumps des 4 gels relus (`dump_frame.py`, scratchpad) : même fil principal bloqué dans le greffon NVIDIA Reflex
+  (`sl.reflex.dll`, chargé sous `170_E658703.dll`, `+0x3C43D`), Reflex Disabled dans ses réglages ; ReShade, overlay
+  NVIDIA, GPU Tweak (allumé, aucune DLL dans le jeu) hors pile. Première lecture fautive corrigée dans le tour (module 170
+  `nvrtum64.dll` : le « 170_ » est le nom du fichier NGX, pas l'index). ETUDE § 25, fin. Test à lui : GPU Tweak fermé.

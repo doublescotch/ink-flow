@@ -1021,5 +1021,27 @@ Prochain canari : mêmes 2 tatouages sur Angel, jeu minimal.
 **Hypothèse concurrente, renforcée** : Solo OG 2.0 est signalé instable au chargement sur sa page Nexus
 (post du 28/08/2026, « crashes 2/3 du temps au chargement, même sur installation propre ») ; son `.app` est illisible
 au CLI (`castShadows` : fichier d'un ancien WolvenKit). Le canari 3 sur le jeu minimal, Solo présent dans les deux passes,
-le départage. Les gels « watchdog » jeu en arrière-plan restent non attribués (deux sur cinq événements, 6 archives
-ou 426).
+le départage. ~~Les gels « watchdog » jeu en arrière-plan restent non attribués (deux sur cinq événements, 6 archives
+ou 426).~~ Attribués à 22 h 45, ci-dessous.
+
+**Canari Angel (22 h 12 → 22 h 32, sa QA)** : mêmes 2 tatouages rebâtis sur Angel, jeu minimal, aucun bras converti
+(Kala sans encre aux bras, Samurai VTK tel quel) : 3 chargements de sauvegarde et de longues bascules de slots, « plus
+longtemps qu'avec Solo » : **aucun plantage `memcpy`**. La signature `memcpy` n'est apparue qu'avec Solo dans le jeu
+(5 fois sur 5). Reste indistinct : Solo lui-même ou les deux bras convertis 8K (présents seulement sur Solo).
+**Sa décision (22 h 35)** : on arrête de se prendre la tête avec Solo pour l'instant ; les corps qui comptent sont les
+VTK (Hyst, Angel, Eve, EBB, EBBRB), où le support VTK et les tatouages UV sur VTK marchent. Solo = parqué, pas tranché.
+
+**Les gels watchdog, attribués (4 sur 4, dumps lus sans symboles)** : 18 h 13, 20 h 40, 21 h 47 et 22 h 32 ont le même
+fil principal bloqué dans le même module au même décalage : `Cyberpunk2077.exe+0x26DD2B` ← **module de 389 120 o à
+`+0x3C43D`** ← `exe+0x26DE10`. Ce module est l'un des cinq greffons NVIDIA Streamline que le jeu charge sous le nom
+`170_E658703.dll` (cache NGX `C:\ProgramData\NVIDIA\NGX\models\`) ; par la taille d'image, c'est **`sl.reflex.dll`**
+(388 736 o sur disque, 2.14.1), le greffon **NVIDIA Reflex**, appelé dans le chemin de présentation (`dxgi.dll` dans la
+pile de 20 h 40) ; les fils secondaires attendent dans `sl.pcl.dll` (360 448 o, `+0x3ACC0`), la mesure de latence. Reflex
+est pourtant **Disabled** dans ses réglages (`UserSettings.json`) : le greffon reste chargé et appelé. Swapchain créé avec
+`FRAME_LATENCY_WAITABLE_OBJECT` (drapeaux `0x840`, journal ReShade). Hors de cause par la pile : ReShade (chargé,
+preset vide, pas dans la pile), overlay NVIDIA (`nvrtum64.dll` « NVIDIA Game Proxy », `nvspcap64.dll`, chargés, pas dans
+la pile), GPU Tweak III (aucune DLL ASUS dans le jeu ; peut agir par le pilote, NVAPI partagé, non prouvable au dump).
+Mémoire plate au gel de 22 h 32 (VRAM 6,5 / 8 Go, jeu 9 Go, GPU 5 %, 120 s stables) : pas une pression mémoire.
+Deux gels sur quatre en arrière-plan (18 h 13 ?, 22 h 32), un au chargement au premier plan (21 h 47). Non attribuable à
+Ink Flow : le canari Angel (33 Mo) gèle comme le jeu complet. **Test à sa main** : GPU Tweak III fermé, même geste
+(Alt-Tab, attendre 3 min) ; puis overlay NVIDIA coupé ; puis greffon Reflex retiré (`sl.reflex.dll` renommé, à sa main).
