@@ -1045,3 +1045,15 @@ Mémoire plate au gel de 22 h 32 (VRAM 6,5 / 8 Go, jeu 9 Go, GPU 5 %, 120 s stab
 Deux gels sur quatre en arrière-plan (18 h 13 ?, 22 h 32), un au chargement au premier plan (21 h 47). Non attribuable à
 Ink Flow : le canari Angel (33 Mo) gèle comme le jeu complet. **Test à sa main** : GPU Tweak III fermé, même geste
 (Alt-Tab, attendre 3 min) ; puis overlay NVIDIA coupé ; puis greffon Reflex retiré (`sl.reflex.dll` renommé, à sa main).
+
+**Chronologie des rapports (30 rapports depuis le 28/10, tous relus au même critère)** : la trame Reflex n'apparaît
+dans **aucun** gel antérieur (30/10 14 h 41, 31/10 13 h 45, 03/11 22 h 25 : fil principal ailleurs, `user32` pour le
+03/11) et dans les **4 gels du 04/11**. Le 28/10 (avant tout Ink Flow) : 7 « Gpu Crash for unknown reasons » en une
+heure = une instabilité GPU / pilote préexistante. ReShade 6.8.0 chargé dès le 03/11 22 h 25 (deux `dxgi.dll` dans la
+liste) : pas le changement du jour. Dossier `bin\x64` recréé le 04/11 à 0 h 57 (ReShade) et 1 h 02 (`version.dll` CET,
+`winmm.dll` RED4ext) ; `UserSettings.json` et `ReShade.ini` modifiés à 19 h 07 (après le 1er gel). GPU Tweak III :
+installé deux fois (« GPU Tweak III Install » 1.9.4.3 du 24/08/2026, « GPUTweak III Mobile » 1.9.4.3 du 28/04/2025,
+le second = compagnon de l'appli mobile), son souvenir d'un réglage d'overlay touché par erreur et d'un jeu instable
+depuis ; **rien dans le dépôt** (`cp:LOG.md`, `ETAT_2.5.md`, `cp:HANDOVER.md` ne le citent pas ; le LOG du 01/11 note
+seulement « pas de RTSS ni Afterburner »). Sans overclock, GPU Tweak ne fait que mesurer : désinstallable sans perte
+(courbe de ventilation = VBIOS). Décision à lui.

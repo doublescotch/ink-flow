@@ -396,3 +396,6 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   (`sl.reflex.dll`, chargé sous `170_E658703.dll`, `+0x3C43D`), Reflex Disabled dans ses réglages ; ReShade, overlay
   NVIDIA, GPU Tweak (allumé, aucune DLL dans le jeu) hors pile. Première lecture fautive corrigée dans le tour (module 170
   `nvrtum64.dll` : le « 170_ » est le nom du fichier NGX, pas l'index). ETUDE § 25, fin. Test à lui : GPU Tweak fermé.
+- 30 rapports depuis le 28/10 relus : trame Reflex dans aucun gel d'avant le 04/11, 7 « GPU crash » le 28/10 avant
+  Ink Flow ; ReShade chargé dès le 03/11 ; GPU Tweak absent du dépôt (sa question) ; deux GPU Tweak installés (appli +
+  compagnon mobile), désinstallables sans overclock. Décision à lui.
