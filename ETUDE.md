@@ -792,5 +792,9 @@ import sans `--keep` donne du TrueColor à 1 mip, 268 Mo de VRAM en 8K, écarté
 lit `<slug>_uv_pwa_noarms.xbm` et garde tous ses chunks (plus de `strip_mask`) ; la coque FPP du corps idem.
 Déclenché seulement quand le corps actif a des chunks dans la bande (Angel) : sur Solo / vanilla, texture d'origine
 et rien de ré-encodé. Build réel : 716 s, **314 Mo**, 832 fichiers, SHA `cec96ac7…`, installé 14 h 23 (ancien dans
-`backup\2026-11-04_142352`). **QA attendue de lui** : chevilles peintes sous un full body UV, pieds nus ; FrecklesV
-visible à 2,0.
+`backup\2026-11-04_142352`). **QA de Hell_Kaiser (14 h 35) : chevilles validées**, le full body UV couvre la même
+chose que la version VTK de Samurai, les deux visuellement identiques. **FrecklesV toujours invisible à 2,0** :
+mesuré ensuite sur la version VTK du même auteur (`002_Tattoos_VTK_GetTenSO_FrecklesV`, 4 textures 8K) : même pâleur
+(alpha max 154, moyenne 40, 1,5 % des texels). Ce tatouage est peint pour le calque natif (`SecondaryAlbedo`, fondu
+dans le teint) ; à travers le décal, même doublé, rien. **Limite du principe des coques, pour les deux familles** :
+les calques très pâles (taches de rousseur, grains de beauté) ne passent pas ; à dire sur la page Nexus.

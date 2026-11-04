@@ -138,6 +138,8 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 - UV Framework tattoos (1.3.0): built and checked out of game on Solo 2.0 + UV Framework 3.2.1 + Solo arms UV, and
   on Angel (body only); not seen in game yet. Songbird 2.0 body: the shell hides its cyber chunks, not seen in game.
   No icons in the creator (text options).
+- Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal,
+  even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as overlay archives.
 - Male V (vanilla body, Gymfiend VTK 1.4.3 + MV Head VTK) seen in the character creator only so far; mirror, first
   person and photo mode not seen in game yet. Head tattoos on a vanilla head (female or male): see Troubleshooting.
 - Face sculpting changed at the ripperdoc after a build has not been QA'd yet (the head shell follows the face morphs

@@ -12,7 +12,9 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   l'attendu** (VTK inchangés, UV = corps seul, bras et pieds nus, V masculin bon). Deux retours traités sur ses go :
   chevilles (chunk 6 masqué coupait l'anneau) → **bande u < 0,22 effacée dans une copie de la texture** pour la
   coque de corps, plus de masque (ETUDE § 21, fin : `--keep` garde le BC7, 8K ≈ 55 s, cache) ; FrecklesV invisible
-  (texture pâle) → opacité 2,0 dans le catalogue de test. **À regarder** : chevilles peintes, pieds nus ; rousseur.
+  (texture pâle) → opacité 2,0 dans le catalogue de test. **QA 14 h 35 : chevilles validées** (= Samurai VTK) ;
+  **FrecklesV invisible même à 2,0, et sa version VTK est aussi pâle** : limite des coques (calques très pâles),
+  gravée dans README, `NEXUS.md` (Known limits) et ETUDE § 21.
 - Correctif au passage : la tête masculine Leon Face nomme sa peau `01_ca_pale_d01` → règle « peau » en préfixe,
   garde-fou « jamais de coque vide ». Commité (`a4e2cae`) ; la bande effacée reste **à commiter** avec ce bloc.
 - Sa question (retour Nexus « partie métallique absente ») : le décal vanilla ne porte que la diffuse ; piste = le
