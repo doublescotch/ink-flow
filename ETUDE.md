@@ -859,3 +859,33 @@ bras, reprise par le compagnon FPP. Tailles : vers vanilla = source / 2 (4K pour
 
 **Posé dans son jeu le 04/11 à 16 h 17** (son déverrouillage, jeu fermé), SHA-256 `6d7043aa…`, ancien dans
 `backup\2026-11-04_161654`. QA en jeu attendue.
+
+## 23. QA 1.4.0 : Samurai UV contre Samurai VTK sur Angel, l'épaule nue est la peinture (2026-11-04, 17 h → 18 h, Fable, « Reprends », hors jeu)
+
+**Retour de Hell_Kaiser** (captures) : sur son Angel + framework, Samurai VTK = épaule propre, gros amas
+d'hexagones sur le deltoïde ; Samurai UV (Unknown) = deltoïde gauche nu, « gros patch manquant », droit plus
+léger. Sa question : la bonne approche ? Convertir les UV en VTK plutôt que les afficher sur un corps VTK ?
+
+**Mesures** (`tools\qa_2026-11-04\seam*.py`, images dans `canari\seam_2026-11-04\`, rien posé) :
+
+| Hypothèse | Mesure | Verdict |
+|---|---|---|
+| La couture corps / bras d'Angel n'est pas celle du vanilla (deltoïde changé de maillage) | `seam.py` : bras d'Angel et vanilla z 1,018-1,521 des deux côtés, 0 triangle de bras vanilla plus près du corps d'Angel que de son bras, 0 à plus de 1 cm d'une surface d'Angel ; sens inverse idem | **morte** |
+| La conversion perd le haut du bras | `seam2.py` : les 10 cm du haut du bras du framework (z > 1,42, u 0,08-0,19, v 0,38-0,49) sont **sans encre dans les 5 tatouages UV**, Kala Sleeve 1 (manche complète) compris ; `samurai_vtk_left_layout.png` : la texture de bras du Samurai **VTK** y est vide aussi ; `samurai_conv_left_layout.png` : la texture convertie porte l'encre à la même hauteur que la VTK (main en plus) | **morte** : ce haut de bras est caché sous l'épaule du corps sur tout corps, personne ne le peint |
+| La mise à plat du corps d'Angel diffère du vanilla à l'épaule | `seam4.py` (18 944 sommets au-dessus de z 1,20) : z 1,44-1,56 à 1,0-1,6 texel du vanilla (8K) ; z 1,28-1,44 médiane 25-120 texels (forme d'Angel, poitrine et haut du torse), mais l'encre Samurai UV est présente à 98,9 % au point d'Angel comme au point vanilla | **sans effet** |
+| C'est la peinture | `seam5.py` : rendu logiciel des épaules (points sur les triangles de peau, texture, tampon de profondeur, 1,5 mm/px) : **A** VTK sur Angel, **B** UV sur Angel par la chaîne (corps bande effacée + bras convertis), **C** UV sur le framework (corps vanilla + bande sur les bras du framework) | **B = C** : deltoïde nu et petits hexagones plus bas sur les deux, A seul porte le gros amas |
+
+**Conclusion** : la chaîne 1.4.0 rend le Samurai UV **tel que son peintre l'a composé** pour le framework ; le
+« patch manquant » est l'écart entre deux peintures du même nom (§ 22 l'avait vu : corrélation d'alpha 0,13-0,38,
+mains inversées). Sur un vrai corps framework il verrait la même épaule nue. **Rien à coder.** Pour la QA : un
+tatouage UV se juge contre son rendu C (`canari\seam_2026-11-04\C_*`), jamais contre son homonyme VTK.
+
+**Réponse à la question d'approche** : « convertir les UV en VTK » est déjà ce que fait la chaîne : la partie corps
+d'une texture UV est dans la mise à plat vanilla (§ 21, même dépliage), seule la bande diffère, et les bras sont
+convertis vers la mise à plat du bras actif (§ 22, les deux sens). La coque est le véhicule des deux familles ; une
+« archive VTK » produite à la place serait le même calcul sans l'adaptation au corps (bande effacée d'Angel, masques,
+FPP). Bras UV sur corps VTK (son pack) : les deux familles de tatouages s'y affichent, le framework posé sert de carte.
+
+**Acquis durable** : le haut du bras (z > 1,42, ≈ 10 cm) est une languette cachée sous l'épaule du corps, vide dans
+toutes les textures de bras lues (VTK et UV) ; le deltoïde visible appartient au **corps**. `seam5.py` = banc « peinture
+ou chaîne ? » réutilisable pour tout écart UV / VTK signalé.

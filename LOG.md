@@ -289,3 +289,14 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   de la table (autre géométrie) ; la coque reste une copie des bras Solo.
 - Bancs factices Solo, Angel, Angel + framework ; non-régression 947 / 947 ; build sur son jeu réel
   1 115 s ; posé 16 h 17 (son déverrouillage, jeu fermé). Commit `5799364`. QA en jeu attendue.
+
+## 2026-11-04 (17 h → 18 h) — QA 1.4.0 : Samurai UV contre VTK, l'épaule nue est la peinture (Fable, « Reprends »)
+
+- Son retour (captures) : Samurai UV sur Angel = deltoïde gauche nu, le VTK y a un gros amas. Sa
+  question : bonne approche ? convertir les UV en VTK plutôt ? Confusion annoncée.
+- Hors jeu, rien posé : couture corps / bras d'Angel = vanilla (`seam.py`) ; haut du bras (z > 1,42)
+  vide dans les 5 textures UV ET dans la texture de bras VTK (`seam2.py`) ; mise à plat du corps
+  d'Angel à l'épaule = vanilla à 1-2 texels (`seam4.py`) ; rendu logiciel A / B / C (`seam5.py`) :
+  UV sur Angel = UV sur framework. Verdict : deux peintures, rien à coder. ETUDE § 23, images dans
+  `canari\seam_2026-11-04\`. Un script d'essai (recouvrement, trop lent) supprimé dans la séance.
+- Réponse sur l'approche gravée (§ 23) : la chaîne est déjà la conversion vers le corps actif.

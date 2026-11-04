@@ -5,7 +5,23 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 16 h 25) : 1.4.0 = conversion des bras UV ↔ vanilla, posée dans son jeu, QA à lui
+## État (2026-11-04, 18 h) : QA 1.4.0 en cours ; Samurai UV « épaule nue » = la peinture, pas la chaîne (ETUDE § 23)
+
+- **Son premier retour de QA** (Samurai UV contre Samurai VTK sur Angel : deltoïde gauche nu) **tranché
+  hors jeu** : rendu logiciel des épaules (`tools\qa_2026-11-04\seam5.py`, images
+  `canari\seam_2026-11-04\`) : UV sur Angel par la chaîne = UV sur le vrai framework ; seul le VTK
+  porte le gros amas. Deux peintures du même nom. Couture corps / bras d'Angel = vanilla (mesuré),
+  conversion des bras intacte. **Rien à coder, 1.4.0 inchangée dans son jeu** (`6d7043aa…`).
+- **Approche confirmée** : la chaîne EST la conversion vers la mise à plat du corps actif (corps déjà
+  en vanilla, bras convertis) ; une « archive VTK » à la place = même calcul sans l'adaptation au
+  corps. Réponse écrite en ETUDE § 23.
+- **QA restante, à lui**, en jugeant chaque UV contre son rendu framework (`C_*`) et non contre un
+  homonyme VTK : Kala Sleeve 1, Bedellia (raccord à l'épaule : le haut du bras est caché sous le
+  corps sur tout corps, l'encre démarre sous le deltoïde chez tous les peintres UV), FPP, V masculin.
+- Puis le bloc ci-dessous reste valable : README, `NEXUS.md` (changelog 1.4.0 + ligne « same name,
+  two paintings » posée dans Known limits), exe + zip 1.4.0, upload, tags sur go.
+
+## ~~État (2026-11-04, 16 h 25) : 1.4.0 = conversion des bras UV ↔ vanilla, posée dans son jeu, QA à lui~~ complété (18 h : premier retour de QA tranché, bloc du dessus)
 
 - **Mesuré puis codé sur son go « dans les deux sens »** (ETUDE § 22) : un bras d'une famille sur des
   bras de l'autre est **converti** (texture rééchantillonnée vers la mise à plat active) au lieu
