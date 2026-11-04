@@ -18,7 +18,9 @@ UV = r"C:\__DEV\cyberpunk\ink_flow\dl\uv"
 SRC = r"C:\__DEV\cyberpunk\ink_flow\src"
 BODY = {"solo": [UV + r"\011_UV_Framework_Texture_3.2.1.archive", UV + r"\006_Solo_OG_2.0.archive", UV + r"\006_Solo_OG_2.0.xl",
                  UV + r"\005_Solo_OG_2.0_Arms_UV.archive"],
-        "angel": [SRC + r"\006_Angel_Body.archive", SRC + r"\006_Angel_Body.xl"]}
+        "angel": [SRC + r"\006_Angel_Body.archive", SRC + r"\006_Angel_Body.xl"],
+        # 1.4.0 (ETUDE § 22) : Angel with the UV Framework loaded behind it, as in his game : UV arms converted
+        "angelfw": [SRC + r"\006_Angel_Body.archive", SRC + r"\006_Angel_Body.xl", UV + r"\011_UV_Framework_Texture_3.2.1.archive"]}
 
 game = os.path.join(ROOT, "game_" + mode)
 if not os.path.isdir(game):

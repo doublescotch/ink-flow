@@ -34,7 +34,7 @@ import sys
 import time
 from dataclasses import dataclass, field
 
-from . import rdar
+from . import armconv, rdar
 
 P = "inkflow"                                   # path prefix of everything the mod ships
 MESH_APPEARANCE = "01_ca_pale"
@@ -120,7 +120,8 @@ TARGET_BY_TEX = {t["tex"]: t for t in TARGETS}
 # UV bodies (Solo, Songbird, the framework's own copies of the vanilla meshes) keep the vanilla body layout, so a
 # shell copied from them reads a UV texture correctly by construction. VTK / vanilla arms keep the vanilla ARM layout
 # in a texture of their own : a UV texture on them, or a VTK arm texture on UV arms, would be garbage, so
-# `mesh_layout` tells the two apart and `run_build` skips the mismatched arm targets. Angel unwraps its feet and
+# `mesh_layout` tells the two apart and `run_build` converts the mismatched arm textures to the active arm layout
+# (`armconv`, ETUDE § 22 : needs the UV Framework's arm mesh in the game), or skips them. Angel unwraps its feet and
 # ankles into the strip (never painted by VTK textures) : under a UV texture those chunks are masked (`strip_mask`).
 UV_BODY_TEX = {"f": r"base\4k\common\overlays\fullbody_overlay_d01.xbm", "m": r"base\4k\common\overlays\ma_fullbody_overlay_d01.xbm"}
 UV_HEAD_TEX = {"f": r"base\4k\common\overlays\wa_head_overlay_d01.xbm", "m": r"base\4k\common\overlays\ma_head_overlay_d01.xbm"}
@@ -749,6 +750,117 @@ def blanked_texture(cli, s, slug, src_xbm, log):
     return dst
 
 
+def extract_ref(cli, archive, work, sub, mesh_path):
+    """One mesh of one given archive (not necessarily the winner) serialised to JSON, cached in work\\mesh\\<sub>."""
+    d = os.path.join(work, "mesh", sub)
+    marker = os.path.join(d, ".src")
+    key = stamp(archive) + "|" + archive.lower() + "|" + mesh_path
+    mesh_json = os.path.join(d, mesh_path + ".json")
+    if cached(marker, key) and os.path.isfile(mesh_json):
+        return mesh_json
+    shutil.rmtree(d, ignore_errors=True)
+    os.makedirs(d)
+    cli.run("unbundle", archive, "-o", d, "-r", re.escape("\\" + os.path.basename(mesh_path)) + "$", what=f"unbundle {sub}")
+    cli.run("convert", "serialize", os.path.join(d, os.path.dirname(mesh_path)), what=f"serialize {sub}")
+    if not os.path.isfile(mesh_json):
+        raise BuildError("expected file missing after extraction: " + mesh_json)
+    with open(marker, "w") as f:
+        f.write(key)
+    return mesh_json
+
+
+def arm_refs(cli, game, work, t, log):
+    """The two meshes an arm conversion pairs (ETUDE § 22) : the vanilla arm (base game) and a copy of it unwrapped
+    into the UV strip, i.e. the first mod archive in load order shipping this arm with the strip layout AND the vanilla
+    geometry (the UV Framework ; Solo's or Songbird's own UV arms are other shapes and are passed over).
+    -> (vanilla json, strip json, owner label) ; BuildError with the reason when there is none."""
+    base = os.path.join(game, BASEGAME)
+    if not os.path.isfile(base):
+        raise BuildError("base game archive not found: " + base)
+    van = extract_ref(cli, base, work, f"ref_{t['code']}_vanilla", t["mesh"])
+    tried = []
+    for n, (label, full) in enumerate(owners_of(game, t["mesh"])):
+        js = extract_ref(cli, full, work, f"ref_{t['code']}_{n}", t["mesh"])
+        if mesh_layout(js)["arms"] != "strip":
+            continue
+        try:
+            armconv.pairing(van, js, SKIN_MAT.match, MESH_APPEARANCE)
+        except armconv.ConvError as e:
+            tried.append(f"{short_label(label)}: {e}")
+            continue
+        log(f"  {t['label']:6s}: UV strip arm for conversions: {short_label(label)}")
+        return van, js, short_label(label)
+    raise BuildError("no UV Framework arm mesh in the game" + (f" ({'; '.join(tried)})" if tried else ""))
+
+
+def converted_textures(cli, s, it, refs, log):
+    """Arm textures of one tattoo converted to the active arm layout (`it.conv` : code -> "full" | "strip"), cached in
+    work\\tex\\<slug>\\conv\\<code>\\. The source DDS is exported once per source texture. Fills `it.conv_tex`
+    (code -> local .xbm) ; an arm with no ink after conversion is dropped (-> list of the dropped codes)."""
+    dropped = []
+    by_src = {}
+    for code in it.conv:
+        by_src.setdefault(os.path.join(it.texdir, it.entry.tex[code]), []).append(code)
+    for src_xbm, codes in by_src.items():
+        todo = []
+        for code in codes:
+            d = os.path.join(s.work, "tex", it.slug, "conv", code)
+            ra, rb = refs[code][0], refs[code][1]
+            key = "|".join([stamp(src_xbm), stamp(ra), stamp(rb), it.conv[code], "v1"])
+            marker = os.path.join(d, ".src")
+            if cached(marker, key + "|empty"):
+                dropped.append(code)
+            elif cached(marker, key) and os.path.isfile(os.path.join(d, code + ".xbm")):
+                it.conv_tex[code] = os.path.join(d, code + ".xbm")
+            else:
+                todo.append((code, d, marker, key))
+        if not todo:
+            continue
+        tmp = os.path.join(s.work, "tex", it.slug, "conv.tmp")
+        shutil.rmtree(tmp, ignore_errors=True)
+        os.makedirs(tmp)
+        try:
+            cli.run("export", src_xbm, "-o", tmp, "-gp", s.game, what="export texture (arm conversion)")
+            dds = next((os.path.join(r, f) for r, _, fs in os.walk(tmp) for f in fs if f.lower().endswith(".dds")), None)
+            if not dds:
+                raise BuildError("texture not exported for the arm conversion: " + src_xbm)
+            for code, d, marker, key in todo:
+                t0 = time.time()
+                t = TARGET_BY_CODE[code]
+                out = os.path.join(tmp, "import")
+                shutil.rmtree(out, ignore_errors=True)
+                os.makedirs(out)
+                try:
+                    r = armconv.convert(it.conv[code], refs[code][0], refs[code][1], dds, os.path.join(out, code + ".dds"),
+                                        SKIN_MAT.match, MESH_APPEARANCE)
+                except armconv.ConvError as e:
+                    raise BuildError(f"[{it.slug}] {t['label']}: arm conversion failed: {e}") from e
+                shutil.rmtree(d, ignore_errors=True)
+                os.makedirs(d)
+                what = "to the vanilla arm layout" if it.conv[code] == "full" else "into the UV strip"
+                if r["ink"] == 0:
+                    with open(marker, "w") as f:
+                        f.write(key + "|empty")
+                    dropped.append(code)
+                    log(f"  [{it.slug}] {t['label']}: no ink on this arm, left out")
+                    continue
+                # `--keep` on a copy of the source keeps its texture setup (BC7 for the UV packs) at the new size
+                shutil.copyfile(src_xbm, os.path.join(out, code + ".xbm"))
+                cli.run("import", os.path.join(out, code + ".dds"), "-o", out, "--keep", what=f"import converted {code}")
+                new = os.path.join(out, code + ".xbm")
+                if not os.path.isfile(new):
+                    raise BuildError("converted texture not produced: " + new)
+                shutil.move(new, os.path.join(d, code + ".xbm"))
+                with open(marker, "w") as f:
+                    f.write(key)
+                it.conv_tex[code] = os.path.join(d, code + ".xbm")
+                log(f"  [{it.slug}] {t['label']}: converted {what} ({r['size']}x{r['size']}, {r['ink']:.0%} of the arm "
+                    f"inked, {r['share']:.1%} paired, {time.time() - t0:.0f} s)")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+    return dropped
+
+
 def shell_mask(layouts, code, family, is_body, base=TEMPLATE_MASK):
     """`chunkMask` (string) of a shell component, or None when the template's own mask already fits."""
     lay = layouts.get(code)
@@ -962,6 +1074,9 @@ class Item:
     skipped: list = field(default_factory=list)   # "Arm L: UV tattoo on VTK / vanilla arms"…, for the log
     no_fpp: set = field(default_factory=set)      # FPP companion codes skipped (first-person arm layout mismatch)
     blanked: set = field(default_factory=set)     # body codes whose shell reads the UV texture with the arm strip cleared
+    conv: dict = field(default_factory=dict)      # arm code -> "full" | "strip" : texture converted to that arm layout
+    conv_tex: dict = field(default_factory=dict)  # arm code -> converted local .xbm (`converted_textures`)
+    texpath: dict = field(default_factory=dict)   # target code -> texture path in the archive (set by `build_archive`)
 
     def __post_init__(self):
         if self.targets is None:
@@ -1112,12 +1227,17 @@ def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
             src_tex = os.path.join(it.texdir, it.entry.tex.get(t["code"], t["tex"]))
             if not os.path.isfile(src_tex):
                 raise BuildError("texture missing after extraction: " + src_tex)
-            if fam == "uv" and t["code"] in BODY_CODES and layouts.get(t["code"], {}).get("strip_chunks"):
+            if t["code"] in it.conv:
+                # Arm texture converted to the active arm layout (ETUDE § 22) : one texture per arm
+                src_tex = it.conv_tex[t["code"]]
+                pp.tex = rf"{P}\tattoos\{slug}\{slug}{t['suffix']}_conv.xbm"
+            elif fam == "uv" and t["code"] in BODY_CODES and layouts.get(t["code"], {}).get("strip_chunks"):
                 # The body unwraps skin into the arm strip (Angel's feet) : the body shell reads a copy of the UV
                 # texture with the strip cleared, and keeps every chunk (ETUDE § 21, QA of the ankles).
                 src_tex = blanked_texture(cli, s, slug, src_tex, log)
                 pp.tex = pp.tex[:-4] + "_noarms.xbm"
                 it.blanked.add(t["code"])
+            it.texpath[t["code"]] = pp.tex
             dst = os.path.join(src, pp.tex)
             if not os.path.isfile(dst):            # a UV texture is shared by the body and arm shells : one copy
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
@@ -1137,7 +1257,8 @@ def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
             for n_ in slots:
                 save(pp.slot_app(n_), make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_slot{n_}_{slug}{t['suffix']}", f"w__{slug}{t['suffix']}", mask))
                 expected.append(pp.slot_app(n_))
-            parts.append(f"{t['code']}{' (UV)' if fam == 'uv' else ''}{' strip cleared' if t['code'] in it.blanked else ''} {nv} vertices / {nm} mat."
+            parts.append(f"{t['code']}{' (UV)' if fam == 'uv' else ''}{' strip cleared' if t['code'] in it.blanked else ''}"
+                         f"{' converted to ' + it.conv[t['code']] if t['code'] in it.conv else ''} {nv} vertices / {nm} mat."
                          + (f" / {nt} morphs" if nt else "") + (f" / mask {mask}" if mask else ""))
         if s.fpp:
             for t in it.targets:
@@ -1146,8 +1267,8 @@ def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
                     continue
                 fam = it.family(t)
                 pt, pf = Paths(slug, t, fam), Paths(slug, f)
+                pt.tex = it.texpath[t["code"]]      # the parent's texture : as copied, cleared strip or converted arm
                 if t["code"] in it.blanked:
-                    pt.tex = pt.tex[:-4] + "_noarms.xbm"
                     fam = "vtk"                 # the strip is cleared in the texture : no strip mask needed
                 if f["mesh"]:
                     mesh, nm, nv = shell(meshes[f["code"]], pt.tex, alpha, f"[{slug}] {f['code']}")
@@ -1305,14 +1426,27 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
             f"(u max {lay['u_max']:.2f}, {lay['strip_share']:.0%} of the skin in the UV strip)"
             + (f", non-skin chunks hidden in the shells: {', '.join(lay['hidden'])}" if lay["hidden"] else "")
             + (f", chunks in the strip (hidden under a UV texture): {lay['strip_chunks']}" if lay["strip_chunks"] and c in BODY_CODES else ""))
+    refs = {}                                   # arm code -> (vanilla json, strip json, owner) | BuildError (reason)
     for it in built:
         keep = []
         for t in it.targets:
             fam = it.family(t)
-            if t["code"] in ARM_CODES and layouts[t["code"]]["arms"] != ("strip" if fam == "uv" else "full"):
-                it.skipped.append(f"{t['label']}: {'UV' if fam == 'uv' else 'VTK'} tattoo on "
-                                  f"{'UV Framework' if fam != 'uv' else 'vanilla / VTK'} arms (other layout)")
-                continue
+            arms = layouts.get(t["code"], {}).get("arms")
+            if t["code"] in ARM_CODES and arms != ("strip" if fam == "uv" else "full"):
+                # The other arm layout : the texture is converted to the active one (ETUDE § 22) when the game has
+                # the UV Framework's arm mesh to pair with the vanilla arm, else the arm is skipped.
+                if t["code"] not in refs:
+                    try:
+                        refs[t["code"]] = arm_refs(cli, s.game, s.work, t, log)
+                    except BuildError as e:
+                        refs[t["code"]] = e
+                        log(f"  ! {t['label']}: no arm conversion possible: {e}")
+                if isinstance(refs[t["code"]], BuildError):
+                    it.skipped.append(f"{t['label']}: {'UV' if fam == 'uv' else 'VTK'} tattoo on "
+                                      f"{'UV Framework' if fam != 'uv' else 'vanilla / VTK'} arms (other layout, "
+                                      f"{refs[t['code']]})")
+                    continue
+                it.conv[t["code"]] = arms
             keep.append(t)
         it.targets = keep
         if it.skipped:
@@ -1332,7 +1466,8 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
                     + (f", non-skin chunks hidden: {', '.join(lay['hidden'])}" if lay["hidden"] else ""))
                 for it in built:
                     fam = it.entry.family.get(f["parent"], "vtk")
-                    if TARGET_BY_CODE[f["parent"]] in it.targets and lay["arms"] != ("strip" if fam == "uv" else "full"):
+                    want = it.conv.get(f["parent"]) or ("strip" if fam == "uv" else "full")   # a converted arm : its new layout
+                    if TARGET_BY_CODE[f["parent"]] in it.targets and lay["arms"] != want:
                         it.no_fpp.add(f["code"])
                         log(f"  ! [{it.slug}] {f['label']} skipped: first-person arms have the other layout")
         if TARGET_BY_CODE["body"] in needed:
@@ -1342,6 +1477,18 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     for i, it in enumerate(built):
         step(2 + i, f"Extracting texture {i + 1}/{len(built)}: {it.name}")
         it.texdir = extract_textures(cli, s.game, it.entry.path, it.slug, s.work, log)
+        if it.conv:
+            step(2 + i, f"Converting arm textures {i + 1}/{len(built)}: {it.name}")
+            for code in converted_textures(cli, s, it, refs, log):
+                it.skipped.append(f"{TARGET_BY_CODE[code]['label']}: no ink on this arm")
+                it.targets = [t for t in it.targets if t["code"] != code]
+                del it.conv[code]
+    empty = [it for it in built if not it.targets]
+    for it in empty:
+        log(f"  ! [{it.slug}] nothing left to build, tattoo left out")
+    built = [it for it in built if it.targets]
+    if not built:
+        raise BuildError("no tattoo left to build: every target was skipped")
 
     step(2 + len(built), "Building the archive")
     log("4. build")

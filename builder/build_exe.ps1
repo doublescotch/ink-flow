@@ -9,6 +9,8 @@ if (-not (Test-Path (Join-Path $venv "Scripts\pyinstaller.exe"))) {
     python -m venv $venv
     & (Join-Path $venv "Scripts\python.exe") -m pip install --quiet --disable-pip-version-check pyinstaller
 }
+# numpy : the arm conversion (inkflow\armconv.py, 1.4.0) ; pinned so a rebuild bundles the same code
+& (Join-Path $venv "Scripts\python.exe") -m pip install --quiet --disable-pip-version-check "numpy==2.4.6"
 $version = (Select-String -Path (Join-Path $builder "inkflow\__init__.py") -Pattern 'VERSION = "([^"]+)"').Matches[0].Groups[1].Value
 & (Join-Path $venv "Scripts\pyinstaller.exe") --noconfirm --clean --onefile --windowed `
     --name "InkFlowBuilder" `

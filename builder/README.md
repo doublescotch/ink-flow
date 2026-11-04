@@ -16,11 +16,14 @@ Nothing made by other authors is redistributed.
 - Female or male V (since 1.1.0), VTK or UV Framework tattoos (UV since 1.3.0). A tattoo archive is female or male
   by the files it replaces (`v_overlay` / `femme_arm_*` / `pwa` head, or `v_masc_overlay` / `masculine_arm_*` /
   `pma` head; UV: `fullbody_overlay_d01` / `wa_head_overlay_d01`, or the `ma_` forms); one build carries both.
-- **Arms follow the family of your arm meshes.** A UV tattoo is one texture for body + both arms, drawn for UV
-  Framework arms (Solo, Songbird…); a VTK tattoo keeps the arms in textures of their own, drawn for vanilla / VTK
-  arms (Angel, vanilla…). The body part of either family fits every body (same layout), so the builder always
-  builds it; the arm part is built only when your arms are of the same family, and the log says when it skips
-  them ("skipped: Arm L: UV tattoo on vanilla / VTK arms"). An arms-only UV tattoo on VTK arms builds nothing.
+- **Arms of either family on arms of either family (1.4.0).** A UV tattoo is one texture for body + both arms,
+  drawn for UV Framework arms (Solo, Songbird…); a VTK tattoo keeps the arms in textures of their own, drawn for
+  vanilla / VTK arms (Angel, vanilla…). The body part of either family fits every body (same layout). When the arm
+  part was drawn for the other family than your arms, the builder **converts** it to your arms' layout (same arm,
+  two unwrappings: each texel is moved to the same spot of the arm), once per tattoo and cached: about 20 s per arm
+  for a UV tattoo, up to a minute for a VTK arm going onto UV arms (an 8K texture: the UV arm area is small). This
+  needs **UV Framework Texture** in your game (its arm meshes are the map between the two layouts, even when your
+  body mod overrides them); without it the arms are skipped as in 1.3.0, and `build.log` says why.
 
 ## How to use
 
@@ -123,10 +126,11 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 - **Head tattoo not visible on a vanilla head** (no VTK head mod): known, under investigation. Head tattoos are drawn
   for VTK HD heads and work with one (seen with VTK Vanilla HD Head).
 - **A UV tattoo shows on the body but not on the arms** (or a VTK arm tattoo is missing on a UV body). Your arm
-  meshes are of the other family: UV Framework arms are unwrapped into the body texture, vanilla / VTK arms into
-  their own, and a texture of one family on arms of the other would be garbage, so the builder skips those arms
-  (`build.log`, block 2: "layout", and "skipped" under the tattoo). Use arm meshes of the tattoo's family, or a
-  tattoo of your arms' family.
+  meshes are of the other family and the builder could not convert the texture: `build.log`, block 2, says "no arm
+  conversion possible" with the reason, usually that UV Framework Texture is not in the game (its arm meshes are
+  needed for the conversion). Install it (it changes nothing on a VTK body: the body mod still wins the meshes) and
+  rebuild. A UV tattoo with no ink in the arm part (body-only packs such as Kala Japanese V2) has no arm shells
+  either: "no ink on this arm" in the log.
 - **A UV tattoo on Angel: the feet stay bare.** Angel unwraps its feet into the part of the texture a UV tattoo uses
   for the arms, so the body shell reads a copy of the texture with that part cleared (made once per texture with
   WolvenKit, 10 to 60 s, cached; the texture format is kept) rather than paint arm ink on the feet. VTK textures
@@ -135,9 +139,12 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 
 ## Known limits of this first cut
 
-- UV Framework tattoos (1.3.0): built and checked out of game on Solo 2.0 + UV Framework 3.2.1 + Solo arms UV, and
-  on Angel (body only); not seen in game yet. Songbird 2.0 body: the shell hides its cyber chunks, not seen in game.
-  No icons in the creator (text options).
+- UV Framework tattoos (1.3.0): seen in game on Angel (body, feet and ankles). On Solo 2.0 + UV Framework 3.2.1 +
+  Solo arms UV: built and checked out of game, not seen in game yet. Songbird 2.0 body: the shell hides its cyber
+  chunks, not seen in game. No icons in the creator (text options).
+- Arm conversion (1.4.0): UV arms onto Angel's arms [IN-GAME STATUS: to write after the QA]; VTK arms onto UV arms
+  (Solo): built and checked out of game only. The converted texture is a resampling: a little softer than the
+  original, and a seam of the unwrapping may show a hairline where the two layouts cut the arm differently.
 - Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal,
   even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as overlay archives.
 - Male V (vanilla body, Gymfiend VTK 1.4.3 + MV Head VTK) seen in the character creator only so far; mirror, first

@@ -798,3 +798,64 @@ mesuré ensuite sur la version VTK du même auteur (`002_Tattoos_VTK_GetTenSO_Fr
 (alpha max 154, moyenne 40, 1,5 % des texels). Ce tatouage est peint pour le calque natif (`SecondaryAlbedo`, fondu
 dans le teint) ; à travers le décal, même doublé, rien. **Limite du principe des coques, pour les deux familles** :
 les calques très pâles (taches de rousseur, grains de beauté) ne passent pas ; à dire sur la page Nexus.
+
+## 22. Conversion des bras UV → mise à plat vanilla : mesure (2026-11-04, 15 h → 15 h 20, Opus, « Reprends », hors jeu)
+
+**Demande** (Hell_Kaiser, chantier choisi) : § 21 point 4. Un tatouage UV sur des bras VTK (Angel) n'a
+aujourd'hui que son corps ; ses bras sont sautés. Rien posé, rien dans `core.py`. Scripts :
+`tools\qa_2026-11-04\uvconv.py` (transfert), `uvdev.py` (écart d'Angel), `ddswrite.py` (DDS
+RGBA8 + mips) ; sorties dans `C:\__DEV\cyberpunk\ink_flow\dl\uv\conv\`.
+
+**Méthode** : bras vanilla (jeu de base, `gen\vanilla_test`) et bras du framework UV 3.2.1 = même
+géométrie, deux mises à plat. Chaque triangle de peau vanilla est apparié au triangle framework au
+même endroit en 3D (centroïdes, k = 4, coins appariés) ; chaque texel de la mise à plat vanilla
+reçoit l'UV framework au même point barycentrique ; la texture UV du corps est lue là (bilinéaire) ;
+dilatation de 8 texels autour des îlots.
+
+| Mesure | Résultat |
+|---|---|
+| Appariement bras G / D | 9 122 / 9 123 et 8 907 / 8 908 triangles ; écart des coins médian 14 / 35 µm, p99 20 / 50 µm |
+| Couverture | 51 % de la texture 4K ; UV framework lues u 0,03-0,22, v < 0,5 (G) et > 0,5 (D) : ETUDE § 21 |
+| Temps (4K, source 8K) | appariement 0,5 s, trame 3 s, lecture 4 s ; DDS 3 s ; import 13 s |
+| Bras d'Angel contre vanilla (`uvdev.py`, 29 935 sommets) | surface à 0,16 mm (p99 1 mm) ; **écart UV médian 0,7 texel, p90 1,9, p99 4,1 en 4K** ; 0,11 % au-delà de 8 texels (z 1,07-1,16) |
+| Encodage | DDS 4K importé `--keep` sur une copie de la texture UV **8K** : sort en 4K, BC7 (`TCM_QualityColor`), 13 mips, 1,7 Mo, 13 s ; même résultat sur un gabarit de bras VTK |
+| Aller-retour | réexport PNG contre la conversion : écart moyen 0,1 / 255, pas de retournement (v inversé : 25 à 58) |
+
+**Rendu** : Bedellia bras G converti = horloge et texte « you were crying… » lisibles, sans
+déformation ; bras D = texte en miroir dans la texture, comme les textures VTK de bras droit.
+**Comparaison avec les versions VTK : sans valeur de preuve** : les auteurs ont repeint (Bedellia
+UV met l'horloge à gauche, sa version VTK à droite ; Samurai VTK a une autre composition et laisse
+la main vierge) : corrélation d'alpha 0,13 à 0,38.
+
+**Conséquence** : une seule conversion par tatouage et par bras, vers la mise à plat vanilla, vaut
+pour tout bras VTK (Angel à 1 texel près) et pour les bras FPP (même mise à plat, § 21). Il faut
+dans le jeu du joueur le bras du framework (archive UV, masqué par Angel mais lisible) et le bras
+vanilla (jeu de base) ; sans framework, les bras restent sautés comme en 1.3.0. Coût au premier
+build : ≈ 20 s par bras (trame en cache par paire de maillages), ≈ 40 s par tatouage UV à manches ;
+les bras sans encre dans la bande ne sont pas convertis (Kala V2 : aucun).
+
+**Sens inverse mesuré** (bras VTK sur bras UV) : bras Solo UV contre framework : médiane 0,1 texel ; 7 % au-delà de
+8 texels, à l'épaule (z 1,15-1,52), surface à 1,15 mm : c'est la forme de Solo, pas un autre dépliage. Une texture
+convertie dans la bande se pose donc sur Solo comme un tatouage UV natif.
+
+### Livré (2026-11-04, 15 h 30 → 16 h 20, Opus, go de Hell_Kaiser « dans les deux sens ») : moteur 1.4.0
+
+`inkflow\armconv.py` (numpy seul : appariement par centroïdes en blocs, trame, dilatation 8 texels, lecture
+bilinéaire, DDS lu en memmap et écrit par niveaux avec mips pondérées par l'alpha). `core.py` : `arm_refs()`
+(bras vanilla du jeu de base + premier bras en bande **qui s'apparie** au vanilla, donc le framework ; Solo et
+Songbird passés), `converted_textures()` (export une fois par texture source, conversion, import `--keep` sur
+une copie de la source, cache `work\tex\<slug>\conv\<code>\`, bras sans encre retiré) ; un bras de l'autre
+famille est converti au lieu d'être sauté, sinon sauté avec la raison ; texture `<slug>_arm_*_conv.xbm` par
+bras, reprise par le compagnon FPP. Tailles : vers vanilla = source / 2 (4K pour une 8K) ; vers la bande =
+2 × source plafonné à 8K (la zone de bras de la bande est petite). `build_exe.ps1` : numpy 2.4.6 épinglé.
+
+| Banc (hors jeu) | Résultat |
+|---|---|
+| Solo (framework + Solo + bras Solo UV) | Samurai VTK : bras G / D convertis dans la bande (8K, 38-39 s), coques = bras Solo (20 102 sommets) |
+| Angel seul | bras UV sautés, raison « no UV Framework arm mesh in the game » (repli 1.3.0) |
+| Angel + framework | 4 UV à manches : bras convertis (2K / 4K, 13-28 s par bras) ; Kala V2 : « no ink on this arm » ; 617 s à froid |
+| Non-régression (arbre vanilla, 35 tatouages, 9 slots) | **947 / 947 fichiers identiques** à la 1.3.0, `.xl` identique |
+| Son jeu réel (lecture) | 14 UV à bras convertis (dont Pirate Vince en V masculin), 391 Mo, 1 358 fichiers, 1 115 s ; texture relue dans l'archive : 4K, intacte |
+
+**Posé dans son jeu le 04/11 à 16 h 17** (son déverrouillage, jeu fermé), SHA-256 `6d7043aa…`, ancien dans
+`backup\2026-11-04_161654`. QA en jeu attendue.
