@@ -23,8 +23,8 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   Reflex** (`sl.reflex.dll`, chargé sous `170_E658703.dll`, `+0x3C43D`, chemin de présentation),
   Reflex pourtant Disabled dans ses réglages ; mémoire plate ; pas Ink Flow (le canari de 33 Mo gèle
   comme le jeu complet). ReShade, overlay NVIDIA, GPU Tweak III hors pile (GPU Tweak = aucune DLL
-  dans le jeu, effet par le pilote possible, non prouvable). **Test à lui** : GPU Tweak fermé, Alt-Tab
-  3 min ; puis overlay NVIDIA coupé ; puis `sl.reflex.dll` renommé (à sa main). ETUDE § 25, fin.
+  dans le jeu, effet par le pilote possible, non prouvable). **Test à lui** : GPU Tweak fermé,
+  Alt-Tab 3 min ; puis overlay NVIDIA coupé ; puis `sl.reflex.dll` renommé (à sa main). ETUDE § 25.
 - **Son jeu maintenant : minimal** (Angel + refits + framework 3.2.1 + canari Angel 33,1 Mo, SHA
   `14f05dc1…`, 420 archives parquées). Sauvegardes `backup\` : `_175841` Angel 1.4.0 (conversions
   retournées, jamais planté), `_205556` Solo complet, `_215048` passe 1, `_221234` passe 2 Solo.
@@ -32,7 +32,8 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   complet moteur corrigé sur Angel (≈ 20 min, textures re-extraites, clé `mips2`) + `install`. Puis
   QA Angel (section Ouvert) et publication 1.4.0 (section Attend).
 - **Réponse à sa question UV (22 h 40)** : un tatouage UV sur corps VTK = le corps marche sans le
-  framework (même mise à plat que vanilla) ; ses bras sont **convertis au build** vers la mise à plat
+  framework (même mise à plat que vanilla) ; ses bras sont **convertis au build** vers la mise à
+  plat
   des bras VTK, et cette conversion lit le maillage de bras du framework **présent dans le jeu au
   moment du build** (`arm_refs`) ; sans lui, bras sautés, raison au journal. L'archive produite est
   autonome : rien ne pointe vers le framework en jeu.
@@ -88,7 +89,7 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
 - Slots = réglage du **builder**, 1 à 9, défaut 2, index 1041-1049 ; rien dans Mod Settings (§ 11).
 - Rien dans le sélecteur vanilla ; miroir ouvert (`HairDresser`, v0.3b) ; noms ≤ 20 caractères.
 - Tête = même recette que le corps (copie du maillage actif + morphtarget), aucun masque (§ 12).
-- Bras convertis **dans les deux sens** (UV ↔ vanilla), framework UV requis sinon repli 1.3.0 (§ 22) ;
+- Bras convertis **dans les deux sens** (UV ↔ vanilla), framework requis sinon repli 1.3.0 (§ 22) ;
   image WolvenKit lue avec **v = 1 − y/h** (§ 24) ; en-têtes contrôlés et textures reconstruites en
   BC7 `--keep` (§ 25).
 - Un banc ou un canari = seulement les tatouages de la question, jamais sa liste entière (04/11).
