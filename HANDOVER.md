@@ -5,7 +5,36 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 20 h 15) : build Solo installé, Samurai VTK validé ; PLANTAGES = le chantier, télémétrie posée, test à jouer
+## État (2026-11-04, 21 h 55) : cause des plantages trouvée (en-têtes de texture faux chez Kala), correctif commité ; canari 3 passe 2 dans son jeu minimal, verdict attendu
+
+- **Cause mesurée** (ETUDE § 25) : trois textures de Kala (`Kala Japanese V2` VTK, UV, With Sleeves) déclarent
+  « 1 mip, 1 398 128 o » sur un tampon de 13 mips (22 369 648 o) ; le moteur copie le mip 4096 hors d'un tampon de
+  1,4 Mo = les trois rapports `memcpy` (18 h 34, 20 h 14, 20 h 30, dépassement de 1,44 Mo). Angel ne plantait pas :
+  sa copie « bande effacée » réécrivait l'en-tête. Le pack masculin Kala V2 (§ 19) a le même en-tête faux.
+- **Correctif commité** (`3ff9324`) : `core.texture_headers` + `core.normalize_textures` (sérialisation, en-tête contre
+  tampon, chaîne tronquée ⇒ export + chaîne complète + import `--keep` = BC7 conservé, 22 Mo VRAM au lieu de 85).
+  Preuve hors jeu : 4 archives (`test_normalize.py`), non-régression 944 / 947 = les 3 textures de Kala, `.xl` idem.
+  Au passage : lignes du tableau Tk à hauteur de police (post Nexus, écran à 150 %).
+- **Son jeu maintenant** : jeu MINIMAL (`minimal_bench.py park_all` : 420 archives dans `archive\pc\mod__parked_2026-11-04`,
+  gardés Solo + bras UV + framework + Ink Flow) + **canari 3 passe 2** (`canari3.py`, Kala V2 UV + Samurai VTK, moteur
+  corrigé, 31,9 Mo, installé 21 h 50). VM et Opera coupés par lui. Sauvegardes : `backup\2026-11-04_205556` = build Solo
+  complet de 19 h 44 (non corrigé), `_215048` = passe 1.
+- **Passe 1 (non corrigé) jouée par lui** : 3 chargements, dizaines de bascules au miroir ; gel au 3e chargement après un
+  clic de plus, **watchdog 120 s**, pas la signature `memcpy`. Les 3 gels du 04/11 (18 h 13, 20 h 40, 21 h 47) ont le
+  même fil principal bloqué (`exe+0x26DD2B` → DLL anonymisée `170_E658703.dll` → `exe+0x26DE10`, pile avec `dxgi.dll` à
+  20 h 40 : un crochet sur Present, gel côté GPU / présentation) ; le gel du 03/11 22 h 25 est ailleurs. Non attribué :
+  ReShade (`d3d12on7`, `ReShade.ini`), overlays, pilote ; un mauvais envoi de texture au GPU reste possible.
+- **Verdict attendu de la passe 2** (mêmes gestes, plus longtemps) : tient ⇒ en-tête ; gèle ⇒ Solo ou le crochet
+  Present, canari suivant = même jeu minimal sans ReShade / overlay, puis sans Solo (Angel). Sa remarque : les corps
+  purement UV ne sont plus d'actualité (Solo, Songbird) ; la priorité = UV sur VTK (Angel, EBB, vanilla), déjà vu bon.
+- Solo signalé instable au chargement sur sa page Nexus (post du 28/08/2026) : hypothèse concurrente, ETUDE § 25.
+- **Retour à son jeu normal** (sa formule sur `archive\pc`, jeu fermé) : `minimal_bench.py unpark_all`, puis
+  `solo_bench.py restore` (Angel), puis rebuild complet avec le moteur corrigé (toutes les textures re-extraites une
+  fois, clé `mips2`, ≈ 20 min) et `install`. Ensuite QA Angel, statuts de `NEXUS.md` / README, exe + zip, upload, tags.
+- Télémétrie : `scratchpad\vram_log.py` → `vram_2026-11-04.csv`, `_b.csv`. Jetables : `gen\uv104\work_canari3`,
+  `out_canari3*`, `scratchpad\tex_*`, `reimport_probe`, `test_normalize_work`.
+
+## ~~État (2026-11-04, 20 h 15) : build Solo installé, Samurai VTK validé ; PLANTAGES = le chantier, télémétrie posée, test à jouer~~ dépassé (21 h 55 : cause trouvée, correctif commité, canari 3 en cours)
 
 - **Son QA Solo (19 h 45-19 h 50)** : Samurai VTK = corps + deux manches partout (créateur, miroir, FPP au miroir) ;
   les VTK défilés au miroir tous bons. **Pas vu** : les UV (plantage avant d'y arriver), FPP ventre, photo, TPP.

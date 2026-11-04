@@ -360,3 +360,17 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   Solo / framework (70 en-têtes exportés, toutes puissances de deux). 24 rapports depuis le 28/10, 20 avant Ink Flow.
 - Poste au repos : VRAM 3,0 / 8 Go, RAM 19,9 / 32 Go. Télémétrie `vram_log.py` posée (1 s) ; test à jouer : même
   défilé au miroir, puis le même sans `Ink_Flow.archive`. Remèdes mémoire listés, rien codé avant la mesure.
+
+## 2026-11-04 (20 h 15 → 21 h 55) — Plantages : en-têtes de texture faux chez Kala, correctif, canari 3 (Fable)
+
+- Télémétrie : VRAM 7,35 / 8 Go et RAM 29 / 32 Go au plantage de 20 h 14 (défilé au miroir, +1 Go en 75 s) ; VM et
+  Opera coupés + 420 archives parquées (`minimal_bench.py`) : défilé OK, mais chargement de sauvegarde planté à
+  5,5 Go VRAM avec la même signature `memcpy`. Sa position : « ça vient de nos dernières modifs ».
+- 70 en-têtes de textures exportés (build + Solo + framework) : trois textures de Kala (V2 VTK, V2 UV, V2 With Sleeves)
+  déclarent 1 mip / 1 398 128 o sur un tampon de 22 369 648 o = le dépassement de 1,44 Mo des rapports. Angel réparait
+  par accident (bande effacée = réimport). Le pack masculin Kala V2 (§ 19) a le même en-tête. ETUDE § 25.
+- Correctif `core.normalize_textures` (sérialisation + reconstruction `--keep`, BC7 conservé), validé hors jeu sur
+  4 archives, non-régression 944 / 947 (les 3 Kala), commit `3ff9324`. GUI : hauteur des lignes à la police (post Nexus).
+- Canari 3 (Kala V2 UV + Samurai VTK, jeu minimal) : passe 1 non corrigée → gel watchdog au 3e chargement (pas la
+  signature `memcpy`) ; les 3 gels du jour ont le même fil principal (crochet Present, DLL anonymisée). Passe 2
+  corrigée installée 21 h 50, verdict attendu. Post Nexus Solo : instable au chargement (hypothèse concurrente).
