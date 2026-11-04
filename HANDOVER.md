@@ -24,9 +24,9 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   Reflex pourtant Disabled dans ses réglages ; mémoire plate ; pas Ink Flow (le canari de 33 Mo gèle
   comme le jeu complet). **Trame nouvelle du 04/11** : absente des 3 gels antérieurs ; 7 « GPU
   crash » le 28/10 avant Ink Flow. ReShade (chargé depuis le 03/11), overlay NVIDIA (compteur FPS
-  actif), GPU Tweak III (allumé, deux entrées installées, aucune DLL dans le jeu) hors pile. **Test
-  à lui** : GPU Tweak désinstallé (sans overclock, rien à perdre), Alt-Tab 3 min ; puis compteur FPS
-  coupé ; puis `sl.reflex.dll` renommé (à sa main). ETUDE § 25, fin.
+  actif) hors pile. ~~GPU Tweak III~~ **éliminé (23 h 02 : désinstallé, redémarré, 5e gel identique)**.
+  **Test à lui** : compteur FPS NVIDIA coupé, Alt-Tab 3 min ; puis `sl.reflex.dll` renommé dans
+  `bin\x64` (à sa main, jeu fermé). ETUDE § 25, fin.
 - **Son jeu maintenant : minimal** (Angel + refits + framework 3.2.1 + canari Angel 33,1 Mo, SHA
   `14f05dc1…`, 420 archives parquées). Sauvegardes `backup\` : `_175841` Angel 1.4.0 (conversions
   retournées, jamais planté), `_205556` Solo complet, `_215048` passe 1, `_221234` passe 2 Solo.

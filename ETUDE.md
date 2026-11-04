@@ -1057,3 +1057,8 @@ le second = compagnon de l'appli mobile), son souvenir d'un réglage d'overlay t
 depuis ; **rien dans le dépôt** (`cp:LOG.md`, `ETAT_2.5.md`, `cp:HANDOVER.md` ne le citent pas ; le LOG du 01/11 note
 seulement « pas de RTSS ni Afterburner »). Sans overclock, GPU Tweak ne fait que mesurer : désinstallable sans perte
 (courbe de ventilation = VBIOS). Décision à lui.
+
+**Test 1 joué (23 h 02)** : GPU Tweak désinstallé, poste redémarré, jeu lancé, créateur de personnage, Alt-Tab un moment :
+**gel, même pile** (`sl.reflex.dll+0x3C43D`, fils secondaires dans `sl.pcl.dll+0x3ACC0`, rapport `230232`). **GPU Tweak
+éliminé** (absent des processus et de la liste des modules). Compteur FPS NVIDIA encore actif pendant ce test. Reste :
+test 2 = compteur FPS NVIDIA coupé (overlay de l'application NVIDIA) ; test 3 = `sl.reflex.dll` renommé dans `bin\x64`.
