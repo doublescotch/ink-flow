@@ -22,10 +22,10 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
 - **Gels watchdog 120 s (4 sur 4, dumps lus)** : fil principal bloqué dans le greffon **NVIDIA
   Reflex** (`sl.reflex.dll`, chargé sous `170_E658703.dll`, `+0x3C43D`, chemin de présentation),
   Reflex pourtant Disabled dans ses réglages ; mémoire plate ; pas Ink Flow (le canari de 33 Mo gèle
-  comme le jeu complet). **Trame nouvelle du 04/11** : absente des 3 gels antérieurs ; 7 « GPU crash »
-  le 28/10 avant Ink Flow. ReShade (chargé depuis le 03/11), overlay NVIDIA (compteur FPS actif),
-  GPU Tweak III (allumé, deux entrées installées, aucune DLL dans le jeu) hors pile. **Test à lui** :
-  GPU Tweak désinstallé (sans overclock, rien à perdre), Alt-Tab 3 min ; puis compteur FPS NVIDIA
+  comme le jeu complet). **Trame nouvelle du 04/11** : absente des 3 gels antérieurs ; 7 « GPU
+  crash » le 28/10 avant Ink Flow. ReShade (chargé depuis le 03/11), overlay NVIDIA (compteur FPS
+  actif), GPU Tweak III (allumé, deux entrées installées, aucune DLL dans le jeu) hors pile. **Test
+  à lui** : GPU Tweak désinstallé (sans overclock, rien à perdre), Alt-Tab 3 min ; puis compteur FPS
   coupé ; puis `sl.reflex.dll` renommé (à sa main). ETUDE § 25, fin.
 - **Son jeu maintenant : minimal** (Angel + refits + framework 3.2.1 + canari Angel 33,1 Mo, SHA
   `14f05dc1…`, 420 archives parquées). Sauvegardes `backup\` : `_175841` Angel 1.4.0 (conversions
