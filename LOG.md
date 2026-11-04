@@ -255,3 +255,16 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - Preuves : arbres factices `gen\uv104\` Solo (194 s, 116 fichiers) et Angel (70), contrôlés par
   `uv_check.py` ; non-régression 380/488 identiques, 108 `.app` de bras gauche = masque du port de
   lien seul, `.xl` identique. Exe non rebâti ; banc en jeu à lui (passation). Commits poussés.
+
+## 2026-11-04 (13 h 50 → 14 h 30) — Banc sur SON Angel : validé ; chevilles par bande effacée ; rousseur à 2,0
+
+- Sa consigne : tester d'abord sur Angel. `game_build.py` : sa config + les 16 UV du zip, build sur son jeu en
+  lecture, installé jeu fermé. Premier build : tête masculine Leon Face (`01_ca_pale_d01`) non reconnue comme
+  peau → coque vide ; règle en préfixe + garde-fou, rebâti, installé (331 Mo, `dfe0d567…`).
+- Son QA : tout à l'attendu (VTK comme avant, UV = corps propre, bras et pieds nus, masculin bon). Deux points :
+  arrêt du tatouage un peu haut sur la cheville (chunk 6 masqué) ; FrecklesV invisible (texture pâle, mesurée).
+  Ses go : bande effacée dans une copie de la texture (`blank_uv_strip`, `--keep` garde le BC7, 8K ≈ 55 s) ;
+  opacité 2,0 pour FrecklesV. Rebâti (716 s, 314 Mo, `cec96ac7…`), installé 14 h 23. QA attendue.
+- Sa question « couche métallique » (retour Nexus sur un retexture David) : le décal vanilla n'a que la diffuse ;
+  piste = le décal à `RoughnessTexture` / `MetalnessTexture` vu dans le corps Songbird (ETUDE § 21), chantier à part.
+- Steam 14 h 05 : 63 Ko téléchargés, manifest verrouillé intact, aucun fichier du jeu modifié (vérifié).

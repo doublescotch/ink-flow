@@ -5,7 +5,23 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 15 h) : support UV codé et prouvé hors jeu (1.3.0), banc en jeu à lui ; exe non rebâti
+## État (2026-11-04, 14 h 30) : UV 1.3.0 validé sur son Angel ; bande effacée + rousseur 2,0 installées, QA attendue
+
+- **Banc fait sur SON Angel** (sa consigne : Angel d'abord) : `game_build.py` (sa config + 16 UV du zip) installé
+  14 h 23 (314 Mo, `cec96ac7…`, ancien dans `backup\2026-11-04_142352`). Son QA du premier build : **tout à
+  l'attendu** (VTK inchangés, UV = corps seul, bras et pieds nus, V masculin bon). Deux retours traités sur ses go :
+  chevilles (chunk 6 masqué coupait l'anneau) → **bande u < 0,22 effacée dans une copie de la texture** pour la
+  coque de corps, plus de masque (ETUDE § 21, fin : `--keep` garde le BC7, 8K ≈ 55 s, cache) ; FrecklesV invisible
+  (texture pâle) → opacité 2,0 dans le catalogue de test. **À regarder** : chevilles peintes, pieds nus ; rousseur.
+- Correctif au passage : la tête masculine Leon Face nomme sa peau `01_ca_pale_d01` → règle « peau » en préfixe,
+  garde-fou « jamais de coque vide ». Commité (`a4e2cae`) ; la bande effacée reste **à commiter** avec ce bloc.
+- Sa question (retour Nexus « partie métallique absente ») : le décal vanilla ne porte que la diffuse ; piste = le
+  décal à rugosité / métal / normale du corps Songbird, chantier à part à mesurer.
+- Catalogue de test = copie (`gen\uv104\catalogue_game_copy.json`) : son catalogue réel n'a pas les 16 UV ni le 2,0.
+- Reste : exe + zip 1.3.0 (`build_exe.ps1`), `NEXUS.md` « seen in game » après son QA final, capture, upload, tag ;
+  régression à rejouer après la bande effacée (sans objet sur vanilla : aucune bande ; à confirmer 488/488 + 108).
+
+## ~~État (2026-11-04, 15 h) : support UV codé et prouvé hors jeu (1.3.0), banc en jeu à lui ; exe non rebâti~~ dépassé (14 h 30 : banc fait)
 
 - **Moteur 1.3.0 livré et commité** (ETUDE § 21, « Livré ») : une texture UV → corps + bras G + bras
   D (+ FPP), tête UV = tête ; mise à plat des bras lue dans le JSON du maillage actif, cibles bras

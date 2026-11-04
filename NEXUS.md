@@ -84,7 +84,7 @@ Ink Flow ships [b]no tattoo[/b]. It ships a small Windows builder: you drop your
 
 [size=5][b]Arms and families (1.3.0)[/b][/size]
 
-VTK and UV tattoos share one body layout: the body part of a tattoo of either family fits every body, vanilla, VTK or UV, and the builder always builds it. The arms differ: UV Framework arms are unwrapped into the left strip of the body texture (a UV tattoo is one file for body + arms), vanilla and VTK arms into textures of their own (a VTK tattoo ships separate arm files). A texture of one family on arms of the other would be garbage, so the builder reads the layout of the arm meshes your game loads and builds the arm shells only for tattoos of the same family; the others get the body part and a "skipped" line in build.log. An arms-only UV tattoo (a sleeve) on VTK arms therefore builds nothing. Angel unwraps its feet into that strip: under a UV tattoo the feet are hidden in the shell rather than painted with arm ink (VTK textures never paint there).
+VTK and UV tattoos share one body layout: the body part of a tattoo of either family fits every body, vanilla, VTK or UV, and the builder always builds it. The arms differ: UV Framework arms are unwrapped into the left strip of the body texture (a UV tattoo is one file for body + arms), vanilla and VTK arms into textures of their own (a VTK tattoo ships separate arm files). A texture of one family on arms of the other would be garbage, so the builder reads the layout of the arm meshes your game loads and builds the arm shells only for tattoos of the same family; the others get the body part and a "skipped" line in build.log. An arms-only UV tattoo (a sleeve) on VTK arms therefore builds nothing. Angel unwraps its feet into that strip: under a UV tattoo the body shell reads a copy of the texture with the strip cleared (made once per texture, cached), so the feet stay bare instead of showing arm ink (VTK textures never paint there).
 
 [size=5][b]How to use[/b][/size]
 
@@ -145,7 +145,7 @@ thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCX
 ```
 1.3.0
 - UV Framework tattoos (Solo-type bodies) are built, no longer "ignored": a UV tattoo is one texture for body + both arms (plus a head file for some), and it becomes body + arm L + arm R shells. The arm shells are built only when the arm meshes your game loads are UV Framework arms; on vanilla / VTK arms (Angel…) the body part is built and build.log says the arms were skipped (the two arm layouts differ; a conversion may come later). The head overlay of a UV pack is built like a VTK head tattoo.
-- Angel + UV tattoo: the feet are hidden in that shell (Angel unwraps them into the part of the texture a UV tattoo uses for the arms).
+- Angel + UV tattoo: the body shell reads a copy of the texture with the arm part cleared, so the feet stay bare (Angel unwraps them into the part of the texture a UV tattoo uses for the arms). One WolvenKit pass per texture the first time (10 to 60 s), cached afterwards.
 - Tattoo shells no longer cover non-skin chunks of your meshes (the personal link port on the left forearm, Songbird's cyber plates): a tattoo is skin only. Rebuild and install.
 - Per-tattoo opacity accepts 0.1 to 2.0 like the Default opacity (1.2.0 refused above 1.0 in the column).
 - The texture cache is rebuilt once (new file list).

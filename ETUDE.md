@@ -759,4 +759,38 @@ families », corps UV à confirmer en jeu avant l'upload).
 | **Non-régression** (`regress_female.py`, HEAD 1.2.0 contre arbre de travail, arbre vanilla factice, ses 19 tatouages, 9 slots) | 488 fichiers des deux côtés, `.xl` identique, **380 identiques, 108 différents = exactement les `*_slot<n>_arm_l.app` et `*_slot<n>_fpp_arm_l.app`** (6 tatouages de bras G × 9 slots × 2), et dans chacun le seul changement est `chunkMask` `…807` → `…799` (bit 3 = chunk `personal_link` du bras gauche, désormais caché : un tatouage est de la peau). Textures, coques, morphtargets, inkcc, localisation : identiques. |
 
 **Effet visible annoncé (QA)** : le port de lien personnel de l'avant-bras gauche ne reçoit plus d'encre (il en
-recevait depuis la 1.0.0, jamais relevé). **Non vu en jeu** : tout le lot UV ; banc à lui (passation).
+recevait depuis la 1.0.0, jamais relevé).
+
+### QA en jeu sur SON Angel (2026-11-04, 13 h 55 → 14 h 15, build sur son installation réelle) : validée
+
+Sa demande : tester d'abord sur Angel, le corps sur lequel j'avais bâti. `tools\qa_2026-11-04\game_build.py` :
+sa config (21 VTK, 9 slots, FPP, miroir) + les 16 UV de `V's Body.zip` (`dl\uv\tattoos\`), catalogue copié, build
+sur son jeu en lecture (237 s, **331 Mo, 832 fichiers, 35 tatouages**, SHA `dfe0d567…`), installé jeu fermé (ancien
+dans `backup\2026-11-04_135501`). Premier build : la tête masculine Leon Face nomme sa peau `01_ca_pale_d01`, que
+la règle « peau » (`^0[1-6]_(ca|bl)_[a-z]+(_body)?$`) refusait : coque de tête vide. Règle changée en préfixe, et
+un garde-fou : si aucun chunk n'est reconnu comme peau, tout est gardé (jamais de coque vide). Rebâti, installé.
+Dans son jeu, `011_UV_Framework` est posé derrière Angel (006) : inerte sur les maillages ; ses `.mi` et peaux
+servent dès que des bras UV (005) gagnent les bras.
+
+**Son retour** : V féminine : tous les VTK comme avant ; les UV = corps propre, bras nus, pieds nus ; V masculin :
+Skeleton sur le visage, Pirate Vince et Japanese V2 propres. **Deux points** : (1) sur un full body UV, le tatouage
+« s'arrête net un peu avant » là où la version VTK descend plus bas sur la jambe = le chunk 6 d'Angel (chevilles,
+79 % de ses sommets dans la bande, 21 % au-dessus de z 0,21 dans la mise à plat du corps) : masqué en entier, on
+perd l'anneau haut de la cheville. Remède exact = effacer la bande u < 0,22 dans une copie de la texture UV pour la
+coque de corps (ré-encodage 25 s par 4K, 166 s par 8K) et ne plus masquer : chevilles peintes, pieds nus. **Tranché
+par lui (14 h 10) : bande effacée.** (2) FrecklesV (taches de rousseur UV) invisible : texture mesurée
+(`png\freckles_sheet.png`) : **alpha max 154, moyenne 41 sur 2 % des texels** (Bedellia : max 255, moyenne 220) ; une
+peinture faite pour se fondre dans la peau par le `SecondaryAlbedo`, trop pâle à travers le décal à 1,0. Remède =
+l'opacité par tatouage à 2,0 (la raison d'être de la borne du § 20) ; **son go : 2,0 dans le catalogue de test**.
+
+**Bande effacée, livré (14 h 10 → 14 h 25)** : `blank_uv_strip()` + `blanked_texture()` (cache `work\tex\<slug>\blank\`) :
+export WolvenKit en DDS (RGBA8 non compressé, en-tête DX10, DXGI 28 / 29, lu dans l'en-tête), colonnes u < 0,22 mises
+à zéro **à chaque niveau de mip** directement dans les octets, import `--keep` sur une copie de l'original : **le
+format de l'original est conservu** (mesuré sur Bedellia 8K : `TCM_QualityColor` = BC7, 6,2 Mo pour 5,9 Mo ; un
+import sans `--keep` donne du TrueColor à 1 mip, 268 Mo de VRAM en 8K, écarté). Temps mesurés dans le build réel :
+**8K = 8 s + 37 à 52 s** (et non 166 s : c'est le TrueColor qui coûtait), 4K = 6 s + 7 à 16 s. La coque de corps
+lit `<slug>_uv_pwa_noarms.xbm` et garde tous ses chunks (plus de `strip_mask`) ; la coque FPP du corps idem.
+Déclenché seulement quand le corps actif a des chunks dans la bande (Angel) : sur Solo / vanilla, texture d'origine
+et rien de ré-encodé. Build réel : 716 s, **314 Mo**, 832 fichiers, SHA `cec96ac7…`, installé 14 h 23 (ancien dans
+`backup\2026-11-04_142352`). **QA attendue de lui** : chevilles peintes sous un full body UV, pieds nus ; FrecklesV
+visible à 2,0.

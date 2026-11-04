@@ -128,8 +128,9 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
   (`build.log`, block 2: "layout", and "skipped" under the tattoo). Use arm meshes of the tattoo's family, or a
   tattoo of your arms' family.
 - **A UV tattoo on Angel: the feet stay bare.** Angel unwraps its feet into the part of the texture a UV tattoo uses
-  for the arms, so the builder hides the feet in that shell rather than paint arm ink on them (VTK textures never
-  paint there either).
+  for the arms, so the body shell reads a copy of the texture with that part cleared (made once per texture with
+  WolvenKit, 10 to 60 s, cached; the texture format is kept) rather than paint arm ink on the feet. VTK textures
+  never paint there either.
 - **Game 2.3x.** Not supported: the 2.5 bodies are different. Someone may fork the generator for 2.31 (MIT).
 
 ## Known limits of this first cut
