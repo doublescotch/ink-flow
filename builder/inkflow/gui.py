@@ -612,7 +612,7 @@ class App(tk.Tk):
                 on = "" if e.id in self.unchecked else "✔"
                 label, cut = core.option_label(self.cat.name(e), self.cfg["max_name"])
                 note = (f"ignored: {e.ignored_reason}" if (e.other or e.unknown) else "") + ("  [name cut]" if cut else "")
-                self.tree.insert("", "end", iid=e.id, values=(on, e.file, " + ".join(t["label"] for t in e.targets), label, self._alpha_cell(e), note))
+                self.tree.insert("", "end", iid=e.id, values=(on, e.file, e.targets_label, label, self._alpha_cell(e), note))
             else:
                 self.tree.insert("", "end", iid=e.id or e.file, values=("", e.file, "—", "", "", f"ignored: {e.ignored_reason}"), tags=("ignored",))
         self.cfg["files"] = [e.path for e in self.entries]
