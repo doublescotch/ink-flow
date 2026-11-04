@@ -30,7 +30,7 @@ Nothing made by other authors is redistributed.
    anywhere. The builder reads each file and shows what it covers: Body, Arm L, Arm R, Head. Unsupported files are
    greyed out with the reason.
 3. Give each tattoo the **name** you want to read in the creator (double-click, 20 characters max). Uncheck the ones you do not want.
-   The **Opacity** column sets one tattoo's opacity (double-click, 0.1 to 1.0; or select several rows and press
+   The **Opacity** column sets one tattoo's opacity (double-click, 0.1 to 2.0: above 1.0 brightens a faded texture; or select several rows and press
    **Opacity…**). Empty = the **Default opacity** of the options, shown in brackets. Rebuild to apply.
 4. Choose the number of **slots** (1 to 9: how many tattoos V can wear at once), whether the slots also show at the **apartment mirror**,
    and whether to build the **first person** shells (on by default: the body and arms V sees of herself; about 1 MB more per arm tattoo).

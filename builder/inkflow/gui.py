@@ -15,6 +15,8 @@ from tkinter.scrolledtext import ScrolledText
 from . import APP_NAME, MOD_NAME, VERSION, core, env
 from .config import Config
 
+ALPHA_MIN, ALPHA_MAX = 0.1, 2.0     # DiffuseAlpha : above 1.0 brightens a faded texture (1.5 seen in game)
+
 T = {
     "title": f"{APP_NAME} {VERSION}",
     "setup": "Setup",
@@ -70,9 +72,9 @@ T = {
     "col_alpha": "Opacity",
     "col_note": "Note",
     "hint_names": ("Double-click a name to edit it (max {n} characters, shown in the character creator), or an opacity "
-                   "(0.1 to 1.0; empty = the default opacity, shown in brackets). Click ✓ to include or exclude."),
-    "alpha_q": "Opacity of the {n} selected tattoo(s), 0.1 to 1.0.\nLeave empty to use the default opacity ({d}).",
-    "alpha_bad": "The opacity must be a number from 0.1 to 1.0 (or empty for the default).",
+                   "(0.1 to 2.0; empty = the default opacity, shown in brackets). Click ✓ to include or exclude."),
+    "alpha_q": "Opacity of the {n} selected tattoo(s), 0.1 to 2.0.\nLeave empty to use the default opacity ({d}).",
+    "alpha_bad": "The opacity must be a number from 0.1 to 2.0 (or empty for the default).",
     "options": "Options",
     "slots": "Slots",
     "mirror": "Also available at the apartment mirror",
@@ -277,7 +279,7 @@ class App(tk.Tk):
         ttk.Checkbutton(f, text=T["fpp"], variable=self.fpp_var).grid(row=0, column=3, sticky="w", padx=(18, 6))
         ttk.Label(f, text=T["alpha"]).grid(row=0, column=4, sticky="w", padx=(18, 6))
         self.alpha_var = tk.DoubleVar(value=float(self.cfg["alpha"]))
-        ttk.Spinbox(f, from_=0.1, to=1.0, increment=0.1, width=5, textvariable=self.alpha_var, format="%.1f").grid(row=0, column=5, sticky="w", **pad)
+        ttk.Spinbox(f, from_=ALPHA_MIN, to=ALPHA_MAX, increment=0.1, width=5, textvariable=self.alpha_var, format="%.1f").grid(row=0, column=5, sticky="w", **pad)
         self.alpha_var.trace_add("write", lambda *_: self._refresh_alpha_cells())
         ttk.Label(f, text=T["out"]).grid(row=1, column=0, sticky="w", **pad)
         self.out_var = tk.StringVar(value=self.cfg["out"])
@@ -634,12 +636,12 @@ class App(tk.Tk):
                 self.tree.set(e.id, "alpha", self._alpha_cell(e))
 
     def _parse_alpha(self, text):
-        """'' -> None (default) ; '0.6' / '0,6' -> 0.6 ; out of 0.1-1.0 or not a number -> ValueError."""
+        """'' -> None (default) ; '0.6' / '0,6' -> 0.6 ; out of ALPHA_MIN-ALPHA_MAX or not a number -> ValueError."""
         text = text.strip().strip("()").replace(",", ".")
         if not text:
             return None
         a = round(float(text), 2)
-        if not 0.1 <= a <= 1.0:
+        if not ALPHA_MIN <= a <= ALPHA_MAX:
             raise ValueError(text)
         return a
 
@@ -764,7 +766,7 @@ class App(tk.Tk):
         x, y, w, h = self.tree.bbox(iid, "#5")
         a = self.cat.alpha(e)
         var = tk.StringVar(value=f"{a:.1f}" if a is not None else "")
-        ed = ttk.Spinbox(self.tree, from_=0.1, to=1.0, increment=0.1, format="%.1f", textvariable=var)
+        ed = ttk.Spinbox(self.tree, from_=ALPHA_MIN, to=ALPHA_MAX, increment=0.1, format="%.1f", textvariable=var)
         ed.place(x=x, y=y, width=max(w, 70), height=h)
         ed.focus_set()
         ed.select_range(0, "end")
