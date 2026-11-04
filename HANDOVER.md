@@ -14,9 +14,8 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
 
 ## État (2026-11-05, 2 h) : 1.4.0 NON publiable : la coque FPP du corps n'a jamais montré le torse ; trous à distance ouverts
 
-- **Première session de la reprise, sa consigne : nettoyage / vérification des `.md` du dépôt
-  Cyberpunk** (passe de sanité prévue depuis le 04/11, `cp:HANDOVER.md` § 2), AVANT de reprendre ce
-  chantier.
+- Passe de sanité des `.md` du dépôt Cyberpunk (sa consigne du 05/11, 2 h) : **faite le 05/11**
+  (`cp:HANDOVER.md` § 2) ; ce chantier peut reprendre, premier geste = le correctif FPP ci-dessous.
 - **Deux défauts trouvés par sa QA du 05/11**, présents depuis la 1.0.1, confirmés par lui sur les
   exe 1.3, 1.2, 1.1 et sur corps vanilla (pas une régression), ETUDE § 26 : (1) **FPP tête baissée :
   manches, pas de corps**. Cause mesurée : la coque FPP du corps est une copie du maillage complet
