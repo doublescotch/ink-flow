@@ -227,14 +227,18 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 
 ## 2026-11-04 (12 h → 13 h) — Support UV : mesure des mises à plat, architecture, devis (Fable, lecture seule)
 
-- Reprise sur « Reprends » : premier geste de la passation. Framework UV 3.2.1, Solo 2.0, bras UV (Solo, Songbird),
-  Songbird Body UV et 5 tatouages UV dépaquetés depuis `V's Body.zip` dans `C:\__DEV\cyberpunk\ink_flow\dl\uv\`,
-  sérialisés, matériaux et UV lus (ETUDE § 21 ; scripts `tools\qa_2026-11-04\`). Rien posé dans le jeu ; son
-  déverrouillage du dossier du jeu (12 h 14) n'a pas servi.
-- Trouvé : le framework livre les maillages vanilla et branche le calque par sa chaîne de `.mi` ; corps vanilla =
-  framework = Solo = Songbird = corps masculins (même mise à plat) ; Angel range ses pieds dans la bande u < 0,22
-  que le framework réserve aux bras UV ; bras VTK = mise à plat vanilla (texture à part), bras UV = bande du corps.
-- Export PNG : le CLI refuse « -o » depuis Git Bash (« Please fill in an output path »), passe en PowerShell.
-  Ré-encodage BC7 chronométré : 166 s pour un 8K, 25 s pour un 4K. Deux pièges hors UV : coque sur Songbird (chunks
-  cyber à masquer), `.app` de Solo non sérialisables par le CLI 9.1.0 (build sur Solo à vérifier).
-- Architecture écrite (ETUDE § 21, cinq points) ; devis présenté, go attendu avant la première ligne de code.
+- Reprise sur « Reprends » : premier geste de la passation. Framework UV 3.2.1, Solo 2.0, bras UV
+  (Solo, Songbird), Songbird Body UV et 5 tatouages UV dépaquetés depuis `V's Body.zip` dans
+  `C:\__DEV\cyberpunk\ink_flow\dl\uv\`, sérialisés, matériaux et UV lus (ETUDE § 21 ; scripts
+  `tools\qa_2026-11-04\`). Rien posé dans le jeu ; son déverrouillage du dossier du jeu (12 h 14)
+  n'a pas servi.
+- Trouvé : le framework livre les maillages vanilla et branche le calque par sa chaîne de `.mi` ;
+  corps vanilla = framework = Solo = Songbird = corps masculins (même mise à plat) ; Angel range ses
+  pieds dans la bande u < 0,22 que le framework réserve aux bras UV ; bras VTK = mise à plat vanilla
+  (texture à part), bras UV = bande du corps.
+- Export PNG : le CLI refuse « -o » depuis Git Bash (« Please fill in an output path »), passe en
+  PowerShell. Ré-encodage BC7 chronométré : 166 s pour un 8K, 25 s pour un 4K. Deux pièges hors UV :
+  coque sur Songbird (chunks cyber à masquer), `.app` de Solo non sérialisables par le CLI 9.1.0
+  (build sur Solo à vérifier).
+- Architecture écrite (ETUDE § 21, cinq points) ; devis présenté, go attendu avant la première ligne
+  de code.
