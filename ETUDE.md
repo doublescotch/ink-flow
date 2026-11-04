@@ -1062,3 +1062,10 @@ seulement « pas de RTSS ni Afterburner »). Sans overclock, GPU Tweak ne fait q
 **gel, même pile** (`sl.reflex.dll+0x3C43D`, fils secondaires dans `sl.pcl.dll+0x3ACC0`, rapport `230232`). **GPU Tweak
 éliminé** (absent des processus et de la liste des modules). Compteur FPS NVIDIA encore actif pendant ce test. Reste :
 test 2 = compteur FPS NVIDIA coupé (overlay de l'application NVIDIA) ; test 3 = `sl.reflex.dll` renommé dans `bin\x64`.
+
+**Test 2 joué (23 h 08 → 23 h 24)** : « Superposition dans le jeu » de l'application NVIDIA sur Off (masquer le compteur
+ne suffit pas : l'overlay reste injecté, `nvspcap64.dll`, cinq processus « NVIDIA Overlay.exe » = un seul overlay
+Chromium), jeu relancé, créateur, Alt-Tab : **16 min sans gel**, zéro processus overlay, aucun rapport. Pas une preuve
+(les gels venaient entre 9 et 13 min de jeu) mais la direction : **overlay NVIDIA = suspect n° 1**, cohérent avec la pile
+(crochet sur la présentation, greffon Reflex en attente). Sa décision : on avance ; il remplacera le compteur par un mod
+de perf intégré à l'interface du jeu si ça se confirme. Test 3 (Reflex) non joué, inutile tant que ça tient.

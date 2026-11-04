@@ -401,3 +401,5 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   compagnon mobile), désinstallables sans overclock. Décision à lui.
 - 23 h 02 : GPU Tweak désinstallé par lui, redémarrage, créateur + Alt-Tab : gel, même pile Reflex (5/5). GPU Tweak
   éliminé. Prochain : compteur FPS NVIDIA coupé, puis `sl.reflex.dll` renommé.
+- 23 h 08-23 h 24 : overlay NVIDIA coupé (réglage, pas le raccourci), jeu relancé, créateur + Alt-Tab : 16 min sans
+  gel, aucun rapport. Direction : overlay NVIDIA. Sa décision : on avance (retour au jeu normal, rebuild corrigé).

@@ -25,8 +25,9 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   comme le jeu complet). **Trame nouvelle du 04/11** : absente des 3 gels antérieurs ; 7 « GPU
   crash » le 28/10 avant Ink Flow. ReShade (chargé depuis le 03/11), overlay NVIDIA (compteur FPS
   actif) hors pile. ~~GPU Tweak III~~ **éliminé (23 h 02 : désinstallé, redémarré, 5e gel identique)**.
-  **Test à lui** : compteur FPS NVIDIA coupé, Alt-Tab 3 min ; puis `sl.reflex.dll` renommé dans
-  `bin\x64` (à sa main, jeu fermé). ETUDE § 25, fin.
+  **Overlay NVIDIA coupé (réglage « Superposition dans le jeu ») : 16 min sans gel à 23 h 24, suspect
+  n° 1, pas prouvé.** Sa décision : on avance ; il prendra un mod de compteur de perf intégré à
+  l'interface si ça se confirme. Si un gel revient : `sl.reflex.dll` renommé (test 3). ETUDE § 25.
 - **Son jeu maintenant : minimal** (Angel + refits + framework 3.2.1 + canari Angel 33,1 Mo, SHA
   `14f05dc1…`, 420 archives parquées). Sauvegardes `backup\` : `_175841` Angel 1.4.0 (conversions
   retournées, jamais planté), `_205556` Solo complet, `_215048` passe 1, `_221234` passe 2 Solo.
