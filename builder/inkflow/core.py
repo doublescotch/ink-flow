@@ -608,7 +608,10 @@ def fpp_torso_mask(cli, game, work, log):
 VTX_SIZE = {"PT_Float16_2": 4, "PT_Float16_4": 8, "PT_Short4N": 8, "PT_UByte4": 4, "PT_UByte4N": 4, "PT_Dec4": 4,
             "PT_Color": 4, "PT_Float32_2": 8, "PT_Float32_3": 12, "PT_Float32_4": 16, "PT_UShort2": 4, "PT_UByte1": 1,
             "PT_UInt1": 4, "PT_Float32_1": 4, "PT_Float16_1": 2, "PT_Float16_3": 6, "PT_Short4": 8, "PT_Short2": 4}
-SKIN_MAT = re.compile(r"^0[1-6]_(ca|bl)_[a-z]+(_body)?$")   # the 12 skin tints (`01_ca_pale`… ; FPP arm R : `01_ca_pale_body`)
+# The 12 skin tints and their variants : `01_ca_pale`, `01_ca_pale_body` (FPP arm R), `01_ca_pale_d01` (Leon Face male head),
+# `01_ca_pale_muscularity` (vanilla body)… : a prefix match. Anything else (`personal_link`, `npc_05_plastic_white`,
+# Songbird's `songbird_cyber_maskset`…) is not skin.
+SKIN_MAT = re.compile(r"^0[1-6]_(ca|bl)_[a-z]+")
 TEMPLATE_MASK = (1 << 63) - 1                               # `chunkMask` of the toolkit templates : every chunk shown
 ALL_CHUNKS = (1 << 64) - 1
 
@@ -669,6 +672,12 @@ def mesh_layout(mesh_json):
         if ci["lodMask"] == 1:
             n_strip += in_strip
             n_all += nv
+    if n_all == 0:
+        # No skin chunk recognised at all (material names we do not know) : never hand out an empty shell. Everything
+        # is shown and the layout is taken as the vanilla one.
+        skin_mask, strip_mask, strip_chunks = ALL_CHUNKS, ALL_CHUNKS, []
+        hidden = ["(none recognised as skin, every chunk kept: " + ", ".join(hidden) + ")"] if hidden else []
+        u_max = 1.0
     return dict(skin_mask=skin_mask, strip_mask=strip_mask, arms="strip" if u_max <= UV_STRIP + 0.03 else "full",
                 u_max=u_max, strip_share=(n_strip / n_all) if n_all else 0.0, hidden=hidden, strip_chunks=strip_chunks)
 
