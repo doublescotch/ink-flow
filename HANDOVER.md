@@ -5,23 +5,36 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 14 h 30) : UV 1.3.0 validé sur son Angel ; bande effacée + rousseur 2,0 installées, QA attendue
+## État (2026-11-04, 14 h 55) : UV 1.3.0 validé sur son Angel (chevilles comprises), exe + zip bâtis, upload à lui
 
-- **Banc fait sur SON Angel** (sa consigne : Angel d'abord) : `game_build.py` (sa config + 16 UV du zip) installé
-  14 h 23 (314 Mo, `cec96ac7…`, ancien dans `backup\2026-11-04_142352`). Son QA du premier build : **tout à
-  l'attendu** (VTK inchangés, UV = corps seul, bras et pieds nus, V masculin bon). Deux retours traités sur ses go :
-  chevilles (chunk 6 masqué coupait l'anneau) → **bande u < 0,22 effacée dans une copie de la texture** pour la
-  coque de corps, plus de masque (ETUDE § 21, fin : `--keep` garde le BC7, 8K ≈ 55 s, cache) ; FrecklesV invisible
-  (texture pâle) → opacité 2,0 dans le catalogue de test. **QA 14 h 35 : chevilles validées** (= Samurai VTK) ;
-  **FrecklesV invisible même à 2,0, et sa version VTK est aussi pâle** : limite des coques (calques très pâles),
-  gravée dans README, `NEXUS.md` (Known limits) et ETUDE § 21.
-- Correctif au passage : la tête masculine Leon Face nomme sa peau `01_ca_pale_d01` → règle « peau » en préfixe,
-  garde-fou « jamais de coque vide ». Commité (`a4e2cae`) ; la bande effacée reste **à commiter** avec ce bloc.
-- Sa question (retour Nexus « partie métallique absente ») : le décal vanilla ne porte que la diffuse ; piste = le
-  décal à rugosité / métal / normale du corps Songbird, chantier à part à mesurer.
-- Catalogue de test = copie (`gen\uv104\catalogue_game_copy.json`) : son catalogue réel n'a pas les 16 UV ni le 2,0.
-- Reste : exe + zip 1.3.0 (`build_exe.ps1`), `NEXUS.md` « seen in game » après son QA final, capture, upload, tag ;
-  régression à rejouer après la bande effacée (sans objet sur vanilla : aucune bande ; à confirmer 488/488 + 108).
+- **Banc fait sur SON Angel** (sa consigne : Angel d'abord) : `game_build.py` (sa config + 16 UV du
+  zip) installé 14 h 23 (314 Mo, `cec96ac7…`, ancien dans `backup\2026-11-04_142352`). Son QA du
+  premier build : **tout à l'attendu** (VTK inchangés, UV = corps seul, bras et pieds nus, V
+  masculin bon). Deux retours traités sur ses go : chevilles (chunk 6 masqué coupait l'anneau) →
+  **bande u < 0,22 effacée dans une copie de la texture** pour la coque de corps, plus de masque
+  (ETUDE § 21, fin : `--keep` garde le BC7, 8K ≈ 55 s, cache) ; FrecklesV invisible (texture pâle) →
+  opacité 2,0 dans le catalogue de test. **QA 14 h 35 : chevilles validées** (= Samurai VTK) ;
+  **FrecklesV invisible même à 2,0, et sa version VTK est aussi pâle** : limite des coques (calques
+  très pâles), gravée dans README, `NEXUS.md` (Known limits) et ETUDE § 21.
+- Correctif au passage : la tête masculine Leon Face nomme sa peau `01_ca_pale_d01` → règle « peau »
+  en préfixe, garde-fou « jamais de coque vide ». Commité (`a4e2cae`) ; la bande effacée reste **à
+  commiter** avec ce bloc.
+- Sa question (retour Nexus « partie métallique absente ») : le décal vanilla ne porte que la
+  diffuse ; piste = le décal à rugosité / métal / normale du corps Songbird, chantier à part à
+  mesurer.
+- Catalogue de test = copie (`gen\uv104\catalogue_game_copy.json`) : son catalogue réel n'a pas les
+  16 UV ni le 2,0.
+- **Exe et zip 1.3.0 bâtis (14 h 50, sur son go)** : exe `1b9c6a6b…ca92` (11,97 Mo), autotest figé
+  sur `exe\home` (18 VTK, jeu réel) : 157 fichiers, 150 347 776 o (= 1.2.0 au bit près côté taille),
+  321 s ; zip `releases\Ink_Flow_Builder-1.3.0.zip` `8ac7a3e6…c91ca`. **À lui** : upload (1.1.0 en
+  ancienne version, 1.2.0 jamais uploadée), coller `NEXUS.md` (résumé, What works with what avec la
+  ligne UV « seen in game » à écrire sur son QA Angel : corps UV, pieds nus, bras sautés ; Solo non
+  vu), changelogs 1.2.0 + 1.3.0, capture de la fenêtre (colonne cibles « (UV) »), sticky, tag
+  `v1.3.0` sur go.
+- Régression après la bande effacée : non rejouée (sans objet sur l'arbre vanilla : aucun chunk dans
+  la bande).
+- Solo + framework + bras UV **jamais vus en jeu** (prouvé hors jeu seulement) ; la page doit le
+  dire tel quel.
 
 ## ~~État (2026-11-04, 15 h) : support UV codé et prouvé hors jeu (1.3.0), banc en jeu à lui ; exe non rebâti~~ dépassé (14 h 30 : banc fait)
 

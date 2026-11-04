@@ -195,7 +195,11 @@ thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCX
 
 ## Files to upload
 
-- 1.2.0 (2026-11-04) : `Ink_Flow_Builder-1.2.0.zip` (`releases\`, SHA-256 `3e1f13f9…6a46`):
+- 1.3.0 (2026-11-04) : `Ink_Flow_Builder-1.3.0.zip` (`releases\`, SHA-256 `8ac7a3e6…c91ca`):
+  `InkFlowBuilder.exe` (SHA-256 `1b9c6a6b…ca92`) + `README.md` + `LICENSE`. Same file description as
+  below. Mark 1.1.0 as old version (1.2.0 was never uploaded: 1.3.0 carries its changes). Mod version
+  field: 1.3.0. Changelog tab: paste 1.2.0 and 1.3.0.
+- 1.2.0 (2026-11-04, not uploaded) : `Ink_Flow_Builder-1.2.0.zip` (`releases\`, SHA-256 `3e1f13f9…6a46`):
   `InkFlowBuilder.exe` (SHA-256 `4e3f15d1…9bb6`) + `README.md` + `LICENSE`. Same file description as
   below. Mark 1.1.0 as old version. Mod version field: 1.2.0.
 - 1.1.0 (2026-11-03, uploaded) : `Ink_Flow_Builder-1.1.0.zip` (`releases\`, SHA-256 `43f0f655…6427`):

@@ -246,25 +246,34 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 ## 2026-11-04 (13 h 30 → 15 h) — Support UV codé : moteur 1.3.0, preuves hors jeu (Fable, go « maintenant »)
 
 - `core.py` : `TEX_TARGETS` (une texture, plusieurs cibles), `Entry.tex` / `family`, `Item.targets`
-  propre, `mesh_layout()` (mise à plat des bras, masques peau et bande), `shell_mask()`, saut des bras
-  de l'autre famille et de leur compagnon FPP, texture UV copiée une fois, morphtarget lu à part ;
-  `gui.py` : libellé « (UV) » ; version 1.3.0 ; README et `NEXUS.md` (changelog 1.3.0, « Arms and families »).
-- Trouvé en bâtissant : le framework UV livre la tête vanilla sans son morphtarget → la 1.2.0 refusait
-  tout build à cible tête sur un jeu avec le framework ; `extract_mesh` lit désormais le morphtarget
-  chez son archive gagnante (jeu de base ici).
+  propre, `mesh_layout()` (mise à plat des bras, masques peau et bande), `shell_mask()`, saut des
+  bras de l'autre famille et de leur compagnon FPP, texture UV copiée une fois, morphtarget lu à
+  part ; `gui.py` : libellé « (UV) » ; version 1.3.0 ; README et `NEXUS.md` (changelog 1.3.0, « Arms
+  and families »).
+- Trouvé en bâtissant : le framework UV livre la tête vanilla sans son morphtarget → la 1.2.0
+  refusait tout build à cible tête sur un jeu avec le framework ; `extract_mesh` lit désormais le
+  morphtarget chez son archive gagnante (jeu de base ici).
 - Preuves : arbres factices `gen\uv104\` Solo (194 s, 116 fichiers) et Angel (70), contrôlés par
   `uv_check.py` ; non-régression 380/488 identiques, 108 `.app` de bras gauche = masque du port de
   lien seul, `.xl` identique. Exe non rebâti ; banc en jeu à lui (passation). Commits poussés.
 
 ## 2026-11-04 (13 h 50 → 14 h 30) — Banc sur SON Angel : validé ; chevilles par bande effacée ; rousseur à 2,0
 
-- Sa consigne : tester d'abord sur Angel. `game_build.py` : sa config + les 16 UV du zip, build sur son jeu en
-  lecture, installé jeu fermé. Premier build : tête masculine Leon Face (`01_ca_pale_d01`) non reconnue comme
-  peau → coque vide ; règle en préfixe + garde-fou, rebâti, installé (331 Mo, `dfe0d567…`).
-- Son QA : tout à l'attendu (VTK comme avant, UV = corps propre, bras et pieds nus, masculin bon). Deux points :
-  arrêt du tatouage un peu haut sur la cheville (chunk 6 masqué) ; FrecklesV invisible (texture pâle, mesurée).
-  Ses go : bande effacée dans une copie de la texture (`blank_uv_strip`, `--keep` garde le BC7, 8K ≈ 55 s) ;
-  opacité 2,0 pour FrecklesV. Rebâti (716 s, 314 Mo, `cec96ac7…`), installé 14 h 23. QA attendue.
-- Sa question « couche métallique » (retour Nexus sur un retexture David) : le décal vanilla n'a que la diffuse ;
-  piste = le décal à `RoughnessTexture` / `MetalnessTexture` vu dans le corps Songbird (ETUDE § 21), chantier à part.
-- Steam 14 h 05 : 63 Ko téléchargés, manifest verrouillé intact, aucun fichier du jeu modifié (vérifié).
+- Sa consigne : tester d'abord sur Angel. `game_build.py` : sa config + les 16 UV du zip, build sur
+  son jeu en lecture, installé jeu fermé. Premier build : tête masculine Leon Face
+  (`01_ca_pale_d01`) non reconnue comme peau → coque vide ; règle en préfixe + garde-fou, rebâti,
+  installé (331 Mo, `dfe0d567…`).
+- Son QA : tout à l'attendu (VTK comme avant, UV = corps propre, bras et pieds nus, masculin bon).
+  Deux points : arrêt du tatouage un peu haut sur la cheville (chunk 6 masqué) ; FrecklesV invisible
+  (texture pâle, mesurée). Ses go : bande effacée dans une copie de la texture (`blank_uv_strip`,
+  `--keep` garde le BC7, 8K ≈ 55 s) ; opacité 2,0 pour FrecklesV. Rebâti (716 s, 314 Mo,
+  `cec96ac7…`), installé 14 h 23. QA attendue.
+- Sa question « couche métallique » (retour Nexus sur un retexture David) : le décal vanilla n'a que
+  la diffuse ; piste = le décal à `RoughnessTexture` / `MetalnessTexture` vu dans le corps Songbird
+  (ETUDE § 21), chantier à part.
+- Steam 14 h 05 : 63 Ko téléchargés, manifest verrouillé intact, aucun fichier du jeu modifié
+  (vérifié).
+- 14 h 35 : son QA : chevilles validées (= Samurai VTK) ; FrecklesV toujours invisible → version VTK
+  mesurée aussi pâle : limite des coques gravée (README, NEXUS, ETUDE). 14 h 50, sur son go : exe
+  1.3.0 `1b9c6a6b…` (autotest figé 157 fichiers, 150 347 776 o, 321 s), zip `8ac7a3e6…` dans
+  `releases\` ; `NEXUS.md` « Files to upload ».
