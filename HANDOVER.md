@@ -5,7 +5,36 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 18 h 40) : QA 1.4.0 suspendue ; SA DÉCISION = banc Solo 2.0 d'abord (UV sur corps natif), puis UV sur VTK
+## État (2026-11-04, 18 h) : banc Solo 2.0 posé dans son jeu, l'épaule du Samurai UV à regarder par lui
+
+- **Dans son jeu depuis 17 h 59** (horloge du poste, qui marque une heure de moins que les blocs
+  précédents ; son déverrouillage `WRITE_UNLOCK.txt` de 17 h 33, jeu fermé) : Angel, son `.xl` et
+  ses refits vanilla **parqués** dans `C:\__DEV\cyberpunk\ink_flow\parked\2026-11-04_angel\` ;
+  **Solo OG 2.0 + `.xl` + Solo OG 2.0 Arms UV posés** (framework 3.2.1 déjà à lui).
+- **Ink Flow 1.4.0 rebâti sur ce jeu** (sa config + 16 UV, 35 tatouages, 9 slots, miroir, FPP) :
+  346,8 Mo, 1 415 fichiers, 1 339 s, SHA `1e97af4f…8e95` ; l'Angel de 16 h 17 (`6d7043aa…`) dans
+  `%LOCALAPPDATA%\InkFlow\backup\2026-11-04_175841`. Aucune archive en conflit.
+- **Détection lue dans le journal** (`gen\uv104\run_solo_game.txt`) : corps = Solo (mise à plat
+  vanilla, 3 % dans la bande), bras G / D = Solo Arms UV (bande, 100 %), tête = VTK HD Head. Bras
+  des UV **directs** ; bras des VTK **convertis vers la bande** (Samurai 56 %, Kala Arm 46 / 38 %
+  en 4K, Bedellia 33 / 31 %, Vale 31 %, Promiscuity 2 %, Cover Me In Gold 1 %) ; Pirate Vince (M)
+  vers vanilla. `.app` de Solo illisible (`castShadows`, § 21) → masque FPP du torse = vanilla.
+- **À lui au créateur, nouvelle partie** : **l'épaule du Samurai UV : pleine ou nue ?** C'est ce
+  qui tranche (§ 23, correction). Puis Samurai VTK converti sur les mêmes bras ; Kala Sleeve 1 =
+  manches seules ; Bedellia = raccord d'épaule ; torse et bras en FPP (masque vanilla) ; port de
+  lien du bras gauche sans encre.
+- **Lecture** : épaule **pleine** sur Solo → la bande z 1,36-1,46 est cachée par le corps framework
+  et le remède pour Angel = remplir cette bande du bras converti depuis la texture du corps
+  (`armconv.py`, source corps vanilla). Épaule **nue** aussi → lecture fausse, lire les `.app` du
+  framework (masques de chunks, ordre des surfaces).
+- **Retour à Angel** : `tools\qa_2026-11-04\solo_bench.py restore` (jeu fermé, formule), puis le
+  build de `backup\2026-11-04_175841` remis à la main ou rebâti. Modes du script : `park | build |
+  install | restore | status`. Jetable : `gen\uv104\work_solo_game`, `out_solo_game`.
+- Ses mots de la veille « là j'avais aucune différence pour moi » : toujours **à préciser par lui**,
+  rien supposé. Reste : QA Angel (Kala Sleeve 1, Bedellia, FPP, V masculin) après ce banc ; README,
+  `NEXUS.md` 1.4.0, exe + zip, upload, tags sur go ; 1.3.0 jamais uploadée.
+
+## ~~État (2026-11-04, 18 h 40) : QA 1.4.0 suspendue ; SA DÉCISION = banc Solo 2.0 d'abord (UV sur corps natif), puis UV sur VTK~~ fait (banc posé, bloc du dessus)
 
 - **Premier geste de la reprise** : poser dans son jeu **Solo 2.0 + framework 3.2.1 + bras Solo UV**
   (archives dans `C:\__DEV\cyberpunk\ink_flow\dl\uv\`, Angel et refits parqués), bâtir avec les UV

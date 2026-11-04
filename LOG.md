@@ -306,3 +306,15 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   conclusion « rien à coder » barrée (§ 23, correction). Kala V2 sans bras : pas une paire utile.
 - 18 h 35 : **sa décision** : banc Solo 2.0 (UV sur corps natif) AVANT les UV sur VTK. Il ferme.
   Ligne « Same name, two paintings » retirée de `NEXUS.md` (jamais publiée).
+
+## 2026-11-04 (17 h 35 → 18 h, horloge du poste) — Banc Solo 2.0 posé dans son jeu (Fable, « Reprends », « unlock »)
+
+- Son déverrouillage (`WRITE_UNLOCK.txt` sur le dossier du jeu, 17 h 33) et jeu fermé : Angel +
+  `.xl` + refits vanilla parqués (`parked\2026-11-04_angel\`), Solo OG 2.0 + `.xl` + bras Solo UV
+  posés depuis `dl\uv\`. Script `tools\qa_2026-11-04\solo_bench.py` (park / build / install /
+  restore / status), refuse d'écrire si le jeu tourne.
+- Build 1.4.0 sur son jeu tel quel (sa config + 16 UV, 35 tatouages, 9 slots) : 1 339 s, 346,8 Mo,
+  1 415 fichiers ; corps Solo détecté en mise à plat vanilla, bras Solo UV en bande ; bras VTK
+  convertis vers la bande (8K, 34-39 s chacun ; Kala Arm en 4K) ; `.app` de Solo illisible → masque
+  FPP vanilla (connu, § 21). Installé 17 h 59 (`1e97af4f…`), l'Angel dans `backup\2026-11-04_175841`.
+- À lui : l'épaule du Samurai UV au créateur (§ 23). Passation réécrite, renvoi `cp:HANDOVER.md`.
