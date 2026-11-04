@@ -20,9 +20,10 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   revient, Solo part) en gardant le jeu minimal, `canari3.py build` + `install` (mêmes 2 tatouages ; sur Angel les bras
   du Samurai restent VTK, ceux de Kala UV sont convertis en 2K/4K vers vanilla), 3 chargements + miroir. Plante avec la
   même signature ⇒ nous (bras convertis ou corps 8K : canari Samurai seul, puis Kala seule). Ne plante pas ⇒ Solo.
-- **Lancement lent du jeu minimal** (sa remarque) : journal RED4ext 21 h 55 48 → index de fabrique 21 h 57 38, près de
-  2 min avant le chargement ; non expliqué (420 archives dans `archive\pc\mod__parked_2026-11-04` : vérifier que le jeu
-  ou ArchiveXL ne les lit pas ; sinon déplacer le parc hors de `archive\pc`).
+- ~~**Lancement lent du jeu minimal** (sa remarque) : près de 2 min avant le chargement ; non expliqué (parc de 420
+  archives lu ?)~~ **sans objet (22 h 10, journaux lus)** : jeu complet de 20 h 11 (191 `.xl`) et jeu minimal de
+  21 h 55 (3 `.xl`) mettent tous deux **66 s jusqu'au menu**, puis ≈ 40 s pour la sauvegarde ; audioware seul prend
+  18 s à chaque lancement. Le dossier parqué n'apparaît dans aucun journal : rien à déplacer.
 - Gels watchdog (18 h 13, 20 h 40, 21 h 47) : même fil principal bloqué dans la présentation d'image, DLL anonymisée
   dans la pile (`170_E658703.dll`, 5 modules), ReShade / overlay candidats ; second phénomène, non traité.
 - **Son jeu ce soir** : minimal (Solo) + canari 3 passe 2. Retour à son jeu normal sur sa formule (`archive\pc`, jeu

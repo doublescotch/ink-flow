@@ -377,3 +377,10 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - 21 h 57 : **passe 2 (moteur corrigé) plantée au chargement, même signature `memcpy`** : le défaut d'en-tête n'est
   pas la cause. Prochain canari : mêmes 2 tatouages sur Angel, jeu minimal (passation). Lancement lent du jeu minimal
   noté (2 min avant le chargement). Session close à 22 h 05, jeu laissé minimal, formules de retour dans la passation.
+
+## 2026-11-04 (22 h 05 →) — Reprise : lancement lent tranché, canari Angel à poser (Fable)
+
+- Jeu trouvé tel que laissé : fermé, minimal (Solo + 6 entrées, 420 parquées), aucun rapport après 21 h 57.
+- Lancement lent = constant, pas le parc : 66 s jusqu'au menu pour le jeu complet (20 h 11, 191 `.xl`) comme pour le
+  minimal (21 h 55, 3 `.xl`) ; audioware 18 s à chaque lancement ; sauvegarde ≈ 40 s. Rien à déplacer.
+- Déverrouillage du jeu expiré (`WRITE_UNLOCK.txt` de 20 h 55) : canari Angel en attente de sa main.
