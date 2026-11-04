@@ -5,21 +5,33 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 18 h) : QA 1.4.0 en cours ; Samurai UV « épaule nue » = la peinture, pas la chaîne (ETUDE § 23)
+## État (2026-11-04, 18 h 40) : QA 1.4.0 suspendue ; SA DÉCISION = banc Solo 2.0 d'abord (UV sur corps natif), puis UV sur VTK
 
-- **Son premier retour de QA** (Samurai UV contre Samurai VTK sur Angel : deltoïde gauche nu) **tranché
-  hors jeu** : rendu logiciel des épaules (`tools\qa_2026-11-04\seam5.py`, images
-  `canari\seam_2026-11-04\`) : UV sur Angel par la chaîne = UV sur le vrai framework ; seul le VTK
-  porte le gros amas. Deux peintures du même nom. Couture corps / bras d'Angel = vanilla (mesuré),
-  conversion des bras intacte. **Rien à coder, 1.4.0 inchangée dans son jeu** (`6d7043aa…`).
-- **Approche confirmée** : la chaîne EST la conversion vers la mise à plat du corps actif (corps déjà
-  en vanilla, bras convertis) ; une « archive VTK » à la place = même calcul sans l'adaptation au
-  corps. Réponse écrite en ETUDE § 23.
-- **QA restante, à lui**, en jugeant chaque UV contre son rendu framework (`C_*`) et non contre un
-  homonyme VTK : Kala Sleeve 1, Bedellia (raccord à l'épaule : le haut du bras est caché sous le
-  corps sur tout corps, l'encre démarre sous le deltoïde chez tous les peintres UV), FPP, V masculin.
-- Puis le bloc ci-dessous reste valable : README, `NEXUS.md` (changelog 1.4.0 + ligne « same name,
-  two paintings » posée dans Known limits), exe + zip 1.4.0, upload, tags sur go.
+- **Premier geste de la reprise** : poser dans son jeu **Solo 2.0 + framework 3.2.1 + bras Solo UV**
+  (archives dans `C:\__DEV\cyberpunk\ink_flow\dl\uv\`, Angel et refits parqués), bâtir avec les UV
+  (Samurai UV en tête) et regarder **l'épaule** du Samurai UV au créateur : pleine ou nue ? Banc
+  jamais fait (Solo + bras UV prouvés hors jeu seulement). Jeu fermé, formule sur le dossier du jeu
+  si je pose.
+- **Pourquoi** (ETUDE § 23 + correction) : son retour « deltoïde gauche nu sur Samurai UV, plein sur
+  Samurai VTK, Angel » n'est **pas** une différence de peinture (j'avais conclu ça trop vite, il m'a
+  repris : même auteur). Preuve : partie corps UV = corps VTK à 98,5 % (même mise à plat) ; le bras
+  diverge : **bande z 1,36-1,46 du bras encrée en VTK, vide en UV** (chez les 5 peintres UV), poignet
+  encré en UV seulement. Lecture : cette bande est cachée sous l'épaule du corps framework, visible
+  sur Angel. Le banc Solo tranche.
+- **Si l'épaule est pleine sur Solo** : remède côté chaîne pour les bras VTK = remplir la bande
+  1,36-1,46 du bras converti depuis la texture du corps (transfert 3D corps → bras, outillage
+  `armconv.py`, source corps vanilla). **Si nue aussi** : lecture fausse, regarder les `.app` du
+  framework (masques de chunks) et l'ordre réel des surfaces.
+- Mesures faites, hors jeu, rien posé : couture corps / bras d'Angel = vanilla ; mise à plat du corps
+  d'Angel à l'épaule = vanilla à 1-2 texels ; hexagones gris en haut de la texture = hanches ; haut
+  du bras (z > 1,42) vide dans toutes les textures de bras lues. Scripts `tools\qa_2026-11-04\seam*.py`
+  (`seam5.py` rendu A/B/C : ne modélise pas ce que le jeu cache, pas une preuve pour la bande ;
+  `seam7.py` = différence pixel à pixel, l'outil qui vaut). Images `canari\seam_2026-11-04\`.
+- **1.4.0 inchangée dans son jeu** (`6d7043aa…`). Ligne « Same name, two paintings » retirée de
+  `NEXUS.md` (jamais publiée, fausse). QA Angel restante (Kala Sleeve 1, Bedellia, FPP, V masculin)
+  **après** le banc Solo. Puis README, `NEXUS.md` changelog 1.4.0, exe + zip, upload, tags sur go.
+- Ses mots : « là j'avais aucune différence pour moi » (fin de séance, non détaillé : à lui préciser
+  à la reprise, sans supposer).
 
 ## ~~État (2026-11-04, 16 h 25) : 1.4.0 = conversion des bras UV ↔ vanilla, posée dans son jeu, QA à lui~~ complété (18 h : premier retour de QA tranché, bloc du dessus)
 

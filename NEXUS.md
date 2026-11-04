@@ -120,9 +120,7 @@ For each tattoo file the builder extracts the texture(s), copies your active bod
 [list]
 [*]Head tattoos on a vanilla head (no VTK head mod) do not show yet.
 [*]Male V: seen in the character creator only so far (vanilla body, Gymfiend VTK).
-[*]UV Framework tattoos (1.3.0): arms only when your arm meshes are UV arms (see "Arms and families"); no conversion between the two arm layouts yet.
-[*]Same name, two paintings: when an author ships a VTK version and a UV version of the same tattoo, they are usually two different compositions (shoulders, hands, placement). The builder shows each one exactly as it would look on its own body family; do not judge the UV one against the VTK one.
-[*]Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal, even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as plain overlay archives.
+[*]UV Framework tattoos (1.3.0): arms only when your arm meshes are UV arms (see "Arms and families"); no conversion between the two arm layouts yet.[*]Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal, even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as plain overlay archives.
 [*]Cyberarms not tested (see above).
 [*]Text options in the creator, no icons yet.
 [*]Face sculpting changed at the ripperdoc after a build has not been QA'd (the head shell follows the morphs of an already sculpted face, so it should be fine).

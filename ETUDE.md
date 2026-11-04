@@ -889,3 +889,26 @@ FPP). Bras UV sur corps VTK (son pack) : les deux familles de tatouages s'y affi
 **Acquis durable** : le haut du bras (z > 1,42, ≈ 10 cm) est une languette cachée sous l'épaule du corps, vide dans
 toutes les textures de bras lues (VTK et UV) ; le deltoïde visible appartient au **corps**. `seam5.py` = banc « peinture
 ou chaîne ? » réutilisable pour tout écart UV / VTK signalé.
+
+### Correction (18 h 30, après son objection : même auteur, même tatouage ; et le défaut touche tous les UV)
+
+~~« Deux compositions différentes », « rien à coder »~~ **conclusion retirée, prématurée.** Différence pixel à pixel
+(`seam7.py`, 2048, alpha > 64, images `samurai_body_diff.png` et `samurai_arm_l_diff.png` dans `canari\seam_2026-11-04\`) :
+
+| Surface (même mise à plat des deux côtés) | Résultat |
+|---|---|
+| **Corps** : `v_overlay` VTK contre partie u > 0,22 de `fullbody_overlay_d01` UV | **identiques à 98,5 %** (Jaccard sur les triangles encrés) ; 0 % « VTK seul » au-dessus de z 1,40 ; écarts « UV seul » 5-22 % entre z 1,06 et 1,22 seulement (hanches). **Même auteur, ré-export : prouvé.** Le § 22 (« repeint », corrélation 0,13-0,38) comparait des mises à plat différentes : sans valeur. |
+| **Bras gauche** : texture VTK contre bande UV convertie | **divergent** : z 1,42-1,46 : VTK encré 30-60 %, UV **0** ; z 1,36-1,42 : VTK seul 18-29 % ; z 1,02-1,16 (poignet, main) : UV seul 18-99 %, VTK vide. Jaccard 14,5 %. |
+
+Lecture : l'auteur a ré-exporté le corps tel quel et **refait le bras** pour le framework ; sur le framework il n'a rien
+peint entre z 1,36 et 1,46 (haut du bras), ce qui n'a de sens que si cette bande y est **cachée sous l'épaule du
+corps**. Sur Angel cette bande est visible (le VTK du même auteur l'encre, et sa capture la montre) : le « patch
+manquant » est **la bande 1,36-1,46 du bras**, vide chez tous les peintres UV, donc systématique, comme il le dit.
+Mon rendu C (vanilla + bras framework, tampon de profondeur) la montrait nue aussi : il ne modélise pas ce que le jeu
+cache (masques de chunks des `.app`, ordre réel des surfaces), donc **il ne vaut pas preuve** pour cette bande.
+
+**Sa décision (18 h 35)** : faire les choses dans l'ordre, **regarder d'abord les UV sur Solo 2.0** (corps natif), puis
+seulement les UV sur VTK. Ce banc tranche la lecture ci-dessus : si sur Solo l'épaule du Samurai UV est pleine, la bande
+est bien cachée par le corps framework, et le remède côté chaîne pour les bras VTK est de **remplir la bande 1,36-1,46
+du bras converti depuis la texture du corps** (transfert 3D corps → bras, même outillage qu'`armconv.py`, source = corps
+vanilla). Si sur Solo l'épaule est nue aussi, la lecture tombe et il faudra regarder les `.app` du framework.

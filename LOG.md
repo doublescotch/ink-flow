@@ -300,3 +300,9 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   UV sur Angel = UV sur framework. Verdict : deux peintures, rien à coder. ETUDE § 23, images dans
   `canari\seam_2026-11-04\`. Un script d'essai (recouvrement, trop lent) supprimé dans la séance.
 - Réponse sur l'approche gravée (§ 23) : la chaîne est déjà la conversion vers le corps actif.
+- 18 h 15 : il me reprend deux fois : même auteur, même tatouage (pas « deux compositions ») ; le
+  défaut touche tous les UV, donc la chaîne, pas un peintre. Différence pixel à pixel (`seam7.py`) :
+  corps identiques à 98,5 %, bras divergents (bande z 1,36-1,46 encrée en VTK, vide en UV). Ma
+  conclusion « rien à coder » barrée (§ 23, correction). Kala V2 sans bras : pas une paire utile.
+- 18 h 35 : **sa décision** : banc Solo 2.0 (UV sur corps natif) AVANT les UV sur VTK. Il ferme.
+  Ligne « Same name, two paintings » retirée de `NEXUS.md` (jamais publiée).
