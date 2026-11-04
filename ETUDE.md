@@ -654,3 +654,77 @@ Spinbox générale (`to=1.0`, qui ne borne que les flèches : 1,5 tapé passait)
 partout (`gui.ALPHA_MIN`, `ALPHA_MAX`, les deux Spinbox, le parseur, textes, README) ; 2,0 = garde-fou choisi par
 moi, rien de mesuré au-delà de 1,5. Parseur testé (1,5, « 2,0 » acceptés ; 2,1, 0,05 refusés). Code seul (décision
 de Hell_Kaiser) : exe et zip à rebâtir avec la prochaine version.
+
+## 21. Support UV : mesure des mises à plat et des matériaux, architecture (2026-11-04, 12 h → 13 h, Fable, « Reprends », lecture seule)
+
+**Entrée** : `3_Bodies\V's Body.zip` → `C:\__DEV\cyberpunk\ink_flow\dl\uv\` : UV Framework Texture 3.2.1
+(`011_…`, 197 fichiers), Solo OG 2.0 (36), Solo OG 2.0 Arms UV (4 maillages), Songbird Arms UV (88), Songbird
+Body 2.0 UV (136), et 5 tatouages UV (Bedellia Unrelated, Kala Japanese V2 et Sleeve 1, Garden Bloom, Pirate
+Venus). Dépaquetés et sérialisés par le CLI WolvenKit 9.1.0 ; scripts dans `tools\qa_2026-11-04\` (`mats.py` :
+magasins de matériaux ; `uvcov2.py` : couverture UV des chunks de peau, triangles LOD 0 rasterisés sur une grille
+64 × 64, confinement A dans B, cartes). Rien posé dans le jeu.
+
+**Ce que livre le framework UV 3.2.1** : les maillages **vanilla** (corps F et M, bras HQ F et M, bras et torse FPP,
+tête F et M, cyberbras : 64 `.mesh`, 1 morphtarget) dont les 12 matériaux de peau pointent sur SA chaîne de `.mi`
+(108 fichiers sous `player_mat_instance\`, chemins vanilla remplacés) ; 24 `.xbm` : peau (`d02_naked`, `n02_naked`,
+`wa_base_rm02`, idem `ma`), calques (`fullbody_overlay_d01`, `glow_overlay_d01`, `wa_head_overlay_d01` et
+leurs `ma_` / normales). Chaîne lue : `female_01_ca_pale.mi` → `default_female_body_01_ca_pale.mi` (Albedo
+`d02_naked`, Normal, Roughness) → `default_body_01_ca_pale.mi` (**`SecondaryAlbedo` = `fullbody_overlay_d01`**,
+`EmissiveMask` = `glow_overlay_d01`, `DetailNormal`) → `01_ca_pale.mi` → `skin.mt`. Masculin : `male_…` →
+`default_male_body_…` → `d_ma_body_…` (`ma_fullbody_overlay_d01`). Tête : `female_head_01_ca_pale.mi` porte
+directement `wa_head_overlay_d01`. Les maillages du framework n'ont **aucun** `SecondaryAlbedo` local : le calque
+vient de la chaîne ; un corps VTK (Angel) le fixe en local (`v_overlay`), ce qui l'emporte. **Question (b) de la
+passation fermée** : tous les maillages lus (framework, Solo, Songbird, bras UV) ont des matériaux **locaux**
+(`localMaterialBuffer`, ou `preloadLocalMaterialInstances` pour les bras comme en vanilla), 0 externe :
+`shell()` les accepte tels quels.
+
+**Mises à plat (chunks de peau, LOD 0, grille 64 × 64 ; « A ⊂ B » = part des cases de A couvertes par B)** :
+
+| Surface | Maillages comparés | Résultat |
+|---|---|---|
+| Corps F | vanilla (4 641 sommets), framework, Solo (62 332), Songbird (71 274, 2 chunks de peau) | **même mise à plat** : vanilla = framework (maillage identique), vanilla ⊂ Solo 1,00, Solo ⊂ vanilla 0,97, Songbird ⊂ vanilla 0,99 ; la peau occupe u > 0,22 |
+| Corps F Angel | Angel (91 360) contre vanilla | Angel ⊂ vanilla **0,73**, vanilla ⊂ Angel 0,88 ; **24 % des cases d'Angel sont dans la bande u < 0,22** : chunk 7 (pieds, z 0,01-0,12, 85 % de ses sommets) et chunk 6 (chevilles, z 0,07-0,21, 79 %). Solo : 1,4 % dans la bande = plante des pieds (z 0,02) |
+| Bras VTK / vanilla | vanilla G/D, Angel G/D, FPP vanilla, bras masculins vanilla et Gymfiend | **tous identiques** (0,99-1,00) : la mise à plat vanilla des bras, texture à part (`femme_arm_*_overlay`) ; 20 % de ses cases sous u < 0,22 de SA texture |
+| Bras UV | framework F G/D et M G/D, Solo Arms UV G/D, FPP framework | **100 % dans la bande u < 0,22 du corps** : gauche en v < 0,5, droit en v > 0,5 (347 cases chacun) ; même géométrie que vanilla (9 123 triangles de peau, chunks 456 / 471 / 4 214 contre 4 212) |
+| Tête F | vanilla, framework, VTK Vanilla HD | identiques (13 186 triangles, 2 602 cases) |
+| Corps M | vanilla, framework, Gymfiend | identiques entre eux **et à la mise à plat du corps féminin** (1,00) |
+
+**Textures (export PNG par le CLI, planche `dl\uv\png\contact_sheet.png`, bande u < 0,22 tracée en rouge)** :
+la peau du framework `d02_naked` (4096²) montre les deux bras dans la bande (21,9 % des texels), torse et jambes
+ailleurs. Encre des tatouages UV dans la bande : Kala Sleeve 1 **100 %** (manches seules), Garden Bloom 37 %,
+Bedellia 32 %, Kala V2 0 % (torse et jambes). VTK : Samurai `v_overlay` (8192²) **0 %**, Kala VTK 0 % : les
+peintres VTK ne touchent jamais la bande (les pieds d'Angel) ; `femme_arm_left_01_overlay` Samurai (4096²) = mise
+à plat vanilla du bras, toute la texture. Tête Garden Bloom 8192², 75 cases.
+
+**Coût d'un ré-encodage WolvenKit** (export DDS puis import BC7, PowerShell, `dl\uv\reenc\`) : 8K = 9 s + **166 s**
+(DDS 341 Mo, xbm 9,6 Mo pour 5,9 Mo à la source) ; 4K = 6 s + 25 s. Un geste qui retouche une texture coûte ça.
+
+**Deux pièges hors UV vus au passage** : (1) `shell()` convertit TOUS les matériaux en décal ; sur Songbird Body
+(7 chunks sur 9 = cyberware multilayer, 37 149 sommets) le tatouage se dessinerait sur les plaques : la coque doit
+masquer (`chunkMask`) les chunks dont le matériau de l'apparence `01_ca_pale` n'est pas une peau (même geste que la
+tête, § 10). (2) Solo 2.0 livre `l0_000_fpp__full.app` et `l0_000_base__full.app` dans un format que **le CLI
+9.1.0 refuse de sérialiser** (`castShadows` : Bool au lieu de `shadowsShadowCastingMode`) : `fpp_torso_mask()`
+(`core.py`, « serialize fpp app ») tombe sur « expected file missing », **rattrapé par son `except`** (lu) : masque
+par défaut `FPP_TORSO_MASK` (valeur vanilla / Angel) et une ligne « not readable » au journal. Le build passe ;
+le masque FPP vrai de Solo reste inconnu (son torse FPP a 62 341 sommets, 8 chunks) : à regarder en jeu au banc.
+
+### Architecture retenue pour la piste A (à coder, sur go)
+
+1. **Une texture, plusieurs coques** : `fullbody_overlay_d01` → cibles `body` + `arm_l` + `arm_r` (et leurs
+   compagnons FPP) avec la même texture ; `ma_fullbody_overlay_d01` → `m_body` + `m_arm_l` + `m_arm_r` ;
+   `wa_head_overlay_d01` / `ma_head_overlay_d01` = alias de `head` / `m_head` (même maillage, même mise à plat
+   que le calque VTK de tête). `TARGET_BY_TEX` devient texture → liste de cibles ; le décal lit la texture avec
+   les UV de la coque, donc **sur un corps UV + bras UV (Solo, Songbird, framework) tout est juste par
+   construction, sans conversion**.
+2. **Bras : détecter la mise à plat du bras actif** dans le JSON déjà sérialisé (u max des chunks de peau LOD 0 :
+   ≤ 0,22 = bras UV, sinon vanilla / VTK) et **refuser la cible bras** quand la famille de la texture ne
+   correspond pas (tatouage UV sur bras VTK, bras VTK sur bras UV), avec la raison dans la fenêtre et `build.log`
+   (« arms skipped : VTK arms »). Un bras VTK lirait toute la texture UV comme un bras : bouillie garantie.
+3. **Corps Angel sous une texture UV** : masquer dans la coque de corps les chunks dont la peau est
+   majoritairement dans la bande (chunks 6-7 = pieds et chevilles) par `chunkMask` : zéro ré-encodage, et les
+   pieds restent nus comme chez tout peintre VTK. Corps vanilla / Solo / Songbird : rien à masquer. Texture VTK
+   sur corps UV : juste (bande vierge), seuls les bras sont refusés (point 2).
+4. **Conversion des bras** (plus tard, optionnelle) : mise à plat vanilla ↔ bande, géométrie identique : transfert
+   par triangle avec appariement 3D (le framework a re-déplié les mêmes sommets), puis import BC7 (25 s par 4K,
+   166 s par 8K). Hors première version UV.
+5. Préfixe de nom `002_Tattoos_UV_` déjà accepté par `NAME_PREFIX` ; catalogue par empreinte de contenu inchangé.

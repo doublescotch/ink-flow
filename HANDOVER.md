@@ -5,7 +5,29 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04) : 1.2.0 = tableau des corps détectés + opacité par tatouage, prête
+## État (2026-11-04, 13 h) : support UV mesuré et architecturé, code sur go ; 1.2.0 toujours à uploader
+
+- **Mesure UV faite (ETUDE § 21, Fable, lecture seule, rien posé)** : corps vanilla = framework UV 3.2.1 = Solo =
+  Songbird = corps masculins (même mise à plat, peau en u > 0,22) ; **bras UV = bande u < 0,22 de la texture du
+  corps** (G en haut, D en bas), **bras VTK = mise à plat vanilla dans leur propre texture** ; Angel met ses pieds
+  et chevilles dans la bande (chunks 6-7, 24 % de sa peau), jamais peints par les textures VTK.
+- **Architecture retenue (ETUDE § 21, fin)** : une texture UV → coques corps + bras G + bras D (+ FPP) ; bras
+  acceptés seulement si la mise à plat du bras actif est celle de la famille (u max ≤ 0,22 = bras UV) ; corps Angel
+  sous texture UV = chunks 6-7 masqués ; aucune conversion ni ré-encodage dans la première version (BC7 = 166 s
+  par 8K, mesuré). Conversion des bras = chantier optionnel plus tard.
+- **Devis à son go** : une séance de code (`core.py` : `TARGET_BY_TEX` → liste, détection de la mise à plat des
+  bras depuis le JSON déjà sérialisé, masque des chunks de bande et des chunks non-peau, journal) + non-régression
+  488/488 + builds CLI sur deux arbres factices (Solo + framework + bras UV ; Angel) avec les 5 tatouages UV de
+  `dl\uv\`. Puis **banc en jeu à lui** : Solo 2.0 + framework 3.2.1 + Solo Arms UV posés (Angel parqué), créateur :
+  Kala Sleeve 1 (manches seules), Bedellia (corps + bras), FPP, miroir ; puis Angel + Bedellia (torse seul, pieds nus).
+- **Deux pièges trouvés, hors UV, à coder dans le même lot** : (1) `shell()` convertit tous les matériaux : sur
+  Songbird Body le tatouage couvrirait les plaques cyber (masquer les chunks non-peau de l'apparence) ; (2) les
+  `.app` de Solo 2.0 ne se sérialisent pas avec le CLI 9.1.0 (`castShadows` Bool) : `fpp_torso_mask()` retombe
+  sur le masque vanilla (`except` lu), le build passe ; le vrai masque FPP de Solo = point de QA au banc.
+- Jetable sur le poste : `C:\__DEV\cyberpunk\ink_flow\dl\uv\` (archives, `x\` sérialisé, `png\`, `reenc\` ≈ 1 Go).
+- Reste inchangé : 1.2.0 à uploader (bloc suivant), opacité > 1,0 corrigée non rebâtie, QA opacité annoncée.
+
+## ~~État (2026-11-04) : 1.2.0 = tableau des corps détectés + opacité par tatouage, prête~~ dépassé (04/11, 13 h : mesure UV)
 
 - **1.2.0 bâtie et commitée** (ETUDE § 20) : cadre « Body meshes in use » (Female V / Male V × Body / Arms / Head),
   colonne **Opacity** par tatouage (catalogue ; vide = **Default opacity**). Exe `4e3f15d1…9bb6`, zip
