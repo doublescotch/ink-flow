@@ -13,9 +13,14 @@ Nothing made by other authors is redistributed.
 - **WolvenKit Console** 9.1.0: the builder downloads it from GitHub on first run (45 MB) into `%LOCALAPPDATA%\InkFlow`.
 - The **.NET 10 runtime** (x64), required by WolvenKit Console. The builder tells you if it is missing and installs it
   for you (one button: Microsoft's installer is downloaded, version and SHA-256 checked, then run silently).
-- Female or male V (since 1.1.0). VTK tattoos only in this version (UV Framework tattoos are listed as "ignored").
-  A tattoo archive is female or male by the files it replaces (`v_overlay` / `femme_arm_*` / `pwa` head, or
-  `v_masc_overlay` / `masculine_arm_*` / `pma` head); one build carries both.
+- Female or male V (since 1.1.0), VTK or UV Framework tattoos (UV since 1.3.0). A tattoo archive is female or male
+  by the files it replaces (`v_overlay` / `femme_arm_*` / `pwa` head, or `v_masc_overlay` / `masculine_arm_*` /
+  `pma` head; UV: `fullbody_overlay_d01` / `wa_head_overlay_d01`, or the `ma_` forms); one build carries both.
+- **Arms follow the family of your arm meshes.** A UV tattoo is one texture for body + both arms, drawn for UV
+  Framework arms (Solo, Songbird…); a VTK tattoo keeps the arms in textures of their own, drawn for vanilla / VTK
+  arms (Angel, vanilla…). The body part of either family fits every body (same layout), so the builder always
+  builds it; the arm part is built only when your arms are of the same family, and the log says when it skips
+  them ("skipped: Arm L: UV tattoo on vanilla / VTK arms"). An arms-only UV tattoo on VTK arms builds nothing.
 
 ## How to use
 
@@ -25,7 +30,7 @@ Nothing made by other authors is redistributed.
    the arms and the head (the shells are copied from these), with the archives it wins over in small grey type. Green =
    a mod archive; grey "base game" = the vanilla mesh. A red line under the table means no body mod was seen at all,
    which is right only if you use none (see Troubleshooting).
-2. **Scan game folder…** finds the VTK tattoo archives your game already loads (`archive\pc\mod` and REDmod), copies
+2. **Scan game folder…** finds the VTK and UV tattoo archives your game already loads (`archive\pc\mod` and REDmod), copies
    them into the builder's tattoo folder and adds them. Or **Add files…** / **Add folder…** with `.archive` files from
    anywhere. The builder reads each file and shows what it covers: Body, Arm L, Arm R, Head. Unsupported files are
    greyed out with the reason.
@@ -117,11 +122,21 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
   chain. Fixed in 1.1.0: the builder re-encodes such textures. Rebuild and install.
 - **Head tattoo not visible on a vanilla head** (no VTK head mod): known, under investigation. Head tattoos are drawn
   for VTK HD heads and work with one (seen with VTK Vanilla HD Head).
+- **A UV tattoo shows on the body but not on the arms** (or a VTK arm tattoo is missing on a UV body). Your arm
+  meshes are of the other family: UV Framework arms are unwrapped into the body texture, vanilla / VTK arms into
+  their own, and a texture of one family on arms of the other would be garbage, so the builder skips those arms
+  (`build.log`, block 2: "layout", and "skipped" under the tattoo). Use arm meshes of the tattoo's family, or a
+  tattoo of your arms' family.
+- **A UV tattoo on Angel: the feet stay bare.** Angel unwraps its feet into the part of the texture a UV tattoo uses
+  for the arms, so the builder hides the feet in that shell rather than paint arm ink on them (VTK textures never
+  paint there either).
 - **Game 2.3x.** Not supported: the 2.5 bodies are different. Someone may fork the generator for 2.31 (MIT).
 
 ## Known limits of this first cut
 
-- UV Framework tattoos (Solo-type bodies) not supported yet. No icons in the creator (text options).
+- UV Framework tattoos (1.3.0): built and checked out of game on Solo 2.0 + UV Framework 3.2.1 + Solo arms UV, and
+  on Angel (body only); not seen in game yet. Songbird 2.0 body: the shell hides its cyber chunks, not seen in game.
+  No icons in the creator (text options).
 - Male V (vanilla body, Gymfiend VTK 1.4.3 + MV Head VTK) seen in the character creator only so far; mirror, first
   person and photo mode not seen in game yet. Head tattoos on a vanilla head (female or male): see Troubleshooting.
 - Face sculpting changed at the ripperdoc after a build has not been QA'd yet (the head shell follows the face morphs

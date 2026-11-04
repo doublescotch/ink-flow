@@ -728,3 +728,35 @@ le masque FPP vrai de Solo reste inconnu (son torse FPP a 62 341 sommets, 8 chun
    par triangle avec appariement 3D (le framework a re-déplié les mêmes sommets), puis import BC7 (25 s par 4K,
    166 s par 8K). Hors première version UV.
 5. Préfixe de nom `002_Tattoos_UV_` déjà accepté par `NAME_PREFIX` ; catalogue par empreinte de contenu inchangé.
+
+### Livré (2026-11-04, 13 h 30 → 15 h, Fable, go « maintenant » de Hell_Kaiser) : moteur 1.3.0, preuves hors jeu
+
+**`core.py`** : table `TEX_TARGETS` (texture → liste de (cible, famille)) : `fullbody_overlay_d01` → corps + bras G +
+bras D, `ma_` → masculin, `wa_head_overlay_d01` / `ma_head_overlay_d01` → tête ; `Entry.tex` / `Entry.family` par
+cible, VTK gagne sur UV quand une archive livre les deux pour la même surface ; `Item.targets` devient un champ
+(l'entrée garde les siens), `Item.skipped`, `Item.no_fpp`. **`mesh_layout()`** lit le JSON déjà sérialisé du maillage
+actif (sommets des chunks de peau, LOD 0, demi-flottants) : `arms` = `strip` (u max ≤ 0,25) ou `full`, `skin_mask`
+(chunks dont le matériau de l'apparence `01_ca_pale` n'est pas un teint : port de lien personnel, plaques Songbird),
+`strip_mask` (chunks de peau à plus de 50 % dans la bande : pieds et chevilles d'Angel) ; 0,01 à 0,11 s par maillage.
+`run_build` journalise la mise à plat de chaque maillage, **saute les cibles bras** dont la famille ne correspond pas
+(et le compagnon FPP de même), écarte un tatouage sans cible restante ; `shell_mask()` pose le `chunkMask` des `.app`
+(gabarit & peau & bande pour le corps sous une texture UV ; masque FPP du torse & idem). `Paths` : une texture UV
+copiée **une fois** (`<slug>_uv_pwa.xbm`, `_head` pour la tête). `KNOWN_OTHER` connaît les glows et normales UV
+(archives « pures » pour Scan et conflits). **`extract_mesh`** accepte un morphtarget livré ailleurs que le maillage :
+le framework UV livre la tête vanilla **sans** son morphtarget (resté au jeu de base) et la 1.2.0 refusait le build
+(« not in the same archive ») ; désormais l'archive gagnante du morphtarget est lue à part (clé de cache étendue).
+`TEX_REGEX` change ⇒ cache des textures rebâti une fois. `gui.py` : colonne cibles par `Entry.targets_label`
+(« Body (UV) + Arm L (UV) + Arm R (UV) »). Version 1.3.0, README, `NEXUS.md` (changelog 1.3.0, section « Arms and
+families », corps UV à confirmer en jeu avant l'upload).
+
+**Preuves (`tools\qa_2026-11-04\uv_build.py` + `uv_check.py`, arbres factices `gen\uv104\`, 7 tatouages : 5 UV + Samurai
++ Kala Arm Body VTK, 2 slots, FPP, miroir)** :
+
+| Arbre | Résultat |
+|---|---|
+| **Solo** (framework 3.2.1 + Solo OG 2.0 + Solo Arms UV) | 194 s, 83,4 Mo, 116 fichiers. Corps = Solo (62 332 sommets, mise à plat vanilla), bras = Solo UV (`strip`), tête = framework + morphtarget du jeu de base. Les 5 UV → corps + bras G + bras D + FPP bras sur **une** copie de texture (8 `.xbm` pour 7 tatouages, dont la tête Garden Bloom) ; Samurai → corps seul, « VTK tattoo on UV Framework arms » ; `chunkMask` `…799` (port de lien) sur les 20 `.app` de bras G, gabarit ailleurs. Options du créateur : chaque UV pilote 3 uiSlots (+ tête pour Garden Bloom), Samurai 1. `.app` FPP de Solo non sérialisable ⇒ masque FPP vanilla (`except` lu), au journal. |
+| **Angel** (006_Angel_Body) | 70 fichiers, 10 `.xbm`. Les 5 UV → corps seul (« UV tattoo on vanilla / VTK arms »), **`chunkMask` `…615` = chunks 6-7 masqués** sur leurs 10 `.app` de corps et `…392` (masque FPP du torse moins 6-7) sur leurs `.app` FPP ; Samurai et Kala VTK entiers, masque gabarit sur le corps, `…799` sur bras G ; Garden Bloom tête = 62 matériaux décal, 105 morphs. |
+| **Non-régression** (`regress_female.py`, HEAD 1.2.0 contre arbre de travail, arbre vanilla factice, ses 19 tatouages, 9 slots) | 488 fichiers des deux côtés, `.xl` identique, **380 identiques, 108 différents = exactement les `*_slot<n>_arm_l.app` et `*_slot<n>_fpp_arm_l.app`** (6 tatouages de bras G × 9 slots × 2), et dans chacun le seul changement est `chunkMask` `…807` → `…799` (bit 3 = chunk `personal_link` du bras gauche, désormais caché : un tatouage est de la peau). Textures, coques, morphtargets, inkcc, localisation : identiques. |
+
+**Effet visible annoncé (QA)** : le port de lien personnel de l'avant-bras gauche ne reçoit plus d'encre (il en
+recevait depuis la 1.0.0, jamais relevé). **Non vu en jeu** : tout le lot UV ; banc à lui (passation).

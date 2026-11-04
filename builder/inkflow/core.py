@@ -21,8 +21,10 @@ Differences with the v0.3 script : no `sys.exit` (BuildError), no `print` (log c
 PyInstaller bundle when frozen, catalogue keyed by CONTENT id (SHA-256) so a renamed file keeps its slug and the
 player's saved character keeps its tattoos.
 """
+import base64
 import copy
 import json
+import math
 import os
 import re
 import shutil
@@ -112,15 +114,41 @@ FPP_TARGETS = [
 ]
 FPP_BY_PARENT = {t["parent"]: t for t in FPP_TARGETS}
 TARGET_BY_TEX = {t["tex"]: t for t in TARGETS}
+# UV Framework family (ETUDE § 21, measured 2026-11-04). ONE texture for body + both arms, drawn in the vanilla body
+# layout (skin in u > 0.22) with the UV arms re-unwrapped into the left strip (u < 0.22 : left arm in v < 0.5, right
+# arm in v > 0.5) ; the head overlay apart, on the vanilla head layout (the one the VTK head overlay uses too). The
+# UV bodies (Solo, Songbird, the framework's own copies of the vanilla meshes) keep the vanilla body layout, so a
+# shell copied from them reads a UV texture correctly by construction. VTK / vanilla arms keep the vanilla ARM layout
+# in a texture of their own : a UV texture on them, or a VTK arm texture on UV arms, would be garbage, so
+# `mesh_layout` tells the two apart and `run_build` skips the mismatched arm targets. Angel unwraps its feet and
+# ankles into the strip (never painted by VTK textures) : under a UV texture those chunks are masked (`strip_mask`).
+UV_BODY_TEX = {"f": r"base\4k\common\overlays\fullbody_overlay_d01.xbm", "m": r"base\4k\common\overlays\ma_fullbody_overlay_d01.xbm"}
+UV_HEAD_TEX = {"f": r"base\4k\common\overlays\wa_head_overlay_d01.xbm", "m": r"base\4k\common\overlays\ma_head_overlay_d01.xbm"}
+UV_STRIP = 0.22                                 # u below which the body texture belongs to the UV arms
+ARM_CODES = ("arm_l", "arm_r", "m_arm_l", "m_arm_r")
+BODY_CODES = ("body", "m_body")
+# texture path -> [(target code, family)] ; "vtk" = the overlay slot of the mesh itself, "uv" = UV Framework layout
+TEX_TARGETS = {t["tex"]: [(t["code"], "vtk")] for t in TARGETS}
+TEX_TARGETS[UV_BODY_TEX["f"]] = [("body", "uv"), ("arm_l", "uv"), ("arm_r", "uv")]
+TEX_TARGETS[UV_BODY_TEX["m"]] = [("m_body", "uv"), ("m_arm_l", "uv"), ("m_arm_r", "uv")]
+TEX_TARGETS[UV_HEAD_TEX["f"]] = [("head", "uv")]
+TEX_TARGETS[UV_HEAD_TEX["m"]] = [("m_head", "uv")]
 KNOWN_OTHER = {
-    r"base\4k\common\overlays\fullbody_overlay_d01.xbm": "UV body+arms (not supported yet)",
     r"base\v_textures\body\v_body_rm.xbm": "VTK skin roughness (not a tattoo)",
     ARMS_TEX + r"\femme_arm_left_01_roughnessmask.xbm": "VTK arm L roughness",
     ARMS_TEX + r"\femme_arm_right_01_roughnessmask.xbm": "VTK arm R roughness",
+    r"base\4k\common\overlays\glow_overlay_d01.xbm": "UV glow (not a tattoo)",
+    r"base\4k\common\overlays\ma_glow_overlay_d01.xbm": "UV glow (not a tattoo)",
+    r"base\4k\common\overlays\wa_head_glow_d01.xbm": "UV head glow (not a tattoo)",
+    r"base\4k\common\overlays\ma_head_glow_overlay_d01.xbm": "UV head glow (not a tattoo)",
+    r"base\4k\common\overlays\normals\fullbody_overlay_n01.xbm": "UV normal map (ignored)",
+    r"base\4k\common\overlays\normals\ma_fullbody_overlay_n01.xbm": "UV normal map (ignored)",
+    r"base\4k\common\overlays\normals\wa_head_overlay_n01.xbm": "UV head normal map (ignored)",
+    r"base\4k\common\overlays\normals\ma_head_overlay_n01.xbm": "UV head normal map (ignored)",
 }
-HASH_PATH = {rdar.fnv1a64(p): p for p in list(TARGET_BY_TEX) + list(KNOWN_OTHER)}
-TARGET_HASHES = {rdar.fnv1a64(t["tex"]) for t in TARGETS}
-TEX_REGEX = "(" + "|".join(re.escape(os.path.basename(t["tex"])) for t in TARGETS) + r"|\d+\.bin)$"
+HASH_PATH = {rdar.fnv1a64(p): p for p in list(TEX_TARGETS) + list(KNOWN_OTHER)}
+TARGET_HASHES = {rdar.fnv1a64(p) for p in TEX_TARGETS}
+TEX_REGEX = "(" + "|".join(sorted({re.escape(os.path.basename(p)) for p in TEX_TARGETS})) + r"|\d+\.bin)$"
 # `002_Tattoos_VTK_`, and the male forms `002_Tattoos_Masc_V_VTK_`, `00_MV_[VTK]_` (Gymfiend family) : same slugs as
 # 1.0.1 for every name the old pattern matched
 NAME_PREFIX = re.compile(r"^\d+_(Tattoos?_(Masc_V_)?|MV_\[)(VTK|UV)\]?_", re.I)
@@ -256,6 +284,8 @@ class Entry:
     targets: list = field(default_factory=list)   # TARGETS dicts
     other: list = field(default_factory=list)     # ignored, known labels
     unknown: int = 0
+    tex: dict = field(default_factory=dict)       # target code -> texture path inside the archive
+    family: dict = field(default_factory=dict)    # target code -> "vtk" | "uv"
 
     @property
     def supported(self):
@@ -264,6 +294,11 @@ class Entry:
     @property
     def target_codes(self):
         return [t["code"] for t in self.targets]
+
+    @property
+    def targets_label(self):
+        """`Body + Arm L + Arm R`, the UV Framework targets tagged `(UV)`."""
+        return " + ".join(t["label"] + (" (UV)" if self.family.get(t["code"]) == "uv" else "") for t in self.targets)
 
     @property
     def ignored_reason(self):
@@ -283,11 +318,16 @@ def scan_files(paths):
             out.append(Entry(p, os.path.basename(p), os.path.splitext(os.path.basename(p))[0], "", [], [f"unreadable: {e}"], 0))
             continue
         found = {HASH_PATH[h] for h in hs if h in HASH_PATH}
+        tex, fam = {}, {}
+        for path in sorted(found):
+            for code, family in TEX_TARGETS.get(path, []):
+                if code not in tex or (fam[code] == "uv" and family == "vtk"):   # the mesh's own slot wins over UV
+                    tex[code], fam[code] = path, family
         out.append(Entry(path=p, file=os.path.basename(p), stem=os.path.splitext(os.path.basename(p))[0],
                          id=rdar.content_id(p),
-                         targets=[t for t in TARGETS if t["tex"] in found],
+                         targets=[t for t in TARGETS if t["code"] in tex],
                          other=sorted(KNOWN_OTHER[x] for x in found if x in KNOWN_OTHER),
-                         unknown=len([h for h in hs if h not in HASH_PATH])))
+                         unknown=len([h for h in hs if h not in HASH_PATH]), tex=tex, family=fam))
     return out
 
 
@@ -492,11 +532,21 @@ def extract_mesh(cli, game, work, t, log):
     log(f"  {t['label']:6s}: {who_ships(owners)}")
     if not os.path.isfile(src):
         raise BuildError("base game archive not found: " + src)
-    if t["morph"] and rdar.fnv1a64(t["morph"]) not in rdar.index(src):
-        raise BuildError(f"the morphtarget of {t['code']} ({t['morph']}) is not in the same archive as the mesh ({src}): unsupported layout")
+    msrc = None
+    if t["morph"]:
+        if rdar.fnv1a64(t["morph"]) in rdar.index(src):
+            msrc = src
+        else:
+            # The morphtarget may be shipped apart from the mesh : UV Framework 3.2.1 ships the vanilla head mesh and
+            # leaves its morphtarget to the base game (ETUDE § 21). The game pairs them the same way we do here :
+            # the morphtarget the game loads, from whichever archive wins it.
+            msrc, mowners = find_owner(game, t["morph"])
+            log(f"  {'':6s}  morphtarget: {who_ships(mowners)}")
+            if not os.path.isfile(msrc):
+                raise BuildError("base game archive not found: " + msrc)
     d = os.path.join(work, "mesh", t["code"])
     marker = os.path.join(d, ".src")
-    key = stamp(src) + "|" + src.lower() + "|" + t["mesh"]
+    key = stamp(src) + "|" + src.lower() + "|" + t["mesh"] + ("" if msrc in (None, src) else "|" + stamp(msrc) + "|" + msrc.lower())
     mesh_json = os.path.join(d, t["mesh"] + ".json")
     morph_json = os.path.join(d, t["morph"] + ".json") if t["morph"] else None
     if cached(marker, key) and os.path.isfile(mesh_json) and (not morph_json or os.path.isfile(morph_json)):
@@ -504,8 +554,11 @@ def extract_mesh(cli, game, work, t, log):
     shutil.rmtree(d, ignore_errors=True)
     os.makedirs(d)
     wanted = [t["mesh"]] + ([t["morph"]] if t["morph"] else [])
-    rx = "(" + "|".join(re.escape("\\" + os.path.basename(p)) for p in wanted) + ")$"
+    same = [p for p in wanted if p == t["mesh"] or msrc == src]
+    rx = "(" + "|".join(re.escape("\\" + os.path.basename(p)) for p in same) + ")$"
     cli.run("unbundle", src, "-o", d, "-r", rx, what=f"unbundle {t['code']}")
+    if t["morph"] and msrc != src:
+        cli.run("unbundle", msrc, "-o", d, "-r", re.escape("\\" + os.path.basename(t["morph"])) + "$", what=f"unbundle {t['code']} morphtarget")
     common = os.path.commonpath([os.path.join(d, os.path.dirname(p)) for p in wanted])
     cli.run("convert", "serialize", common, what=f"serialize {t['code']}")
     for p in (mesh_json, morph_json):
@@ -549,6 +602,86 @@ def fpp_torso_mask(cli, game, work, log):
     except (BuildError, OSError, ValueError, KeyError, TypeError) as e:
         log(f"  ! FPP app: {who}, not readable ({e}): default mask {FPP_TORSO_MASK}")
     return FPP_TORSO_MASK
+
+
+# ----------------------------------------------------------------------------- 2c. UV layouts (ETUDE § 21)
+VTX_SIZE = {"PT_Float16_2": 4, "PT_Float16_4": 8, "PT_Short4N": 8, "PT_UByte4": 4, "PT_UByte4N": 4, "PT_Dec4": 4,
+            "PT_Color": 4, "PT_Float32_2": 8, "PT_Float32_3": 12, "PT_Float32_4": 16, "PT_UShort2": 4, "PT_UByte1": 1,
+            "PT_UInt1": 4, "PT_Float32_1": 4, "PT_Float16_1": 2, "PT_Float16_3": 6, "PT_Short4": 8, "PT_Short2": 4}
+SKIN_MAT = re.compile(r"^0[1-6]_(ca|bl)_[a-z]+(_body)?$")   # the 12 skin tints (`01_ca_pale`… ; FPP arm R : `01_ca_pale_body`)
+TEMPLATE_MASK = (1 << 63) - 1                               # `chunkMask` of the toolkit templates : every chunk shown
+ALL_CHUNKS = (1 << 64) - 1
+
+
+def _half(h):
+    s, e, f = (h >> 15) & 1, (h >> 10) & 0x1f, h & 0x3ff
+    v = (f / 1024.0) * 2.0 ** -14 if e == 0 else (float("nan") if e == 31 else (1 + f / 1024.0) * 2.0 ** (e - 15))
+    return -v if s else v
+
+
+def mesh_layout(mesh_json):
+    """What a shell copied from this mesh needs to know (serialised mesh JSON, vertex based, a fraction of a second) :
+      skin_mask   : chunk mask hiding every chunk whose material in the `01_ca_pale` appearance is not a skin tint
+                    (the arms' personal link port, Songbird's cyber plates…) : a tattoo is skin only ;
+      strip_mask  : chunk mask hiding the skin chunks mostly (> 50 % of their vertices) unwrapped in the UV strip
+                    u < 0.22 (Angel's feet and ankles) : for body shells under a UV texture, which keeps the arms there ;
+      arms        : "strip" when the skin UVs (LOD 0) stay under u 0.22 = UV Framework arms, else "full" = the vanilla
+                    arm layout (vanilla, VTK) ;
+      u_max, strip_share, hidden, strip_chunks : the figures behind it, for the log."""
+    root = load(mesh_json)["Data"]["RootChunk"]
+    rb = root["renderResourceBlob"]["Data"]
+    header = rb["header"]
+    buf = base64.b64decode(rb["renderBuffer"]["Bytes"])
+    app = next((a["Data"] for a in root.get("appearances", []) if a["Data"]["name"]["$value"] == MESH_APPEARANCE), None)
+    chunk_mats = [c["$value"] for c in app["chunkMaterials"]] if app else []
+    skin_mask, strip_mask = ALL_CHUNKS, ALL_CHUNKS
+    hidden, strip_chunks = [], []
+    u_max, n_strip, n_all = 0.0, 0, 0
+    for n, ci in enumerate(header["renderChunkInfos"]):
+        mat = chunk_mats[n] if n < len(chunk_mats) else "01_ca_pale"
+        if not SKIN_MAT.match(mat):
+            skin_mask &= ~(1 << n)
+            hidden.append(f"{n}:{mat}")
+            continue
+        cv = ci["chunkVertices"]
+        lay = cv["vertexLayout"]["elements"]["Elements"]
+        tex = next((e for e in lay if e["usage"] == "PS_TexCoord" and e["usageIndex"] == 0), None)
+        if tex is None:
+            continue
+        stream = [e for e in lay if e["streamIndex"] == tex["streamIndex"] and e["streamType"] == "ST_PerVertex"]
+        stride = sum(VTX_SIZE.get(e["type"], 4) for e in stream)
+        pos = sum(VTX_SIZE.get(e["type"], 4) for e in stream[:stream.index(tex)])
+        base = cv["byteOffsets"]["Elements"][tex["streamIndex"]]
+        nv = ci["numVertices"]
+        in_strip = 0
+        for i in range(nv):
+            u = _half(struct.unpack_from("<H", buf, base + i * stride + pos)[0])
+            if u != u:
+                continue
+            u -= math.floor(u)
+            if u < UV_STRIP:
+                in_strip += 1
+            elif ci["lodMask"] == 1 and u > u_max:
+                u_max = u
+        if nv and in_strip * 2 > nv:
+            strip_mask &= ~(1 << n)
+            strip_chunks.append(n)
+        if ci["lodMask"] == 1:
+            n_strip += in_strip
+            n_all += nv
+    return dict(skin_mask=skin_mask, strip_mask=strip_mask, arms="strip" if u_max <= UV_STRIP + 0.03 else "full",
+                u_max=u_max, strip_share=(n_strip / n_all) if n_all else 0.0, hidden=hidden, strip_chunks=strip_chunks)
+
+
+def shell_mask(layouts, code, family, is_body, base=TEMPLATE_MASK):
+    """`chunkMask` (string) of a shell component, or None when the template's own mask already fits."""
+    lay = layouts.get(code)
+    m = base
+    if lay:
+        m &= lay["skin_mask"]
+        if is_body and family == "uv":
+            m &= lay["strip_mask"]
+    return None if m == base else str(m)
 
 
 # ----------------------------------------------------------------------------- 3. textures
@@ -619,11 +752,14 @@ def extract_textures(cli, game, archive, slug, work, log):
 
 # ----------------------------------------------------------------------------- 4. construction
 class Paths:
-    def __init__(self, slug, t):
+    def __init__(self, slug, t, family="vtk"):
         d = rf"{P}\tattoos\{slug}"
         s = t["suffix"]
-        self.tex = rf"{d}\{slug}{s}.xbm"
         tag = GENDER_TAG[t.get("gender", "f")]
+        if family == "uv":      # one UV texture serves body + both arms : copied once, shared by their shells
+            self.tex = rf"{d}\{slug}_uv_{tag}" + ("_head" if t["code"] in ("head", "m_head") else "") + ".xbm"
+        else:
+            self.tex = rf"{d}\{slug}{s}.xbm"
         self.mesh = rf"{d}\{slug}_{tag}{s}.mesh"
         self.morph = rf"{d}\{slug}_{tag}{s}.morphtarget"
         self.app = rf"{d}\{slug}{s}.app"                           # route 1
@@ -746,10 +882,16 @@ class Item:
     name: str
     texdir: str = ""
     alpha: float = None          # per-tattoo opacity (catalogue) ; None = Settings.alpha
+    targets: list = None         # TARGETS dicts built for this item : entry.targets minus the arms `run_build` skips
+    skipped: list = field(default_factory=list)   # "Arm L: UV tattoo on VTK / vanilla arms"…, for the log
+    no_fpp: set = field(default_factory=set)      # FPP companion codes skipped (first-person arm layout mismatch)
 
-    @property
-    def targets(self):
-        return self.entry.targets
+    def __post_init__(self):
+        if self.targets is None:
+            self.targets = list(self.entry.targets)
+
+    def family(self, t):
+        return self.entry.family.get(t["code"], "vtk")
 
 
 @dataclass
@@ -843,7 +985,7 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
             for i, it in enumerate(items, 1):
                 names = []
                 for f in FPP_TARGETS:
-                    if TARGET_BY_CODE[f["parent"]] in it.targets:
+                    if TARGET_BY_CODE[f["parent"]] in it.targets and f["code"] not in it.no_fpp:
                         nm = f"inkflow_slot{n_}_{it.slug}{f['suffix']}"
                         finfos.append(info(nm, fui[f["code"]], Paths(it.slug, f).slot_app(n_), f"w__{it.slug}{f['suffix']}"))
                         names.append(nm)
@@ -861,9 +1003,10 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
 
 
 
-def build_archive(s, cli, items, active, log, fpp_mask=None):
+def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
     """items: list of Item ; active: target code -> (mesh json, morph json) ; fpp_mask: chunk mask of the FPP body shell
-    (`fpp_torso_mask`, when `s.fpp`). -> (archive, xl, listing)."""
+    (`fpp_torso_mask`, when `s.fpp`) ; layouts: target code -> `mesh_layout` (chunk masks). -> (archive, xl, listing)."""
+    layouts = layouts or {}
     tdir = templates_dir()
     src = os.path.join(s.work, "pack", s.name)
     shutil.rmtree(src, ignore_errors=True)
@@ -887,13 +1030,15 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
         alpha = s.alpha if it.alpha is None else it.alpha
         parts = []
         for t in it.targets:
-            pp = Paths(slug, t)
-            src_tex = os.path.join(it.texdir, t["tex"])
+            fam = it.family(t)
+            pp = Paths(slug, t, fam)
+            src_tex = os.path.join(it.texdir, it.entry.tex.get(t["code"], t["tex"]))
             if not os.path.isfile(src_tex):
                 raise BuildError("texture missing after extraction: " + src_tex)
             dst = os.path.join(src, pp.tex)
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            shutil.copyfile(src_tex, dst)
+            if not os.path.isfile(dst):            # a UV texture is shared by the body and arm shells : one copy
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copyfile(src_tex, dst)
             mesh, nm, nv = shell(meshes[t["code"]], pp.tex, alpha, f"[{slug}] {t['code']}")
             save(pp.mesh, mesh)
             expected.append(pp.mesh)
@@ -902,27 +1047,32 @@ def build_archive(s, cli, items, active, log, fpp_mask=None):
                 morph, nt = retarget_morph(morphs[t["code"]], t, pp.mesh)
                 save(pp.morph, morph)
                 expected.append(pp.morph)
+            mask = shell_mask(layouts, t["code"], fam, t["code"] in BODY_CODES)
             if s.route1 and t["code"] == "body":
-                save(pp.app, make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_{slug}", f"w__{slug}"))
+                save(pp.app, make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_{slug}", f"w__{slug}", mask))
                 expected.append(pp.app)
             for n_ in slots:
-                save(pp.slot_app(n_), make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_slot{n_}_{slug}{t['suffix']}", f"w__{slug}{t['suffix']}"))
+                save(pp.slot_app(n_), make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_slot{n_}_{slug}{t['suffix']}", f"w__{slug}{t['suffix']}", mask))
                 expected.append(pp.slot_app(n_))
-            parts.append(f"{t['code']} {nv} vertices / {nm} mat." + (f" / {nt} morphs" if nt else ""))
+            parts.append(f"{t['code']}{' (UV)' if fam == 'uv' else ''} {nv} vertices / {nm} mat." + (f" / {nt} morphs" if nt else "")
+                         + (f" / mask {mask}" if mask else ""))
         if s.fpp:
             for t in it.targets:
                 f = FPP_BY_PARENT.get(t["code"])
-                if not f:
+                if not f or f["code"] in it.no_fpp:
                     continue
-                pt, pf = Paths(slug, t), Paths(slug, f)
+                fam = it.family(t)
+                pt, pf = Paths(slug, t, fam), Paths(slug, f)
                 if f["mesh"]:
                     mesh, nm, nv = shell(meshes[f["code"]], pt.tex, alpha, f"[{slug}] {f['code']}")
                     save(pf.mesh, mesh)
                     expected.append(pf.mesh)
-                    resource, mask = pf.mesh, None
-                    parts.append(f"{f['code']} {nv} vertices / {nm} mat.")
+                    resource, mask = pf.mesh, shell_mask(layouts, f["code"], fam, False)
+                    parts.append(f"{f['code']} {nv} vertices / {nm} mat." + (f" / mask {mask}" if mask else ""))
                 else:
-                    resource, mask = pt.mesh, fpp_mask
+                    base = int(fpp_mask) if fpp_mask is not None else TEMPLATE_MASK
+                    resource = pt.mesh
+                    mask = shell_mask(layouts, t["code"], fam, True, base) or (str(base) if fpp_mask is not None else None)
                     parts.append(f"{f['code']} = body shell, mask {mask}")
                 for n_ in slots:
                     save(pf.slot_app(n_), make_app(tpls[f["tpl"]], f, resource, f"inkflow_slot{n_}_{slug}{f['suffix']}", f"w__{slug}{f['suffix']}", mask))
@@ -1050,7 +1200,7 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
             log(f"  ! name too long ({len(catalogue.name(e))} > {s.max_name}), cut: \"{catalogue.name(e)}\" -> \"{label}\"")
         names_seen.setdefault(label, []).append(e.file)
         a = catalogue.alpha(e)
-        log(f"  + {e.file}  ->  {catalogue.slug(e)}, \"{label}\": {' + '.join(t['label'] for t in e.targets)}"
+        log(f"  + {e.file}  ->  {catalogue.slug(e)}, \"{label}\": {e.targets_label}"
             + (f", opacity {a:g}" if a is not None else "")
             + (f"  (ignored: {e.ignored_reason})" if e.other or e.unknown else ""))
         built.append(Item(e, catalogue.slug(e), label, alpha=a))
@@ -1062,12 +1212,43 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     log("2. active meshes")
     needed = [t for t in TARGETS if any(t in it.targets for it in built)]
     active = {t["code"]: extract_mesh(cli, s.game, s.work, t, log) for t in needed}
+    # UV layouts (ETUDE § 21) : arm targets whose texture family does not match the active arm mesh are skipped
+    layouts = {c: mesh_layout(m) for c, (m, _) in active.items()}
+    for c, lay in layouts.items():
+        log(f"  {TARGET_BY_CODE[c]['label']:6s}: {'UV' if lay['arms'] == 'strip' else 'vanilla / VTK'} layout "
+            f"(u max {lay['u_max']:.2f}, {lay['strip_share']:.0%} of the skin in the UV strip)"
+            + (f", non-skin chunks hidden in the shells: {', '.join(lay['hidden'])}" if lay["hidden"] else "")
+            + (f", chunks in the strip (hidden under a UV texture): {lay['strip_chunks']}" if lay["strip_chunks"] and c in BODY_CODES else ""))
+    for it in built:
+        keep = []
+        for t in it.targets:
+            fam = it.family(t)
+            if t["code"] in ARM_CODES and layouts[t["code"]]["arms"] != ("strip" if fam == "uv" else "full"):
+                it.skipped.append(f"{t['label']}: {'UV' if fam == 'uv' else 'VTK'} tattoo on "
+                                  f"{'UV Framework' if fam != 'uv' else 'vanilla / VTK'} arms (other layout)")
+                continue
+            keep.append(t)
+        it.targets = keep
+        if it.skipped:
+            log(f"  ! [{it.slug}] skipped: " + " ; ".join(it.skipped) + ("" if keep else " : nothing left, tattoo left out"))
+    built = [it for it in built if it.targets]
+    if not built:
+        raise BuildError("no tattoo left to build: every target was skipped (see the arm layouts above)")
+    needed = [t for t in TARGETS if any(t in it.targets for it in built)]
     fpp_mask = None
     if s.fpp:
         log("2b. first person")
         for f in FPP_TARGETS:
             if f["mesh"] and TARGET_BY_CODE[f["parent"]] in needed:
                 active[f["code"]] = extract_mesh(cli, s.game, s.work, f, log)
+                layouts[f["code"]] = lay = mesh_layout(active[f["code"]][0])
+                log(f"  {f['label']:9s}: {'UV' if lay['arms'] == 'strip' else 'vanilla / VTK'} layout (u max {lay['u_max']:.2f})"
+                    + (f", non-skin chunks hidden: {', '.join(lay['hidden'])}" if lay["hidden"] else ""))
+                for it in built:
+                    fam = it.entry.family.get(f["parent"], "vtk")
+                    if TARGET_BY_CODE[f["parent"]] in it.targets and lay["arms"] != ("strip" if fam == "uv" else "full"):
+                        it.no_fpp.add(f["code"])
+                        log(f"  ! [{it.slug}] {f['label']} skipped: first-person arms have the other layout")
         if TARGET_BY_CODE["body"] in needed:
             fpp_mask = fpp_torso_mask(cli, s.game, s.work, log)
 
@@ -1079,7 +1260,7 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     step(2 + len(built), "Building the archive")
     log("4. build")
     try:
-        arc, xl, listing = build_archive(s, cli, built, active, log, fpp_mask)
+        arc, xl, listing = build_archive(s, cli, built, active, log, fpp_mask, layouts)
     except Cancelled:
         for p in (os.path.join(s.out, s.name + ".archive"), os.path.join(s.out, s.name + ".archive.xl")):
             if os.path.isfile(p):
@@ -1090,7 +1271,8 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     log(f"\nDONE in {time.time() - t0:.0f} s: {arc} ({size / 1e6:.1f} MB, {len(listing)} files) + {os.path.basename(xl)}")
     log(f"  {len(built)} tattoo(s), {s.slots} slot(s), mirror {'on' if s.mirror else 'off'}, first person {'on' if s.fpp else 'off'}")
     for it in built:
-        log(f"    {it.slug:40s} \"{it.name}\"  [{', '.join(it.entry.target_codes)}]" + (f"  opacity {it.alpha:g}" if it.alpha is not None else ""))
+        log(f"    {it.slug:40s} \"{it.name}\"  [{', '.join(t['code'] + ('/uv' if it.family(t) == 'uv' else '') for t in it.targets)}]"
+            + (f"  opacity {it.alpha:g}" if it.alpha is not None else "") + (f"  skipped: {' ; '.join(it.skipped)}" if it.skipped else ""))
     step(total, "Done")
     return BuildResult(arc, xl, listing, built, time.time() - t0, size)
 

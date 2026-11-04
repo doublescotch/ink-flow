@@ -242,3 +242,16 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   (build sur Solo à vérifier).
 - Architecture écrite (ETUDE § 21, cinq points) ; devis présenté, go attendu avant la première ligne
   de code.
+
+## 2026-11-04 (13 h 30 → 15 h) — Support UV codé : moteur 1.3.0, preuves hors jeu (Fable, go « maintenant »)
+
+- `core.py` : `TEX_TARGETS` (une texture, plusieurs cibles), `Entry.tex` / `family`, `Item.targets`
+  propre, `mesh_layout()` (mise à plat des bras, masques peau et bande), `shell_mask()`, saut des bras
+  de l'autre famille et de leur compagnon FPP, texture UV copiée une fois, morphtarget lu à part ;
+  `gui.py` : libellé « (UV) » ; version 1.3.0 ; README et `NEXUS.md` (changelog 1.3.0, « Arms and families »).
+- Trouvé en bâtissant : le framework UV livre la tête vanilla sans son morphtarget → la 1.2.0 refusait
+  tout build à cible tête sur un jeu avec le framework ; `extract_mesh` lit désormais le morphtarget
+  chez son archive gagnante (jeu de base ici).
+- Preuves : arbres factices `gen\uv104\` Solo (194 s, 116 fichiers) et Angel (70), contrôlés par
+  `uv_check.py` ; non-régression 380/488 identiques, 108 `.app` de bras gauche = masque du port de
+  lien seul, `.xl` identique. Exe non rebâti ; banc en jeu à lui (passation). Commits poussés.
