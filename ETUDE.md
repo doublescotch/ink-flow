@@ -647,3 +647,10 @@ Non-régression (`tools\qa_2026-11-03\regress_female.py`, HEAD 1.1.0 contre arbr
 **488/488 fichiers identiques, `.xl` identique**. Captures de la fenêtre (cas réel Angel + Gymfiend, cas fabriqué
 sans corps moddé avec bras G/D différents) : lisibles. Zip `3e1f13f9…6a46` (`releases\Ink_Flow_Builder-1.2.0.zip`).
 Non vu en jeu : une coque à 0,6 rend comme le réglage général à 0,6 (même champ du même matériau).
+
+**Bornes révisées (2026-11-04, retour du demandeur sur Nexus)** : la borne 1,0 de la colonne venait de la
+Spinbox générale (`to=1.0`, qui ne borne que les flèches : 1,5 tapé passait) ; lui a joué l'opacité générale à
+**1,5 en jeu et s'en sert** (texture pâle rehaussée), mais la colonne la refusait. Bornes portées à **0,1-2,0**
+partout (`gui.ALPHA_MIN`, `ALPHA_MAX`, les deux Spinbox, le parseur, textes, README) ; 2,0 = garde-fou choisi par
+moi, rien de mesuré au-delà de 1,5. Parseur testé (1,5, « 2,0 » acceptés ; 2,1, 0,05 refusés). Code seul (décision
+de Hell_Kaiser) : exe et zip à rebâtir avec la prochaine version.

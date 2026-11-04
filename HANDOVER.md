@@ -16,6 +16,9 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
   ~~Tags : seul `v1.0.0` existe~~ posés et poussés sur son go (04/11) : `v1.0.1` = `d86e5ab`, `v1.1.0` = `546200f`,
   `v1.2.0` = commit du sticky 1.2.0 (dernier commit de chaque version, comme `v1.0.0` = `dcf165a`).
   Réponses individuelles du 02/11 retirées de `NEXUS_POSTS.md` à sa demande (postées, historique git).
+- **Opacité > 1,0 par tatouage (04/11, retour du demandeur)** : colonne bornée à 1,0, réglage général non ;
+  corrigé dans le code (0,1-2,0 partout, ETUDE § 20, fin), **non rebâti** (sa décision : part avec la prochaine
+  version). Réponse au demandeur : en attendant, l'opacité générale à 1,5 marche, la par-tatouage viendra.
 - **Point de QA annoncé** : une coque à opacité propre rend comme le réglage général à la même valeur (même champ
   `DiffuseAlpha`), jamais vu en jeu ; à regarder au créateur avec deux tatouages à 0,5 et 1,0.
 - **Prochaine séance (inchangée)** : tête vanilla, tête du V masculin, miroir / FPP / photo du V masculin (bloc

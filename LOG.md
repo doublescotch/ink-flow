@@ -222,3 +222,5 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   Samurai à 0,6) ; non-régression 488/488 et `.xl` identiques contre la 1.1.0 ; captures de la fenêtre.
 - Sa réponse : 1.1.0 déjà uploadée ⇒ **1.2.0** : version, exe `4e3f15d1…`, zip `3e1f13f9…` dans `releases\`,
   `NEXUS.md` (étapes 1 et 3, dépannage, changelog 1.2.0, fichier à envoyer, capture de la fenêtre à refaire).
+- 04/11 : retour du demandeur : colonne Opacity refuse 1,5 alors que l'opacité générale à 1,5 marche en jeu.
+  Bornes 0,1-2,0 partout (`gui.ALPHA_MIN` / `ALPHA_MAX`), parseur testé ; code seul, exe non rebâti (sa décision).
