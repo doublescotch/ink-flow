@@ -12,36 +12,35 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-04, 22 h 45) : canari Angel tenu, Solo parqué sur sa décision ; gels = greffon NVIDIA Reflex ; jeu encore minimal
+## État (2026-11-05, 0 h 40) : 1.4.0 complète installée dans son instance neuve, QA à lui ; Solo parqué ; gels = overlay NVIDIA
 
-- **Plantages `memcpy` (ETUDE § 25)** : 5 sur 5 avec Solo dans le jeu ; le canari Angel (mêmes 2
-  tatouages, aucun bras converti, jeu minimal) a tenu 3 chargements et de longues bascules de slots
-  (sa QA, 22 h 20-22 h 32). Reste indistinct : Solo ou les bras convertis 8K (Solo seulement).
-  **Sa décision (22 h 35) : Solo parqué, on n'y revient pas pour l'instant** ; priorité = corps VTK
-  (Hyst, Angel, Eve, EBB, EBBRB) et tatouages UV sur VTK, déjà vus bons. En-tête Kala : corrigé.
-- **Gels watchdog 120 s (4 sur 4, dumps lus)** : fil principal bloqué dans le greffon **NVIDIA
-  Reflex** (`sl.reflex.dll`, chargé sous `170_E658703.dll`, `+0x3C43D`, chemin de présentation),
-  Reflex pourtant Disabled dans ses réglages ; mémoire plate ; pas Ink Flow (le canari de 33 Mo gèle
-  comme le jeu complet). **Trame nouvelle du 04/11** : absente des 3 gels antérieurs ; 7 « GPU
-  crash » le 28/10 avant Ink Flow. ReShade (chargé depuis le 03/11), overlay NVIDIA (compteur FPS
-  actif) hors pile. ~~GPU Tweak III~~ **éliminé (23 h 02 : désinstallé, redémarré, 5e gel identique)**.
-  **Overlay NVIDIA coupé (réglage « Superposition dans le jeu ») : 16 min sans gel à 23 h 24, suspect
-  n° 1, pas prouvé.** Sa décision : on avance ; il prendra un mod de compteur de perf intégré à
-  l'interface si ça se confirme. Si un gel revient : `sl.reflex.dll` renommé (test 3). ETUDE § 25.
-- **Son jeu maintenant : minimal** (Angel + refits + framework 3.2.1 + canari Angel 33,1 Mo, SHA
-  `14f05dc1…`, 420 archives parquées). Sauvegardes `backup\` : `_175841` Angel 1.4.0 (conversions
-  retournées, jamais planté), `_205556` Solo complet, `_215048` passe 1, `_221234` passe 2 Solo.
-- **Retour à son jeu normal** (sa formule, jeu fermé) : `minimal_bench.py unpark_all`, puis rebuild
-  complet moteur corrigé sur Angel (≈ 20 min, textures re-extraites, clé `mips2`) + `install`. Puis
-  QA Angel (section Ouvert) et publication 1.4.0 (section Attend).
-- **Réponse à sa question UV (22 h 40)** : un tatouage UV sur corps VTK = le corps marche sans le
-  framework (même mise à plat que vanilla) ; ses bras sont **convertis au build** vers la mise à
-  plat
-  des bras VTK, et cette conversion lit le maillage de bras du framework **présent dans le jeu au
-  moment du build** (`arm_refs`) ; sans lui, bras sautés, raison au journal. L'archive produite est
-  autonome : rien ne pointe vers le framework en jeu.
-- Télémétrie `vram_2026-11-04_c.csv` (scratchpad de la session) tourne jusqu'à 23 h 44.
-- Lancement lent : sans objet (66 s jusqu'au menu, jeu complet comme minimal ; audioware 18 s).
+- **Dans son jeu depuis 0 h 36** : instance régénérée par lui depuis « Virgin » (piles 1-3 : Angel
+  sans bras, refits, tête VTK HD, framework UV 3.2.1 ; Gymfiend absent, V masculin = vanilla) +
+  **Ink Flow 1.4.0 bâtie sur tout `3_Bodies\__Tattoos`** (44 archives, 42 tatouages, 19 bras
+  convertis, 9 slots, miroir, FPP ; 465,8 Mo, SHA `da5757d2…`, `gen\uv104\out_pack`, journal
+  `log_pack.txt`). Aucun conflit. Script : `tools\qa_2026-11-05\pack_build.py build | install`.
+- **Refusés au scan** : `Tortured Skin` UV et son Alt (InkDonkey), 3 fichiers inconnus chacun : à
+  mesurer avant de dire « non supporté ». Corps seul (pas d'encre aux bras) : Kala V2 UV, Anal Slut.
+- **Sa QA** : Samurai UV = deltoïde plein (conversion corrigée) ; Kala Sleeve 1-3 ; Bedellia ;
+  FrecklesV UV contre VTK (taches invisibles jusqu'ici ; à comparer en classique sans Ink Flow) ;
+  FPP, miroir, photo ; opacité par tatouage (0,5 contre 1,0) ; V masculin vanilla ; ONI V, Finn
+  Head, Militech Babe, Pirate Venus / Vince jamais vus.
+- **Caches** : l'exe travaille dans `%LOCALAPPDATA%\InkFlow\work`, les bancs dans
+  `gen\uv104\work_game` ; un rebuild depuis son exe ré-extrait tout (≈ 17 min) ; copie du cache
+  vers le sien sur son go. Son catalogue réel n'a pas les noms des UV (copie de test).
+- **Plantages `memcpy` (ETUDE § 25)** : 5 sur 5 avec Solo ; le canari Angel a tenu (sa QA du
+  04/11). Indistinct : Solo ou les bras convertis 8K. **Sa décision (04/11, 22 h 35) : Solo
+  parqué** ; priorité = corps VTK (Hyst, Angel, Eve, EBB, EBBRB) et UV sur VTK. En-tête Kala
+  corrigé.
+- **Gels watchdog (5 sur 5, dumps lus, ETUDE § 25)** : fil principal bloqué dans le greffon NVIDIA
+  Reflex (`sl.reflex.dll` sous `170_E658703.dll`, `+0x3C43D`), trame nouvelle du 04/11, pas Ink
+  Flow. GPU Tweak éliminé (désinstallé, 5e gel identique). **Overlay NVIDIA coupé (réglage) : 16 min
+  sans gel**, suspect n° 1, pas prouvé ; il prendra un compteur de perf intégré au jeu si ça se
+  confirme. Si un gel revient : `sl.reflex.dll` renommé (test 3).
+- **UV sur corps VTK (sa question)** : le corps marche sans le framework ; les bras sont convertis
+  au build, et la conversion lit le maillage de bras du framework présent dans le jeu **au moment
+  du build** (`arm_refs`) ; sans lui, bras sautés. L'archive produite est autonome en jeu.
+- **Après sa QA** : statuts de `NEXUS.md` / README, exe + zip 1.4.0, upload, tags (section Attend).
 
 ## Ouvert (non tranché, non mesuré)
 

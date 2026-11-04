@@ -403,3 +403,18 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   éliminé. Prochain : compteur FPS NVIDIA coupé, puis `sl.reflex.dll` renommé.
 - 23 h 08-23 h 24 : overlay NVIDIA coupé (réglage, pas le raccourci), jeu relancé, créateur + Alt-Tab : 16 min sans
   gel, aucun rapport. Direction : overlay NVIDIA. Sa décision : on avance (retour au jeu normal, rebuild corrigé).
+
+## 2026-11-05 (0 h → 0 h 40) — Instance régénérée par lui, build complet 1.4.0 sur son pack à jour, installé (Fable)
+
+- Il a vidé l'instance et l'a régénérée depuis son backup « Virgin » (plugins WolvenKit réinstallés sauf deux posés à la
+  main), piles 1 à 3 posées (Angel sans bras, refits, tête VTK HD, framework UV 3.2.1 ; Gymfiend oublié : V masculin
+  vanilla). Le parc de 420 archives n'existe plus : `unpark_all` sans objet.
+- Premier build lancé sur sa config du 04/11 (21 + 16 UV de `dl\uv`) : arrêté sur sa remarque, 7 archives de son dossier
+  manquaient (Masc UV/VTK ONI V, Masc UV Kala V2 ± Sleeves, VTK ONI V, VTK FrecklesV, VTK Finn Head). Nouveau script
+  `tools\qa_2026-11-05\pack_build.py` : tout `3_Bodies\__Tattoos` (44 archives), même cache `work_game`.
+- Build : 1 007 s, 42 tatouages (Tortured Skin UV ×2 refusés : 3 fichiers inconnus chacun), 19 bras convertis, 2 UV sans
+  encre aux bras (Kala V2, Anal Slut), en-têtes Kala reconstruits, aucun conflit ; 465,8 Mo, 1 632 fichiers, SHA
+  `da5757d2…`. Installé à 0 h 36 sur son déverrouillage de 23 h 45 (aucune sauvegarde : instance neuve).
+- Ses questions : cache de l'exe ≠ cache des bancs (`%LOCALAPPDATA%\InkFlow\work` contre `gen\uv104\work_game`) ;
+  FrecklesV UV = rien d'exclu (corps, 2 bras, tête) ; Cover Me In Gold = rugosités ignorées (décal diffuse seule).
+  Son test à faire : FrecklesV en classique sans Ink Flow (taches invisibles en jeu, les deux versions sont pâles).
