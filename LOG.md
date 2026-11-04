@@ -383,4 +383,7 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - Jeu trouvé tel que laissé : fermé, minimal (Solo + 6 entrées, 420 parquées), aucun rapport après 21 h 57.
 - Lancement lent = constant, pas le parc : 66 s jusqu'au menu pour le jeu complet (20 h 11, 191 `.xl`) comme pour le
   minimal (21 h 55, 3 `.xl`) ; audioware 18 s à chaque lancement ; sauvegarde ≈ 40 s. Rien à déplacer.
-- Déverrouillage du jeu expiré (`WRITE_UNLOCK.txt` de 20 h 55) : canari Angel en attente de sa main.
+- Déverrouillage du jeu expiré (`WRITE_UNLOCK.txt` de 20 h 55) ; re-enregistré par lui à 22 h 09.
+- 22 h 09-22 h 12 : `solo_bench.py restore` (Angel revenu, Solo parti), `canari3.py build` sur Angel (132 s, 33,1 Mo,
+  Kala sans encre aux bras donc aucune conversion, Samurai VTK tel quel), `install` ; jeu minimal gardé. Verdict à lui :
+  plante ⇒ nous hors conversion ; tient ⇒ Solo ou les bras convertis 8K (à départager ensuite).

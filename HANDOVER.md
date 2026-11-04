@@ -5,7 +5,23 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 22 h 05) : le correctif d'en-tête est juste mais N'EST PAS la cause des plantages ; canari suivant = mêmes 2 tatouages sur Angel
+## État (2026-11-04, 22 h 15) : canari Angel (mêmes 2 tatouages, jeu minimal) POSÉ dans son jeu, verdict attendu
+
+- **Posé à 22 h 12** (son déverrouillage de 22 h 09, `WRITE_UNLOCK.txt` re-enregistré) : `solo_bench.py restore`
+  (Solo + bras UV retirés, Angel + `.xl` + refits revenus du parc), `canari3.py build` sur Angel (132 s, 33,1 Mo,
+  SHA `14f05dc1…`, `gen\uv104\out_canari3`), `canari3.py install` ; canari Solo passe 2 dans `backup\2026-11-04_221234`.
+  Jeu toujours **minimal** : Angel (3 fichiers) + framework 3.2.1 + Ink Flow, 420 archives parquées.
+- **Contenu du canari Angel** : Kala V2 UV = corps seul, bande des bras effacée (réimport, en-tête réécrit) ; Kala n'a
+  **pas d'encre sur les bras** (sautés) ; Samurai VTK = corps 8K + bras VTK tels quels. **Aucun bras converti 8K** dans ce
+  build, contrairement au canari Solo (deux bras convertis 8K importés par WolvenKit).
+- **Lecture du verdict** (3 chargements de sauvegarde + défilé au miroir, par lui) : plante avec la signature `memcpy`
+  ⇒ nous, hors conversion (corps Samurai 8K ou Kala UV reconstruite : canari Samurai seul, puis Kala seule). Ne plante
+  pas ⇒ **Solo ou les bras convertis 8K**, pas départageables ici : canari suivant = Solo remis avec Samurai seul,
+  bras convertis en 4K au lieu de 8K (remède mémoire déjà listé), ou Solo sans aucun tatouage.
+- Retour à son jeu normal, sur sa formule (jeu fermé) : `minimal_bench.py unpark_all` puis rebuild complet moteur
+  corrigé (≈ 20 min) + `install`, ou remise à la main du build Angel de `backup\2026-11-04_175841`.
+
+## ~~État (2026-11-04, 22 h 05) : le correctif d'en-tête est juste mais N'EST PAS la cause des plantages ; canari suivant = mêmes 2 tatouages sur Angel~~ dépassé (22 h 15 : canari Angel posé)
 
 - **Canari 3, passe 2 (moteur corrigé, Kala V2 UV + Samurai VTK, jeu minimal, VM et Opera coupés) : plantage au
   chargement de la sauvegarde à 21 h 57, signature `memcpy` identique** (`exe+0x196A3CC` ← `+0x343451`, source
