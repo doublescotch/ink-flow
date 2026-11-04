@@ -5,7 +5,26 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 14 h 55) : UV 1.3.0 validé sur son Angel (chevilles comprises), exe + zip bâtis, upload à lui
+## État (2026-11-04, 16 h 25) : 1.4.0 = conversion des bras UV ↔ vanilla, posée dans son jeu, QA à lui
+
+- **Mesuré puis codé sur son go « dans les deux sens »** (ETUDE § 22) : un bras d'une famille sur des
+  bras de l'autre est **converti** (texture rééchantillonnée vers la mise à plat active) au lieu
+  d'être sauté. Vers vanilla : 2K / 4K, 13-35 s par bras ; vers la bande : 8K, ≈ 40 s. Exige le
+  framework UV dans le jeu (ses bras = la carte) ; sinon repli 1.3.0, raison au journal.
+- **Preuves hors jeu** : bancs factices Solo / Angel / Angel + framework ; non-régression 947 / 947
+  identiques à la 1.3.0 ; texture relue dans l'archive. Commit `5799364`, poussé.
+- **Dans son jeu depuis 16 h 17** : build de sa config + 16 UV (391 Mo, 1 358 fichiers, SHA
+  `6d7043aa…`), ancien dans `backup\2026-11-04_161654`. 14 UV à bras convertis (Pirate Vince en V
+  masculin compris), Kala V2 et Anal Slut sans encre dans la bande (corps seul).
+- **QA à lui** : Kala Sleeve 1 (manches), Bedellia (raccord à l'épaule, texte lisible), Samurai UV
+  contre Samurai VTK, FPP tête baissée, V masculin. Effets annoncés : trait possible sur une couture
+  du dépliage, bras un peu plus doux que l'original.
+- **Après la QA** : README (ligne « [IN-GAME STATUS] » des limites), `NEXUS.md` (changelog 1.4.0,
+  « Arms and families »), exe + zip 1.4.0 (`build_exe.ps1` installe numpy 2.4.6 : exe ≈ +15 Mo),
+  upload (1.3.0 jamais uploadée : la 1.4.0 la remplace), tags sur go.
+- Jetable : `C:\__DEV\cyberpunk\ink_flow\dl\uv\conv\` (paires, bancs, ≈ 1 Go), `gen\uv104\*_angelfw`.
+
+## ~~État (2026-11-04, 14 h 55) : UV 1.3.0 validé sur son Angel (chevilles comprises), exe + zip bâtis, upload à lui~~ dépassé (16 h 25 : 1.4.0)
 
 - **Banc fait sur SON Angel** (sa consigne : Angel d'abord) : `game_build.py` (sa config + 16 UV du
   zip) installé 14 h 23 (314 Mo, `cec96ac7…`, ancien dans `backup\2026-11-04_142352`). Son QA du

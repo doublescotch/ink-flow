@@ -277,3 +277,15 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   mesurée aussi pâle : limite des coques gravée (README, NEXUS, ETUDE). 14 h 50, sur son go : exe
   1.3.0 `1b9c6a6b…` (autotest figé 157 fichiers, 150 347 776 o, 321 s), zip `8ac7a3e6…` dans
   `releases\` ; `NEXUS.md` « Files to upload ».
+
+## 2026-11-04 (15 h → 16 h 25) — Conversion des bras UV ↔ vanilla : mesure, 1.4.0, pose (Opus, « Reprends »)
+
+- Chantier choisi par lui (§ 21 point 4). Mesure hors jeu : bras vanilla et bras du framework
+  appariés à 99,99 % (14-50 µm) ; Bedellia converti lisible ; bras d'Angel à 0,7 texel du vanilla ;
+  encodage `--keep` 4K sur gabarit 8K = BC7, 13 s. Paires UV / VTK des auteurs repeintes : sans
+  valeur de preuve. ETUDE § 22.
+- Son go « dans les deux sens » : `armconv.py` (numpy seul), `core.py` (références, cache, bras sans
+  encre retirés, compagnons FPP). Sa question : les bras Solo ne sont pas écartés du build, seulement
+  de la table (autre géométrie) ; la coque reste une copie des bras Solo.
+- Bancs factices Solo, Angel, Angel + framework ; non-régression 947 / 947 ; build sur son jeu réel
+  1 115 s ; posé 16 h 17 (son déverrouillage, jeu fermé). Commit `5799364`. QA en jeu attendue.
