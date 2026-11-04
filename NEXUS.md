@@ -6,10 +6,10 @@ page (English). Rewritten from the **published** text (read through the API on 2
 additions (credits, AppData, screenshots, "in addition to vanilla ones") are kept, the "UPDATE IN
 PROGRESS" banner goes, and every claim below is one we measured or he saw in game.
 
-## What changes on the page for 1.4.0 (2026-11-04, arm conversion ; **upload after Hell_Kaiser's QA in game**, 1.3.0 never uploaded: 1.4.0 carries 1.2.0 + 1.3.0)
+## What changes on the page for 1.4.0 (2026-11-04, arm conversion ; **QA done 2026-11-05 on a fresh game, ready to upload**, 1.3.0 never uploaded: 1.4.0 carries 1.2.0 + 1.3.0)
 
-- What works with what: the UV line says what he saw on Solo 2.0 (creator). The bracketed statuses (mirror, first
-  person, photo mode on Solo ; UV arms on Angel) are written after his QA, never before.
+- What works with what: the UV line says what he saw on Solo 2.0 (creator). The statuses (mirror, first person, photo
+  mode on Solo ; UV arms on Angel) were written on 2026-11-05 after his QA on a game rebuilt from scratch.
 - "Arms and families" becomes 1.4.0: a texture of the other family is converted, no longer skipped.
 - Known limits: the "no conversion yet" line goes ; the conversion's own limits (softer, hairline seam, UV Framework
   Texture needed) come in. How it works: one sentence on the conversion. Changelog 1.4.0.
@@ -81,15 +81,15 @@ Ink Flow ships [b]no tattoo[/b]. It ships a small Windows builder: you drop your
 [*]Female V with the vanilla body or a body mod of the VTK family (Angel, EBBRB…), or male V with the vanilla body or Gymfiend VTK: see "What works with what" below. The screenshot shows the archives of an Angel setup.
 [/list]
 
-[size=5][b]What works with what (1.1.0)[/b][/size]
+[size=5][b]What works with what (1.4.0)[/b][/size]
 
 [list]
-[*][b]Angel body[/b] (+ Vanilla Refits, VTK Vanilla HD Head): seen in game, every feature: creator, ripperdoc, mirror, first person, photo mode, body / arms / head tattoos, stacking. This is the setup Ink Flow was developed on.
+[*][b]Angel body[/b] (+ Vanilla Refits, VTK Vanilla HD Head): seen in game, every feature: creator, ripperdoc, mirror, first person, photo mode, body / arms / head tattoos, stacking. This is the setup Ink Flow was developed on. 1.4.0: seen again on a game rebuilt from scratch (Angel + Vanilla Refits + VTK Vanilla HD Head + UV Framework 3.2.1): the whole test pack, 42 tattoos VTK and UV with 19 arm conversions, in the creator and at the mirror. [FIRST PERSON BODY ON ANGEL: DOES NOT SHOW, measured 2026-11-05, fix in progress ; INVENTORY / PHOTO MODE: holes on the shins with the 8K Samurai, under investigation. DO NOT UPLOAD BEFORE BOTH ARE SETTLED.]
 [*][b]Vanilla body[/b] (no body mod at all): seen in game, same features for body and arms. Head tattoos on the vanilla head (no VTK head mod) do not show: known, being looked at; with a VTK HD head they work.
 [*][b]VTK Vanilla HD body[/b]: reported working by a user, and passes the builder's checks entirely (body, arms, first-person arms).
-[*][b]Male V, vanilla body[/b] and [b]Gymfiend VTK 1.4.3 + MV Head VTK[/b]: seen in the character creator (body tattoos, stacking). Mirror, first person and photo mode not seen in game yet; male head tattoos not tested yet.
+[*][b]Male V, vanilla body[/b] and [b]Gymfiend VTK 1.4.3 + MV Head VTK[/b]: seen in the character creator (body tattoos, stacking). Mirror, first person and photo mode not seen in game yet. Male face tattoos on the vanilla male head do not show (same limit as the female vanilla head); on MV Head VTK not tested yet.
 [*][b]Other VTK bodies[/b]: the builder reads the body, arm and head meshes your game actually loads and copies them. EBBRB 5.0 passes the builder's checks (measured on its archive, not seen in game yet). Any body mod whose meshes keep local materials and the standard skin appearance passes; a body mod that does not pass stops the build with "unsupported body mod" rather than producing a broken result. The body mod must itself work on your game version: the tattoo shells are copies of its meshes, so a body not updated for 2.5 will not get better under Ink Flow.
-[*][b]UV Framework bodies[/b] (1.3.0, arms of both families since 1.4.0): Solo 2.0 + UV Framework Texture 3.2.1 + Solo arms UV: seen in the character creator, body and both arms, with UV tattoos and with VTK tattoos (their arms converted, see "Arms and families" below). [MIRROR / FIRST PERSON / PHOTO MODE ON SOLO: to write after his QA.] Songbird 2.0 body: builds (its cyber plates are left out of the shell), not seen in game.
+[*][b]UV Framework bodies[/b] (1.3.0, arms of both families since 1.4.0): Solo 2.0 + UV Framework Texture 3.2.1 + Solo arms UV: seen in the character creator, body and both arms, with UV tattoos and with VTK tattoos (their arms converted, see "Arms and families" below). Mirror, first person and photo mode on Solo: not seen, our Solo bench crashed at save load (Solo's own page reports the same on a clean install), so Solo is parked for now; in first person on Solo the belly uses the vanilla torso mask (Solo's .app cannot be read by WolvenKit Console). Songbird 2.0 body: builds (its cyber plates are left out of the shell), not seen in game.
 [*][b]Not tested[/b]: cyberarms (Mantis Blades, Gorilla Arms… the tattoo shells cover the arms fully; what happens on a cyberarm has not been looked at).
 [/list]
 
@@ -126,12 +126,14 @@ Still wrong? Open the data folder and post [b]build.log[/b] from a fresh build: 
 
 For each tattoo file the builder extracts the texture(s), copies your active body / arm / head meshes with their skin materials replaced by the vanilla tattoo decal material, points the decal at the tattoo texture, and writes one appearance per tattoo and per slot plus the character-creator entries (CCXL). Since 1.3.0 a UV Framework texture is pointed at by the body and both arm shells at once (one copy of the texture), and only the skin chunks of a mesh are shown in a shell. Since 1.4.0 an arm texture drawn for the other arm layout is resampled through the two arm meshes (the UV Framework arm and your arm share the vertices, each with its own unwrapping) into a texture of your arms' layout, written by WolvenKit with a full mip chain. The head shell carries a copy of the face morph target, so it follows face sculpting. First person works like the vanilla tattoos: a hidden companion of each slot drives first-person shells (the body shell through the first-person chunk mask, copies of your first-person arm meshes). Male V needs no companion: the game shows his third-person body and arms in first person, so his shells are listed for both views, as the vanilla male tattoos are. The textures are copied byte for byte (what you see is the author's tattoo, unchanged), except those whose mip chain stops early (several male packs): they render as broken stripes through the decal, so the builder re-encodes them with WolvenKit (same image, full mip chain, uncompressed: about 4 MB in the archive, about 85 MB of video memory while a 4096 tattoo is worn). The build log lists them. Everything is generated by WolvenKit Console from JSON; the source of the builder is public.
 
-[size=5][b]Known limits (1.1.0)[/b][/size]
+[size=5][b]Known limits (1.4.0)[/b][/size]
 
 [list]
-[*]Head tattoos on a vanilla head (no VTK head mod) do not show yet.
+[*]Head tattoos on a vanilla head (no VTK head mod, female or male) do not show yet.
+[*][FIRST PERSON, TO REWRITE AFTER THE FIX] First person: the body tattoo does not show when looking down (arms do), on every body (vanilla, Angel). The first-person body shell is a copy of the full body mesh wearing the chunk mask of the first-person torso mesh, whose chunks are numbered differently (on Angel that mask is the lower legs: her torso is drawn by another component). Present since 1.0.1, confirmed 2026-11-05 (two users reported it on the page). Fix: one first-person shell per body component of the first-person appearance, copy of that component's mesh with its own mask.
+[*]Feet and ankles on Angel: Angel unwraps its feet and ankles into the arm strip of the body texture, which VTK textures do not paint and which the builder clears for UV textures. On Angel every tattoo therefore stops in a straight line at the ankle, even one the author painted further down (Samurai). Angel-specific; being looked at (resampling the feet the way the arms are).
 [*]Male V: seen in the character creator only so far (vanilla body, Gymfiend VTK).
-[*]Arm conversion (1.4.0): the converted arm is a resampling of the author's texture: a little softer than the original, and a hairline may show on a seam where the two unwrappings cut the arm differently. VTK arms onto UV arms (Solo): seen in the creator. UV arms onto vanilla / VTK arms (Angel): [TO WRITE AFTER HIS QA ON ANGEL]. Needs UV Framework Texture in the game, see "Arms and families".
+[*]Arm conversion (1.4.0): the converted arm is a resampling of the author's texture: a little softer than the original, and a hairline may show on a seam where the two unwrappings cut the arm differently. VTK arms onto UV arms (Solo): seen in the creator. UV arms onto vanilla / VTK arms (Angel): seen in the creator and at the mirror for every UV tattoo of the test pack. Needs UV Framework Texture in the game, see "Arms and families".
 [*]Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal, even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as plain overlay archives.
 [*]Cyberarms not tested (see above).
 [*]Text options in the creator, no icons yet.
@@ -157,6 +159,7 @@ thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCX
 ```
 1.4.0
 - Arms of either family on arms of either family: a UV Framework tattoo on vanilla / VTK arms (Angel…), a VTK tattoo on UV Framework arms (Solo…), now gets its arm part converted to your arms' layout instead of skipped (same arm, two unwrappings: each texel moves to the same spot of the arm). Once per tattoo, cached. Needs UV Framework Texture in the game (its arm meshes are the map); without it the arms are skipped as in 1.3.0 and build.log says why. The converted arm is a resampling: a little softer, and a hairline may show on a seam.
+- Texture header check: textures whose header declares a single mip over a buffer that holds the full chain (Kala Japanese V2 VTK / UV / With Sleeves, female and male packs) are rebuilt by WolvenKit so the header matches the data (BC7 kept). build.log lists them.
 - Carries 1.2.0 (per-tattoo opacity, Body meshes in use table) and 1.3.0 (UV Framework tattoos, skin-only shells, Angel feet), never uploaded.
 - The conversion cache is rebuilt once. Rebuild and install.
 ```

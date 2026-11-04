@@ -418,3 +418,17 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - Ses questions : cache de l'exe ≠ cache des bancs (`%LOCALAPPDATA%\InkFlow\work` contre `gen\uv104\work_game`) ;
   FrecklesV UV = rien d'exclu (corps, 2 bras, tête) ; Cover Me In Gold = rugosités ignorées (décal diffuse seule).
   Son test à faire : FrecklesV en classique sans Ink Flow (taches invisibles en jeu, les deux versions sont pâles).
+
+## 2026-11-05 (0 h 40 → 2 h) — Sa QA : créateur bon, mais trous à l'inventaire / photo et rien sur le corps en FPP (Fable)
+
+- Sa QA 1.4.0 : créateur fem et masc V tout bon (sauf Skeleton Face sur tête masc vanilla : tête vanilla, connu) ;
+  Samurai coupé net à la cheville sur Angel (pieds dans la bande, § 21) ; puis mode photo troué en bas des tibias,
+  inventaire troué ailleurs, FPP tête baissée = manches sans corps. Page Nexus / README / sticky 1.4.0 écrits puis
+  **repris : mentions « vu en FPP et mode photo » retirées, upload gelé**. Exe 1.4.0 bâti (SHA `a1bf1701…`), zip non fait.
+- Éliminations : overlay / archives (config minimale `minimal_angel.py`, identique) ; build (octets identiques au
+  16 h 17, chaîne de non-régression) ; LOD (un seul niveau) ; textures High (pareil). Lui : instance re-régénérée depuis
+  Virgin, Samurai seul rebâti avec les exe 1.3 / 1.2 / 1.1, puis 1.1 sur corps vanilla : **identique partout** → pas
+  une régression. Deux retours Nexus sur la FPP relus par lui, réponse éditée (confirmé).
+- Mesuré : masque du torse FPP d'Angel = chunks 5-7 = mollets et pieds (hauteurs lues), le torse vient de `Body:ANGEL` ;
+  notre coque FPP copie le maillage complet avec ce masque. Correctif défini (ETUDE § 26). Trous à distance : ouvert,
+  deux mesures listées. Session close à 2 h ; son jeu : instance Virgin + Load Begone + build 1.1 Samurai sur vanilla.

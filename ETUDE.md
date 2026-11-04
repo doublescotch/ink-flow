@@ -1069,3 +1069,41 @@ Chromium), jeu relancé, créateur, Alt-Tab : **16 min sans gel**, zéro process
 (les gels venaient entre 9 et 13 min de jeu) mais la direction : **overlay NVIDIA = suspect n° 1**, cohérent avec la pile
 (crochet sur la présentation, greffon Reflex en attente). Sa décision : on avance ; il remplacera le compteur par un mod
 de perf intégré à l'interface du jeu si ça se confirme. Test 3 (Reflex) non joué, inutile tant que ça tient.
+
+## 26. Première personne : la coque du corps n'a jamais montré le torse ; trous à distance (2026-11-05, 0 h 40 → 2 h, Fable, sa QA, mesures hors jeu)
+
+**Ce qu'il voit** (1.4.0 complète sur son instance régénérée, Angel + tête VTK HD + framework, puis config minimale,
+puis instance re-régénérée avec Samurai VTK seul rebâti par les exe 1.3, 1.2, 1.1, puis 1.1 sur corps vanilla) :
+créateur propre ; inventaire = trous dans le bas des jambes ; mode photo = plus de trous, pas aux mêmes endroits ;
+**première personne tête baissée = manches, rien sur le corps**, quelques fragments sur les mollets (Angel). Identique
+sur les quatre builds et sur vanilla : **pas une régression**, un défaut présent depuis la 1.0.1. Deux utilisateurs
+l'avaient signalé sur la page (FPP) ; il leur avait répondu « en théorie ça marche » ; édité le 05/11 : confirmé.
+
+**Éliminé par mesure** : les 208 archives de son instance (config minimale, identique) ; le build (fichiers du Samurai
+VTK identiques octet pour octet entre le pack du 05/11 et le build du 04/11 16 h 17, chaîne de non-régression jusqu'à
+la 1.0.1) ; le LOD (le maillage complet d'Angel n'a qu'un niveau, `lodMask` 1 sur ses 8 chunks) ; la qualité des
+textures (High essayé par lui, pareil) ; GPU Tweak et les archives nouvelles (§ 25).
+
+**Cause mesurée de la première personne** (`t0_000_pwa_fpp__torso.mesh` et `l0_000_fpp__full.app` d'Angel extraits,
+chunks et hauteurs lus) : le maillage torse FPP d'Angel est une **copie exacte de son maillage complet** (8 chunks, mêmes
+comptes de sommets) ; son app FPP l'affiche avec le masque `0xFFFFFFFFFFFFFFE0` = **chunks 5, 6, 7 seulement**, hauteurs
+0,28-0,53 m, 0,07-0,29 m, 0,01-0,12 m : **mollets et pieds**. Le torse (chunks 0-4, 0,51-1,53 m) est dessiné par un autre
+composant, `Body:ANGEL`, masque complet. Notre coque FPP du corps = copie du **maillage complet** à laquelle on applique
+le masque du torse FPP (`fpp_torso_mask`, § 16) : sur Angel elle montre donc les mollets et les pieds (ses « deux-trois
+petits bouts sur les jambes ») ; sur vanilla, dont le maillage torse FPP a une autre découpe, le masque désigne d'autres
+chunks du maillage complet et rien de visible ne sort (à mesurer : extraire le torse FPP vanilla de
+`basegame_4_appearance.archive`). Le « FPP validé » du 02/11 était au miroir (reflet du corps TPP) et les bras.
+
+**Correctif à coder (prochaine session)** : une coque FPP **par composant de corps de l'app FPP** = copie du maillage
+**de ce composant** (pas du maillage complet) avec **son** `chunkMask`, matériaux peau → décal ; vanilla = torse FPP ;
+Angel = torse FPP (mollets) + `Body:ANGEL` (complet) ; Solo = à lire (son `.app` illisible au CLI, § 21). Le suiveur
+(`linkController`, § 18) reste. Non-régression : les bras FPP inchangés. QA : tête baissée hors miroir, sur vanilla
+et sur Angel, puis mode photo.
+
+**Trous à l'inventaire et en mode photo (ouvert)** : même coque TPP que le créateur (une coque corps par tatouage et
+par slot, utilisée par le créateur, l'inventaire, le mode photo et le miroir), donc la différence vient de la vue :
+distance de caméra, niveaux de mips, éclairage. Pistes : chaîne de mips du Samurai 8K (alpha qui s'évide aux niveaux
+réduits : les trous changent avec la vue) ; combat de profondeur coque / peau à distance (le décal vanilla a-t-il un
+décalage ?). Mesure 1 : Kala Japanese Body VTK (4K) à l'inventaire et en mode photo (propre ⇒ texture). Mesure 2 :
+exporter les mips du Samurai (DDS complet) et compter l'alpha par niveau. Remède si texture : reconstruire les mips
+au build (`normalize_textures` sait déjà exporter + réimporter avec chaîne complète).

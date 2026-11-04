@@ -4,7 +4,28 @@ One block per post; paste as is or trim. The individual replies of 2026-11-02 (E
 vanilla body) were removed on 2026-11-04 at Hell_Kaiser's request: posted, and superseded by the
 stickies (they stay in git history, commit `546200f` and before).
 
-## Sticky 1.2.0 (replaces the 1.1.0 one below, to post with the 1.2.0 upload, 2026-11-04)
+## Sticky 1.4.0 (replaces the 1.2.0 one below, to post with the 1.4.0 upload ; **ON HOLD 2026-11-05, 2 h** : the
+## "Tested in game" line below claims first person and photo mode, both false on Angel, rewrite after the FPP fix)
+
+```
+1.4.0 IS OUT: UV Framework tattoos, arm conversion between the two families, per-tattoo opacity. Update, Build again, Install.
+
+What's new (full list in the Changelogs tab; 1.2.0 and 1.3.0 were never uploaded, 1.4.0 carries them):
+- UV Framework tattoos (the one-file body + arms packs made for -KS- UV Texture Framework) are supported: drop them in the list like VTK ones, each gets its own Ink slot.
+- Arms of either family on arms of either family: a UV tattoo on vanilla / Angel arms, a VTK tattoo on Solo's UV arms, gets its arm part converted to your arms' layout (same arm, two unwrappings). This needs -KS- UV Texture Framework in your game; without it the arms of the other family are skipped and build.log says why.
+- Per-tattoo opacity column (0.1 to 2.0) and a "Body meshes in use" table at the top of the window (Female V / Male V, Body / Arms / Head).
+- Textures with a wrong header (some Kala Japanese V2 files) are rebuilt automatically.
+
+Tested in game (2.5, fresh install): female V on Angel (+ Vanilla Refits, VTK Vanilla HD Head, UV Framework 3.2.1), 42 tattoos VTK and UV, creator, mirror, first person, photo mode; male V on the vanilla body (creator). Solo 2.0: creator only.
+
+Known: on Angel every tattoo stops at the ankles (Angel's feet live in the part of the texture that tattoos do not paint); head tattoos on a vanilla head (female or male) do not show; very faint overlays (freckles) do not show through the decal.
+
+Ink Flow only needs ArchiveXL (and the RED4ext it runs on), plus the UV Framework if you want arm conversion.
+
+Still nothing on V? Post your build.log here (button "Open data folder"), with your body mod and your mod manager.
+```
+
+## ~~Sticky 1.2.0~~ replaced by the 1.4.0 one above (never posted: 1.2.0 was never uploaded, 2026-11-04)
 
 ```
 1.2.0 IS OUT: per-tattoo opacity, and a clearer view of the bodies the builder found. Update, Build again, Install.

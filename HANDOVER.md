@@ -12,35 +12,40 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 0 h 40) : 1.4.0 complète installée dans son instance neuve, QA à lui ; Solo parqué ; gels = overlay NVIDIA
+## État (2026-11-05, 2 h) : 1.4.0 NON publiable : la coque FPP du corps n'a jamais montré le torse ; trous à distance ouverts
 
-- **Dans son jeu depuis 0 h 36** : instance régénérée par lui depuis « Virgin » (piles 1-3 : Angel
-  sans bras, refits, tête VTK HD, framework UV 3.2.1 ; Gymfiend absent, V masculin = vanilla) +
-  **Ink Flow 1.4.0 bâtie sur tout `3_Bodies\__Tattoos`** (44 archives, 42 tatouages, 19 bras
-  convertis, 9 slots, miroir, FPP ; 465,8 Mo, SHA `da5757d2…`, `gen\uv104\out_pack`, journal
-  `log_pack.txt`). Aucun conflit. Script : `tools\qa_2026-11-05\pack_build.py build | install`.
-- **Refusés au scan** : `Tortured Skin` UV et son Alt (InkDonkey), 3 fichiers inconnus chacun : à
-  mesurer avant de dire « non supporté ». Corps seul (pas d'encre aux bras) : Kala V2 UV, Anal Slut.
-- **Sa QA** : Samurai UV = deltoïde plein (conversion corrigée) ; Kala Sleeve 1-3 ; Bedellia ;
-  FrecklesV UV contre VTK (taches invisibles jusqu'ici ; à comparer en classique sans Ink Flow) ;
-  FPP, miroir, photo ; opacité par tatouage (0,5 contre 1,0) ; V masculin vanilla ; ONI V, Finn
-  Head, Militech Babe, Pirate Venus / Vince jamais vus.
-- **Caches** : l'exe travaille dans `%LOCALAPPDATA%\InkFlow\work`, les bancs dans
-  `gen\uv104\work_game` ; un rebuild depuis son exe ré-extrait tout (≈ 17 min) ; copie du cache
-  vers le sien sur son go. Son catalogue réel n'a pas les noms des UV (copie de test).
-- **Plantages `memcpy` (ETUDE § 25)** : 5 sur 5 avec Solo ; le canari Angel a tenu (sa QA du
-  04/11). Indistinct : Solo ou les bras convertis 8K. **Sa décision (04/11, 22 h 35) : Solo
-  parqué** ; priorité = corps VTK (Hyst, Angel, Eve, EBB, EBBRB) et UV sur VTK. En-tête Kala
-  corrigé.
-- **Gels watchdog (5 sur 5, dumps lus, ETUDE § 25)** : fil principal bloqué dans le greffon NVIDIA
-  Reflex (`sl.reflex.dll` sous `170_E658703.dll`, `+0x3C43D`), trame nouvelle du 04/11, pas Ink
-  Flow. GPU Tweak éliminé (désinstallé, 5e gel identique). **Overlay NVIDIA coupé (réglage) : 16 min
-  sans gel**, suspect n° 1, pas prouvé ; il prendra un compteur de perf intégré au jeu si ça se
-  confirme. Si un gel revient : `sl.reflex.dll` renommé (test 3).
-- **UV sur corps VTK (sa question)** : le corps marche sans le framework ; les bras sont convertis
-  au build, et la conversion lit le maillage de bras du framework présent dans le jeu **au moment
-  du build** (`arm_refs`) ; sans lui, bras sautés. L'archive produite est autonome en jeu.
-- **Après sa QA** : statuts de `NEXUS.md` / README, exe + zip 1.4.0, upload, tags (section Attend).
+- **Première session de la reprise, sa consigne : nettoyage / vérification des `.md` du dépôt
+  Cyberpunk** (passe de sanité prévue depuis le 04/11, `cp:HANDOVER.md` § 2), AVANT de reprendre ce
+  chantier.
+- **Deux défauts trouvés par sa QA du 05/11**, présents depuis la 1.0.1, confirmés par lui sur les
+  exe 1.3, 1.2, 1.1 et sur corps vanilla (pas une régression), ETUDE § 26 : (1) **FPP tête baissée :
+  manches, pas de corps**. Cause mesurée : la coque FPP du corps est une copie du maillage complet
+  avec le masque du torse FPP ; sur Angel ce masque = chunks 5-7 = mollets et pieds (le torse vient
+  de `Body:ANGEL`), sur vanilla il désigne d'autres chunks. **Correctif à coder** : une coque FPP
+  par composant de corps de l'app FPP, copie du maillage de ce composant avec son masque. (2)
+  **Trous dans le bas des jambes à l'inventaire et en mode photo**, créateur propre, Samurai 8K :
+  même coque TPP partout, donc la vue (distance, mips). Mesures : Kala Body 4K dans les mêmes vues ;
+  alpha par mip du Samurai. Remède probable : reconstruire les mips au build.
+- **Son jeu (2 h)** : instance re-régénérée depuis « Virgin », `archive\pc\mod` = Load Begone + Ink
+  Flow 1.1 Samurai seul sur corps vanilla (15,5 Mo, SHA `08d84f60…`). Ses piles 1-3 à reposer par
+  lui. Overlay NVIDIA coupé (gels, § 25). Rien de parqué par moi (`mod__parked_2026-11-05` disparu
+  avec sa régénération ; `minimal_angel.py` reste utilisable).
+- **1.4.0 : tout est bâti, rien n'est publiable** : pack complet 465,8 Mo (`gen\uv104\out_pack`, SHA
+  `da5757d2…`, `pack_build.py`), exe `exe\dist\InkFlowBuilder.exe` 22,7 Mo SHA `a1bf1701…` (zip non
+  fait). `NEXUS.md`, README, sticky de `NEXUS_POSTS.md` : mentions FPP / photo retirées, crochets «
+  TO REWRITE AFTER THE FIX », **upload gelé** jusqu'aux deux points ci-dessus ; les crochets doivent
+  être réécrits après sa QA, jamais avant (faute de ce soir : écrits avant qu'il regarde la FPP).
+- **Reste ouvert de sa QA** : Skeleton Face sur tête masculine vanilla (tête vanilla, limite connue)
+  ; Samurai coupé net à la cheville sur Angel (pieds dans la bande, § 21, remède = rééchantillonner
+  les pieds comme les bras) ; Tortured Skin UV ×2 refusés (3 fichiers inconnus) ; FrecklesV à tester
+  en classique.
+- **Plantages `memcpy`** : 5 sur 5 avec Solo, Solo parqué sur sa décision (04/11). **Gels watchdog**
+  : greffon Reflex dans la pile, overlay NVIDIA coupé = 16 min sans gel, suspect n° 1 (ETUDE § 25).
+- **Caches** : exe = `%LOCALAPPDATA%\InkFlow\work`, bancs = `gen\uv104\work_game` ; copie vers le
+  sien sur son go. Son catalogue réel n'a pas les noms des UV.
+- **UV sur corps VTK** : le corps marche sans le framework ; les bras sont convertis au build et la
+  conversion lit le maillage de bras du framework présent dans le jeu au moment du build
+  (`arm_refs`).
 
 ## Ouvert (non tranché, non mesuré)
 

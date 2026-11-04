@@ -139,12 +139,24 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 
 ## Known limits of this first cut
 
-- UV Framework tattoos (1.3.0): seen in game on Angel (body, feet and ankles). On Solo 2.0 + UV Framework 3.2.1 +
-  Solo arms UV: seen in the character creator (body and both arms) [MIRROR / FIRST PERSON / PHOTO MODE: to write after
-  the QA]. Songbird 2.0 body: the shell hides its cyber chunks, not seen in game. No icons in the creator (text options).
-- Arm conversion (1.4.0): UV arms onto Angel's arms [IN-GAME STATUS: to write after the QA on Angel]; VTK arms onto
-  UV arms (Solo): seen in the character creator. The converted texture is a resampling: a little softer than the
-  original, and a seam of the unwrapping may show a hairline where the two layouts cut the arm differently.
+- UV Framework tattoos (1.3.0): seen in game on Angel (body, feet and ankles bare). On Solo 2.0 + UV Framework 3.2.1 +
+  Solo arms UV: seen in the character creator (body and both arms); mirror, first person and photo mode not seen, the
+  Solo bench crashed at save load (Solo's own page reports the same), Solo parked for now; in first person on Solo the
+  belly uses the vanilla torso mask (Solo's `.app` cannot be read by WolvenKit Console). Songbird 2.0 body: the shell
+  hides its cyber chunks, not seen in game. No icons in the creator (text options).
+- First person [TO REWRITE AFTER THE FIX]: the body tattoo does not show when looking down (arms do), on every body
+  (vanilla, Angel). The first-person body shell is a copy of the full body mesh wearing the chunk mask of the
+  first-person torso mesh, whose chunks are numbered differently (on Angel that mask is the lower legs; her torso is
+  another component). Present since 1.0.1, measured 2026-11-05. Fix: one first-person shell per body component of
+  the first-person appearance, copy of that component's mesh with its own mask.
+- Inventory and photo mode [UNDER INVESTIGATION]: holes on the shins with the 8K Samurai, none in the creator; same
+  shell in every view, so the camera distance (mip levels of that texture) is the lead, not the shells.
+- Arm conversion (1.4.0): UV arms onto Angel's arms: seen in the creator and at the mirror for every UV tattoo of the
+  test pack, on a game rebuilt from scratch; VTK arms onto UV arms (Solo): seen in the character creator. The converted texture is a resampling: a little softer than the original, and a seam of the unwrapping may
+  show a hairline where the two layouts cut the arm differently.
+- Feet and ankles on Angel: Angel unwraps them into the arm strip of the body texture, which VTK textures do not paint
+  and which the builder clears for UV textures: on Angel every tattoo stops in a straight line at the ankle, even one
+  painted further down by its author (Samurai). Angel-specific; being looked at (resampling the feet like the arms).
 - Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal,
   even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as overlay archives.
 - Male V (vanilla body, Gymfiend VTK 1.4.3 + MV Head VTK) seen in the character creator only so far; mirror, first
