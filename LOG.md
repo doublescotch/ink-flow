@@ -348,3 +348,5 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   poser) avec les statuts non vus entre crochets ; lien du framework = Nexus 3783 (-KS- UV Texture Framework,
   vérifié par l'API ; son 3.2.1 vient de son zip, même mod supposé, à confirmer par lui). README : Solo vu
   au créateur (corps + deux bras, VTK convertis compris).
+- 19 h 44 : sa formule reçue, jeu fermé : `solo_bench.py install`, build Solo complet (348,1 Mo) dans son jeu, canari 2
+  dans `backup\2026-11-04_194421`. À lui : QA Solo au créateur puis FPP, miroir, photo, TPP.

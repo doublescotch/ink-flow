@@ -9,10 +9,9 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 
 - **Prêt, pas installé** : `gen\uv104\out_solo_game\Ink_Flow.archive` (348,1 Mo, SHA `6bf974d1…`, `.xl` 194 o), sa
   config + 16 UV, 35 tatouages, 13 bras VTK convertis vers la bande avec le `v` corrigé (Samurai 68 % du bras
-  encré), Pirate Vince vers vanilla, aucune archive en conflit. Journal `gen\uv104\log_solo_game.txt`. **Son jeu
-  porte encore le canari 2** (2 tatouages, `595cba24…`). Jeu fermé au moment du build.
-- **Prochain geste** : (1) sur sa formule (dossier du jeu, jeu fermé) : `solo_bench.py install` (l'ancien part dans
-  `%LOCALAPPDATA%\InkFlow\backup\<horodatage>`) ; (2) **sa QA Solo** : créateur (Samurai VTK = deux manches,
+  encré), Pirate Vince vers vanilla, aucune archive en conflit. Journal `gen\uv104\log_solo_game.txt`. **Installé dans son jeu à 19 h 44**
+  sur sa formule (canari 2 dans `backup\2026-11-04_194421`).
+- **Prochain geste** : ~~(1) `solo_bench.py install`~~ fait 19 h 44 ; (2) **sa QA Solo** : créateur (Samurai VTK = deux manches,
   Kala Arm, Bedellia, Vale), puis FPP, miroir, photo, TPP (jamais faits, plantages) ; (3) `solo_bench.py restore`
   (formule), rebâtir sur Angel, **revoir le Samurai UV sur Angel : deltoïde plein** ; Kala Sleeve 1, Bedellia, V
   masculin ; (4) écrire les statuts entre crochets de `NEXUS.md` et du README, exe + zip, upload, tags sur go.
