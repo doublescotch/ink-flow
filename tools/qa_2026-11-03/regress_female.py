@@ -2,7 +2,7 @@
 twice against the fake vanilla game tree of 2026-11-02 (`gen\\t101\\fakegame`), his settings, on a COPY of his
 catalogue (his own is never written) : once with the engine of the last commit (`git show HEAD:...` into a temp
 folder), once with the working tree. Both archives unbundled and compared file by file (SHA-256), plus the .xl.
-Usage : regress_female.py"""
+Usage : regress_female.py [git ref of the old engine, default HEAD]"""
 import hashlib, importlib, os, shutil, subprocess, sys
 
 PROJ = r"D:\OneDrive - NS2I\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow"
@@ -10,6 +10,7 @@ ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\m103"
 FAKE = r"C:\__DEV\cyberpunk\ink_flow\gen\t101\fakegame"
 FOLDER = r"D:\OneDrive - NS2I\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos"   # ex-__InkFlow (03/11)
 CAT = ROOT + r"\catalogue_copy.json"
+REF = sys.argv[1] if len(sys.argv) > 1 else "HEAD"
 
 # engine of the last commit, next to its templates (core.templates_dir() = ../../templates)
 old = ROOT + r"\head_src"
@@ -17,7 +18,7 @@ shutil.rmtree(old, ignore_errors=True)
 for rel in ["builder/inkflow/" + f for f in ("__init__.py", "core.py", "env.py", "config.py", "rdar.py")]:
     dst = os.path.join(old, rel)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    open(dst, "wb").write(subprocess.run(["git", "-C", PROJ, "show", "HEAD:" + rel], capture_output=True, check=True).stdout)
+    open(dst, "wb").write(subprocess.run(["git", "-C", PROJ, "show", REF + ":" + rel], capture_output=True, check=True).stdout)
 shutil.copytree(os.path.join(PROJ, "templates"), os.path.join(old, "templates"), dirs_exist_ok=True)
 
 

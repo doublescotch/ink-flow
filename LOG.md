@@ -331,3 +331,20 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   (bande « vide », remplissage depuis le corps : artefacts de la lecture miroir).
 - Sa consigne : builds de test = seulement les tatouages testés (mémoire). Trois plantages, tous jeu
   en arrière-plan, non attribués. Jeu laissé avec Solo + build de 2 tatouages ; builds complets périmés.
+
+## 2026-11-04 (19 h 20 → 19 h 45) — Build Solo complet avec la conversion corrigée, non-régression 947/947, page 1.4.0 préparée (Fable, « Reprends »)
+
+- Reprise sur la passation : jeu fermé, Solo posé, canari de 2 tatouages encore installé. `solo_bench.py build`
+  relancé (sa config + 16 UV, 35 tatouages) : 14 min (les 15 conversions refaites, clé de cache `v2` ; le reste
+  en cache), 348,1 Mo, SHA `6bf974d1…`, aucune archive en conflit. Rien écrit dans le jeu : l'installation
+  attend sa formule sur le dossier du jeu.
+- Lu au journal : corps Solo en mise à plat vanilla, bras G / D Solo UV (bande, 100 %), 13 bras VTK convertis
+  vers la bande (Samurai 68 % du bras encré contre 56 % avant le correctif, Kala Arm 56 / 51 %, Bedellia 33 / 35 %,
+  Vale 36 %, Cover Me In Gold 1 %, Promiscuity 3 / 4 %), Pirate Vince (M) vers vanilla ; `.app` de Solo
+  illisible (masque FPP du torse = vanilla, connu).
+- Non-régression 1.3.0 (`31bc458`) → arbre courant sur le faux arbre vanilla : 947 / 947 fichiers identiques,
+  `.xl` identique. `regress_female.py` prend maintenant la référence git en argument (HEAD par défaut).
+- `NEXUS.md` : blocs 1.4.0 (page, « Arms and families », limites, « How it works », changelog, fichiers à
+  poser) avec les statuts non vus entre crochets ; lien du framework = Nexus 3783 (-KS- UV Texture Framework,
+  vérifié par l'API ; son 3.2.1 vient de son zip, même mod supposé, à confirmer par lui). README : Solo vu
+  au créateur (corps + deux bras, VTK convertis compris).

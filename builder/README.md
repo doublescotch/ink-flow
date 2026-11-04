@@ -140,10 +140,10 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 ## Known limits of this first cut
 
 - UV Framework tattoos (1.3.0): seen in game on Angel (body, feet and ankles). On Solo 2.0 + UV Framework 3.2.1 +
-  Solo arms UV: built and checked out of game, not seen in game yet. Songbird 2.0 body: the shell hides its cyber
-  chunks, not seen in game. No icons in the creator (text options).
-- Arm conversion (1.4.0): UV arms onto Angel's arms [IN-GAME STATUS: to write after the QA]; VTK arms onto UV arms
-  (Solo): built and checked out of game only. The converted texture is a resampling: a little softer than the
+  Solo arms UV: seen in the character creator (body and both arms) [MIRROR / FIRST PERSON / PHOTO MODE: to write after
+  the QA]. Songbird 2.0 body: the shell hides its cyber chunks, not seen in game. No icons in the creator (text options).
+- Arm conversion (1.4.0): UV arms onto Angel's arms [IN-GAME STATUS: to write after the QA on Angel]; VTK arms onto
+  UV arms (Solo): seen in the character creator. The converted texture is a resampling: a little softer than the
   original, and a seam of the unwrapping may show a hairline where the two layouts cut the arm differently.
 - Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal,
   even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as overlay archives.

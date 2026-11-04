@@ -5,7 +5,27 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 19 h 15) : conversion des bras corrigée (retournement vertical), validée sur Solo avec 2 tatouages ; build complet et QA Angel à refaire
+## État (2026-11-04, 19 h 45) : build Solo complet refait avec le correctif, non-régression 947/947 ; installation et QA Solo à faire, puis Angel
+
+- **Prêt, pas installé** : `gen\uv104\out_solo_game\Ink_Flow.archive` (348,1 Mo, SHA `6bf974d1…`, `.xl` 194 o), sa
+  config + 16 UV, 35 tatouages, 13 bras VTK convertis vers la bande avec le `v` corrigé (Samurai 68 % du bras
+  encré), Pirate Vince vers vanilla, aucune archive en conflit. Journal `gen\uv104\log_solo_game.txt`. **Son jeu
+  porte encore le canari 2** (2 tatouages, `595cba24…`). Jeu fermé au moment du build.
+- **Prochain geste** : (1) sur sa formule (dossier du jeu, jeu fermé) : `solo_bench.py install` (l'ancien part dans
+  `%LOCALAPPDATA%\InkFlow\backup\<horodatage>`) ; (2) **sa QA Solo** : créateur (Samurai VTK = deux manches,
+  Kala Arm, Bedellia, Vale), puis FPP, miroir, photo, TPP (jamais faits, plantages) ; (3) `solo_bench.py restore`
+  (formule), rebâtir sur Angel, **revoir le Samurai UV sur Angel : deltoïde plein** ; Kala Sleeve 1, Bedellia, V
+  masculin ; (4) écrire les statuts entre crochets de `NEXUS.md` et du README, exe + zip, upload, tags sur go.
+- **Non-régression rejouée** : 1.3.0 (`31bc458`) → arbre courant, 947 / 947 identiques, `.xl` identique
+  (`regress_female.py <ref>`). Le correctif ne touche que les conversions.
+- **Page 1.4.0 préparée** dans `NEXUS.md` (statuts non vus entre crochets, lien framework = Nexus 3783 à confirmer
+  par lui : son 3.2.1 vient de son zip) ; README « Known limits » : Solo vu au créateur. Version : 1.4.0.
+- Sauvegardes du jour dans `backup\` : `_175841` = Angel 1.4.0 (conversions retournées), `_182737` = Solo complet
+  (idem), `_185219` et `_190814` = canaris. Jetable : `gen\uv104\work_*`, `out_canari*`, `out_solo_game` après
+  installation. Trois plantages de la séance précédente (jeu en arrière-plan) : non attribués, à surveiller.
+- Ses mots de la veille « là j'avais aucune différence pour moi » : toujours à préciser par lui, rien supposé.
+
+## ~~État (2026-11-04, 19 h 15) : conversion des bras corrigée (retournement vertical), validée sur Solo avec 2 tatouages ; build complet et QA Angel à refaire~~ dépassé (19 h 45 : build complet refait, non-régression rejouée)
 
 - **Trouvé et livré** (ETUDE § 24, commit de cette séance) : `armconv` lisait et écrivait les textures avec v = y/h,
   le jeu lit **v = 1 − y/h** dans l'image que WolvenKit exporte / importe ; chaque bras converti était retourné

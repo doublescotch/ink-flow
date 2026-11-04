@@ -1,10 +1,21 @@
-# Nexus page — Ink Flow (page 36814, 1.3.0 UV of 2026-11-04 ; 1.2.0 opacity, 1.1.0 male V, 1.0.1 rewrite below)
+# Nexus page — Ink Flow (page 36814, 1.4.0 arm conversion of 2026-11-04 ; 1.3.0 UV, 1.2.0 opacity, 1.1.0 male V, 1.0.1 rewrite below)
 
 Fields to paste on https://www.nexusmods.com/cyberpunk2077/mods/36814. Written for the Nexus
 page (English). Rewritten from the **published** text (read through the API on 2026-11-02 at
 18 h 20, copy in `C:\__DEV\cyberpunk\ink_flow\gen\nexus_36814_desc.bbcode`): Hell_Kaiser's
 additions (credits, AppData, screenshots, "in addition to vanilla ones") are kept, the "UPDATE IN
 PROGRESS" banner goes, and every claim below is one we measured or he saw in game.
+
+## What changes on the page for 1.4.0 (2026-11-04, arm conversion ; **upload after Hell_Kaiser's QA in game**, 1.3.0 never uploaded: 1.4.0 carries 1.2.0 + 1.3.0)
+
+- What works with what: the UV line says what he saw on Solo 2.0 (creator). The bracketed statuses (mirror, first
+  person, photo mode on Solo ; UV arms on Angel) are written after his QA, never before.
+- "Arms and families" becomes 1.4.0: a texture of the other family is converted, no longer skipped.
+- Known limits: the "no conversion yet" line goes ; the conversion's own limits (softer, hairline seam, UV Framework
+  Texture needed) come in. How it works: one sentence on the conversion. Changelog 1.4.0.
+- Framework link = Nexus mod 3783 (-KS- UV Texture Framework, Zosoab70 and AllKnowingLion, MAIN file "UV Framework 4.1",
+  read on the API 2026-11-04). His `011_UV_Framework_Texture_3.2.1.archive` comes from his own zip: same mod assumed
+  (version line 3.x then 4.1), **to confirm by him** before the upload.
 
 ## What changes on the page for 1.3.0 (2026-11-04, UV Framework tattoos ; **upload after Hell_Kaiser's QA in game**)
 
@@ -78,13 +89,13 @@ Ink Flow ships [b]no tattoo[/b]. It ships a small Windows builder: you drop your
 [*][b]VTK Vanilla HD body[/b]: reported working by a user, and passes the builder's checks entirely (body, arms, first-person arms).
 [*][b]Male V, vanilla body[/b] and [b]Gymfiend VTK 1.4.3 + MV Head VTK[/b]: seen in the character creator (body tattoos, stacking). Mirror, first person and photo mode not seen in game yet; male head tattoos not tested yet.
 [*][b]Other VTK bodies[/b]: the builder reads the body, arm and head meshes your game actually loads and copies them. EBBRB 5.0 passes the builder's checks (measured on its archive, not seen in game yet). Any body mod whose meshes keep local materials and the standard skin appearance passes; a body mod that does not pass stops the build with "unsupported body mod" rather than producing a broken result. The body mod must itself work on your game version: the tattoo shells are copies of its meshes, so a body not updated for 2.5 will not get better under Ink Flow.
-[*][b]UV Framework bodies[/b] (1.3.0): Solo 2.0 + UV Framework Texture 3.2.1 + Solo arms UV: [SEEN IN GAME: to confirm after QA, else "built and checked, not seen in game yet"]. A UV tattoo is one texture for body + both arms; on UV arms the builder draws all three, on vanilla / VTK arms (Angel…) it draws the body part only and says so in build.log (the arm layouts differ, see "Arms and families" below). Songbird 2.0 body: builds (its cyber plates are left out of the shell), not seen in game.
+[*][b]UV Framework bodies[/b] (1.3.0, arms of both families since 1.4.0): Solo 2.0 + UV Framework Texture 3.2.1 + Solo arms UV: seen in the character creator, body and both arms, with UV tattoos and with VTK tattoos (their arms converted, see "Arms and families" below). [MIRROR / FIRST PERSON / PHOTO MODE ON SOLO: to write after his QA.] Songbird 2.0 body: builds (its cyber plates are left out of the shell), not seen in game.
 [*][b]Not tested[/b]: cyberarms (Mantis Blades, Gorilla Arms… the tattoo shells cover the arms fully; what happens on a cyberarm has not been looked at).
 [/list]
 
-[size=5][b]Arms and families (1.3.0)[/b][/size]
+[size=5][b]Arms and families (1.4.0)[/b][/size]
 
-VTK and UV tattoos share one body layout: the body part of a tattoo of either family fits every body, vanilla, VTK or UV, and the builder always builds it. The arms differ: UV Framework arms are unwrapped into the left strip of the body texture (a UV tattoo is one file for body + arms), vanilla and VTK arms into textures of their own (a VTK tattoo ships separate arm files). A texture of one family on arms of the other would be garbage, so the builder reads the layout of the arm meshes your game loads and builds the arm shells only for tattoos of the same family; the others get the body part and a "skipped" line in build.log. An arms-only UV tattoo (a sleeve) on VTK arms therefore builds nothing. Angel unwraps its feet into that strip: under a UV tattoo the body shell reads a copy of the texture with the strip cleared (made once per texture, cached), so the feet stay bare instead of showing arm ink (VTK textures never paint there).
+VTK and UV tattoos share one body layout: the body part of a tattoo of either family fits every body, vanilla, VTK or UV, and the builder always builds it. The arms differ: UV Framework arms are unwrapped into the left strip of the body texture (a UV tattoo is one file for body + arms), vanilla and VTK arms into textures of their own (a VTK tattoo ships separate arm files). The builder reads the layout of the arm meshes your game loads. A tattoo of the same family is drawn as is. Since 1.4.0 a tattoo of the other family gets its arm part [b]converted[/b] to your arms' layout: same arm, two unwrappings, each texel is moved to the same spot of the arm (a UV sleeve onto Angel's or vanilla arms, a VTK sleeve onto Solo's UV arms). Once per tattoo, cached: about 20 s per arm for a UV tattoo, up to a minute for a VTK arm going onto UV arms. This needs [url=https://www.nexusmods.com/cyberpunk2077/mods/3783]-KS- UV Texture Framework[/url] in your game (developed on its 3.2.1 archive) (its arm meshes are the map between the two layouts, even when your body mod overrides them); without it the arms are skipped as in 1.3.0 and build.log says why. Angel unwraps its feet into that strip: under a UV tattoo the body shell reads a copy of the texture with the strip cleared (made once per texture, cached), so the feet stay bare instead of showing arm ink (VTK textures never paint there).
 
 [size=5][b]How to use[/b][/size]
 
@@ -113,14 +124,15 @@ Still wrong? Open the data folder and post [b]build.log[/b] from a fresh build: 
 
 [size=5][b]How it works[/b][/size]
 
-For each tattoo file the builder extracts the texture(s), copies your active body / arm / head meshes with their skin materials replaced by the vanilla tattoo decal material, points the decal at the tattoo texture, and writes one appearance per tattoo and per slot plus the character-creator entries (CCXL). Since 1.3.0 a UV Framework texture is pointed at by the body and both arm shells at once (one copy of the texture), and only the skin chunks of a mesh are shown in a shell. The head shell carries a copy of the face morph target, so it follows face sculpting. First person works like the vanilla tattoos: a hidden companion of each slot drives first-person shells (the body shell through the first-person chunk mask, copies of your first-person arm meshes). Male V needs no companion: the game shows his third-person body and arms in first person, so his shells are listed for both views, as the vanilla male tattoos are. The textures are copied byte for byte (what you see is the author's tattoo, unchanged), except those whose mip chain stops early (several male packs): they render as broken stripes through the decal, so the builder re-encodes them with WolvenKit (same image, full mip chain, uncompressed: about 4 MB in the archive, about 85 MB of video memory while a 4096 tattoo is worn). The build log lists them. Everything is generated by WolvenKit Console from JSON; the source of the builder is public.
+For each tattoo file the builder extracts the texture(s), copies your active body / arm / head meshes with their skin materials replaced by the vanilla tattoo decal material, points the decal at the tattoo texture, and writes one appearance per tattoo and per slot plus the character-creator entries (CCXL). Since 1.3.0 a UV Framework texture is pointed at by the body and both arm shells at once (one copy of the texture), and only the skin chunks of a mesh are shown in a shell. Since 1.4.0 an arm texture drawn for the other arm layout is resampled through the two arm meshes (the UV Framework arm and your arm share the vertices, each with its own unwrapping) into a texture of your arms' layout, written by WolvenKit with a full mip chain. The head shell carries a copy of the face morph target, so it follows face sculpting. First person works like the vanilla tattoos: a hidden companion of each slot drives first-person shells (the body shell through the first-person chunk mask, copies of your first-person arm meshes). Male V needs no companion: the game shows his third-person body and arms in first person, so his shells are listed for both views, as the vanilla male tattoos are. The textures are copied byte for byte (what you see is the author's tattoo, unchanged), except those whose mip chain stops early (several male packs): they render as broken stripes through the decal, so the builder re-encodes them with WolvenKit (same image, full mip chain, uncompressed: about 4 MB in the archive, about 85 MB of video memory while a 4096 tattoo is worn). The build log lists them. Everything is generated by WolvenKit Console from JSON; the source of the builder is public.
 
 [size=5][b]Known limits (1.1.0)[/b][/size]
 
 [list]
 [*]Head tattoos on a vanilla head (no VTK head mod) do not show yet.
 [*]Male V: seen in the character creator only so far (vanilla body, Gymfiend VTK).
-[*]UV Framework tattoos (1.3.0): arms only when your arm meshes are UV arms (see "Arms and families"); no conversion between the two arm layouts yet.[*]Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal, even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as plain overlay archives.
+[*]Arm conversion (1.4.0): the converted arm is a resampling of the author's texture: a little softer than the original, and a hairline may show on a seam where the two unwrappings cut the arm differently. VTK arms onto UV arms (Solo): seen in the creator. UV arms onto vanilla / VTK arms (Angel): [TO WRITE AFTER HIS QA ON ANGEL]. Needs UV Framework Texture in the game, see "Arms and families".
+[*]Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal, even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as plain overlay archives.
 [*]Cyberarms not tested (see above).
 [*]Text options in the creator, no icons yet.
 [*]Face sculpting changed at the ripperdoc after a build has not been QA'd (the head shell follows the morphs of an already sculpted face, so it should be fine).
@@ -138,6 +150,15 @@ MIT. [url=https://github.com/doublescotch/ink-flow]github.com/doublescotch/ink-f
 
 [url=https://www.patreon.com/kalahira]Kala[/url], [url=https://www.nexusmods.com/profile/bedellia?gameId=3333]Bedellia[/url] and [url=https://www.nexusmods.com/profile/shivakoko]Shivakoko[/url] for the tattoos in the screenshots. Please help me find the authors of the Samurai and Garden Bloom tattoos, they are listed as "Unknown" in the names. Amazing works; this project would not exist without their art to give it a point.
 thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCXL Tattoo Toolkit[/url], the template resource whose switcher layout Ink Flow follows. psiberx for ArchiveXL and RED4ext. The WolvenKit team for WolvenKit Console (downloaded by the builder, not shipped).
+```
+
+## Changelog 1.4.0 (Nexus "Changelogs" tab, 2026-11-04)
+
+```
+1.4.0
+- Arms of either family on arms of either family: a UV Framework tattoo on vanilla / VTK arms (Angel…), a VTK tattoo on UV Framework arms (Solo…), now gets its arm part converted to your arms' layout instead of skipped (same arm, two unwrappings: each texel moves to the same spot of the arm). Once per tattoo, cached. Needs UV Framework Texture in the game (its arm meshes are the map); without it the arms are skipped as in 1.3.0 and build.log says why. The converted arm is a resampling: a little softer, and a hairline may show on a seam.
+- Carries 1.2.0 (per-tattoo opacity, Body meshes in use table) and 1.3.0 (UV Framework tattoos, skin-only shells, Angel feet), never uploaded.
+- The conversion cache is rebuilt once. Rebuild and install.
 ```
 
 ## Changelog 1.3.0 (Nexus "Changelogs" tab, 2026-11-04)
@@ -194,7 +215,11 @@ thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCX
 
 ## Files to upload
 
-- 1.3.0 (2026-11-04) : `Ink_Flow_Builder-1.3.0.zip` (`releases\`, SHA-256 `8ac7a3e6…c91ca`):
+- 1.4.0 (2026-11-04, exe and zip not built yet) : `Ink_Flow_Builder-1.4.0.zip` (`releases\`, SHA-256 [after
+  `build_exe.ps1`]): `InkFlowBuilder.exe` (SHA-256 [idem]) + `README.md` + `LICENSE`. Same file description as
+  below. Mark 1.1.0 as old version (1.2.0 and 1.3.0 were never uploaded: 1.4.0 carries their changes). Mod
+  version field: 1.4.0. Changelog tab: paste 1.2.0, 1.3.0 and 1.4.0.
+- 1.3.0 (2026-11-04, not uploaded) : `Ink_Flow_Builder-1.3.0.zip` (`releases\`, SHA-256 `8ac7a3e6…c91ca`):
   `InkFlowBuilder.exe` (SHA-256 `1b9c6a6b…ca92`) + `README.md` + `LICENSE`. Same file description as
   below. Mark 1.1.0 as old version (1.2.0 was never uploaded: 1.3.0 carries its changes). Mod version
   field: 1.3.0. Changelog tab: paste 1.2.0 and 1.3.0.
