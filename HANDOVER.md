@@ -5,7 +5,33 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 21 h 55) : cause des plantages trouvée (en-têtes de texture faux chez Kala), correctif commité ; canari 3 passe 2 dans son jeu minimal, verdict attendu
+## État (2026-11-04, 22 h 05) : le correctif d'en-tête est juste mais N'EST PAS la cause des plantages ; canari suivant = mêmes 2 tatouages sur Angel
+
+- **Canari 3, passe 2 (moteur corrigé, Kala V2 UV + Samurai VTK, jeu minimal, VM et Opera coupés) : plantage au
+  chargement de la sauvegarde à 21 h 57, signature `memcpy` identique** (`exe+0x196A3CC` ← `+0x343451`, source
+  illisible dès le premier octet, `D3D12Core` dans la pile, r8 = 3 072 o). Passe 1 (non corrigé) : gel watchdog au 3e
+  chargement. Donc : l'en-tête faux de Kala est réel et corrigé (commit `3ff9324`, à garder), mais ces plantages ont
+  une autre cause. Prémisse « Angel ne plantait pas grâce au réimport » : affaiblie, pas prouvée.
+- **Ce qui reste dans le jeu minimal au moment du plantage** : Solo OG 2.0 + bras Solo UV + framework 3.2.1 + Ink Flow
+  2 tatouages (Kala V2 UV 4K reconstruite ; Samurai VTK = corps 8K + deux bras convertis 8K importés par WolvenKit).
+  Suspects : **Solo** (page Nexus : plantages au chargement 2/3 du temps, même installation propre ; `.app` mal formé),
+  le framework, nos textures 8K importées (bras convertis), le corps Samurai 8K (jamais suspect sur Angel).
+- **Canari suivant, le seul qui tranche** (prochaine session, jeu fermé, sa formule) : `solo_bench.py restore` (Angel
+  revient, Solo part) en gardant le jeu minimal, `canari3.py build` + `install` (mêmes 2 tatouages ; sur Angel les bras
+  du Samurai restent VTK, ceux de Kala UV sont convertis en 2K/4K vers vanilla), 3 chargements + miroir. Plante avec la
+  même signature ⇒ nous (bras convertis ou corps 8K : canari Samurai seul, puis Kala seule). Ne plante pas ⇒ Solo.
+- **Lancement lent du jeu minimal** (sa remarque) : journal RED4ext 21 h 55 48 → index de fabrique 21 h 57 38, près de
+  2 min avant le chargement ; non expliqué (420 archives dans `archive\pc\mod__parked_2026-11-04` : vérifier que le jeu
+  ou ArchiveXL ne les lit pas ; sinon déplacer le parc hors de `archive\pc`).
+- Gels watchdog (18 h 13, 20 h 40, 21 h 47) : même fil principal bloqué dans la présentation d'image, DLL anonymisée
+  dans la pile (`170_E658703.dll`, 5 modules), ReShade / overlay candidats ; second phénomène, non traité.
+- **Son jeu ce soir** : minimal (Solo) + canari 3 passe 2. Retour à son jeu normal sur sa formule (`archive\pc`, jeu
+  fermé) : `minimal_bench.py unpark_all`, `solo_bench.py restore`, puis rebuild complet moteur corrigé (≈ 20 min) ou
+  remise à la main du build Angel de `backup\2026-11-04_175841` (conversions retournées, mais jamais planté).
+- Sauvegardes du jour : `_205556` = Solo complet 19 h 44, `_215048` = passe 1, dernière = passe 2 écrasée par rien.
+  Jetables : `gen\uv104\work_canari3`, `out_canari3*`, `scratchpad\tex_*`, `reimport_probe`, `test_normalize_work`.
+
+## ~~État (2026-11-04, 21 h 55) : cause des plantages trouvée (en-têtes de texture faux chez Kala), correctif commité ; canari 3 passe 2 dans son jeu minimal, verdict attendu~~ dépassé (22 h 05 : passe 2 plantée, même signature)
 
 - **Cause mesurée** (ETUDE § 25) : trois textures de Kala (`Kala Japanese V2` VTK, UV, With Sleeves) déclarent
   « 1 mip, 1 398 128 o » sur un tampon de 13 mips (22 369 648 o) ; le moteur copie le mip 4096 hors d'un tampon de

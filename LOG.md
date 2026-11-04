@@ -374,3 +374,6 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - Canari 3 (Kala V2 UV + Samurai VTK, jeu minimal) : passe 1 non corrigée → gel watchdog au 3e chargement (pas la
   signature `memcpy`) ; les 3 gels du jour ont le même fil principal (crochet Present, DLL anonymisée). Passe 2
   corrigée installée 21 h 50, verdict attendu. Post Nexus Solo : instable au chargement (hypothèse concurrente).
+- 21 h 57 : **passe 2 (moteur corrigé) plantée au chargement, même signature `memcpy`** : le défaut d'en-tête n'est
+  pas la cause. Prochain canari : mêmes 2 tatouages sur Angel, jeu minimal (passation). Lancement lent du jeu minimal
+  noté (2 min avant le chargement). Session close à 22 h 05, jeu laissé minimal, formules de retour dans la passation.

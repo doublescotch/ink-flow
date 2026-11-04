@@ -1014,7 +1014,11 @@ puissance de deux ⇒ import simple. Preuve hors jeu (`test_normalize.py`) : Kal
 13 mips, table 13, 22 369 648 déclarés = tampon ; Samurai VTK (3 textures saines) intouché. Preuve en jeu : canari 3
 (`canari3.py`, Kala V2 UV + Samurai VTK, jeu minimal, passe 1 moteur actuel / passe 2 corrigé) : résultats dans le journal.
 
-**Hypothèse concurrente notée, non tranchée** : Solo OG 2.0 est signalé instable au chargement sur sa page Nexus
+**Verdict du canari 3 (22 h)** : passe 1 (non corrigé) = gel watchdog ; **passe 2 (corrigé) = plantage au chargement,
+signature `memcpy` identique** (21 h 57). Le défaut d'en-tête est réel et corrigé mais **n'explique pas ces plantages**.
+Prochain canari : mêmes 2 tatouages sur Angel, jeu minimal.
+
+**Hypothèse concurrente, renforcée** : Solo OG 2.0 est signalé instable au chargement sur sa page Nexus
 (post du 28/08/2026, « crashes 2/3 du temps au chargement, même sur installation propre ») ; son `.app` est illisible
 au CLI (`castShadows` : fichier d'un ancien WolvenKit). Le canari 3 sur le jeu minimal, Solo présent dans les deux passes,
 le départage. Les gels « watchdog » jeu en arrière-plan restent non attribués (deux sur cinq événements, 6 archives
