@@ -5,7 +5,36 @@ Créée le 2026-11-01 à 2 h 45 (compartimentage demandé par Hell_Kaiser : chaq
 ~~**Pas de git tant que le proto ne tient pas**~~ Dépôt ouvert depuis le 01/11 (21 h 25) :
 `https://github.com/doublescotch/ink-flow`, branche `master` ; `canari\` exclu.
 
-## État (2026-11-04, 18 h) : banc Solo 2.0 posé dans son jeu, l'épaule du Samurai UV à regarder par lui
+## État (2026-11-04, 19 h 15) : conversion des bras corrigée (retournement vertical), validée sur Solo avec 2 tatouages ; build complet et QA Angel à refaire
+
+- **Trouvé et livré** (ETUDE § 24, commit de cette séance) : `armconv` lisait et écrivait les textures avec v = y/h,
+  le jeu lit **v = 1 − y/h** dans l'image que WolvenKit exporte / importe ; chaque bras converti était retourné
+  verticalement (contenu miroir, posé sur la moitié que l'autre bras lit). Correctif = `v ← 1 − v` sur les deux jeux
+  d'UV après appariement ; clé de cache `v2`. Preuves : 3 canaris en jeu validés par lui, Jaccard 82 % hors jeu.
+- **Dans son jeu maintenant** : Solo OG 2.0 + bras Solo UV + framework (Angel parqué dans
+  `C:\__DEV\cyberpunk\ink_flow\parked\2026-11-04_angel\`), **build de 2 tatouages** (Samurai VTK + Unknown Samurai UV,
+  41 Mo, `595cba24…`, `gen\uv104\out_canari2`). Sauvegardes dans `%LOCALAPPDATA%\InkFlow\backup\` : `2026-11-04_175841`
+  = Angel 1.4.0 de 16 h 17 (`6d7043aa…`, conversions retournées), `_182737` = Solo complet (35 tatouages, idem),
+  `_185219` = canari 1, `_190814` = canari 2. Les deux builds complets sont **périmés** (conversions fausses).
+- **Prochain geste** : (1) rebâtir sur Solo avec sa liste réelle (`solo_bench.py build` puis `install`, ≈ 22 min ; ou
+  lui au builder : ses 21 archives + les 16 UV de `dl\uv\tattoos\`) ; QA Solo : FPP, miroir, photo, TPP (jamais faits,
+  plantages) ; (2) **Angel remis** (`solo_bench.py restore`, jeu fermé, formule), rebâtir, **revoir le Samurai UV sur
+  Angel : le deltoïde doit être plein** ; puis Kala Sleeve 1, Bedellia, V masculin ; (3) non-régression 1.3.0 → 1.4.0 à
+  rejouer (`regress`, attendu 947/947 : aucune conversion sur l'arbre vanilla) ; (4) README, `NEXUS.md` changelog 1.4.0,
+  exe + zip, upload, tags sur go. Version : rester en 1.4.0 (jamais publiée), le correctif est dedans.
+- **Trois plantages du jeu dans la séance, tous jeu en arrière-plan** (Alt-Tab pour écrire sa QA ; une fois avec une
+  VM Odoo 15 qui échouait à démarrer au même moment). Non attribué ; hypothèse VRAM 8 Go + textures 8K, non mesurée.
+  Rien vu en jeu actif.
+- **Sa consigne gravée** (mémoire `feedback-builds-de-test-cibles`) : un banc ou canari = seulement les tatouages de
+  la question, jamais sa liste entière.
+- Ce qui ne tient plus (barré dans ETUDE § 23) : « bande z 1,36-1,46 vide chez les peintres UV », « remplir la bande
+  depuis le corps » ; les `seam*.py` lisent au point miroir. La divergence VTK / UV du Samurai existe (deux exports de
+  l'artiste : encre plus noire, patch ventral, motifs décalés d'1 cm) : réglage d'opacité par tatouage, rien à coder.
+- Ses mots de la veille « là j'avais aucune différence pour moi » : toujours à préciser par lui, rien supposé.
+- Jetable : `gen\uv104\work_solo_game`, `out_solo_game`, `work_canari_swap`, `out_canari_swap`, `work_canari2`,
+  `out_canari2` ; scratchpad `diag\` (≈ 1,5 Go d'exports) et `pylib\` (texture2ddecoder) de la séance.
+
+## ~~État (2026-11-04, 18 h) : banc Solo 2.0 posé dans son jeu, l'épaule du Samurai UV à regarder par lui~~ dépassé (19 h 15 : cause trouvée, correctif livré)
 
 - **Dans son jeu depuis 17 h 59** (horloge du poste, qui marque une heure de moins que les blocs
   précédents ; son déverrouillage `WRITE_UNLOCK.txt` de 17 h 33, jeu fermé) : Angel, son `.xl` et

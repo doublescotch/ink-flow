@@ -318,3 +318,16 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   convertis vers la bande (8K, 34-39 s chacun ; Kala Arm en 4K) ; `.app` de Solo illisible → masque
   FPP vanilla (connu, § 21). Installé 17 h 59 (`1e97af4f…`), l'Angel dans `backup\2026-11-04_175841`.
 - À lui : l'épaule du Samurai UV au créateur (§ 23). Passation réécrite, renvoi `cp:HANDOVER.md`.
+
+## 2026-11-04 (18 h → 19 h 15) — Bras convertis retournés verticalement : trouvé par 3 canaris, corrigé (Fable)
+
+- Son QA Solo : Unknown Samurai UV = corps + bras, épaule pleine ; Samurai VTK = corps OK, **aucune manche**.
+  Hors jeu, rien ne distingue bras converti et bras UV (en-têtes, coques, créateur, archive, Oodle du jeu,
+  mips, BC7 décodé indépendamment) : seule reste l'orientation de l'image, invisible sur une texture UV
+  (bras droit = miroir vertical du gauche).
+- Canari 1 (textures échangées) : la texture convertie est en cause. Canari 2 (moitié haute seule sur
+  les deux bras) : manche à droite → le jeu lit v = 1 − y/h. Correctif `armconv` (v inversé, cache
+  `v2`), canari 3 validé par lui : deux bras complets, même dessin que l'UV. ETUDE § 24 ; § 23 barré
+  (bande « vide », remplissage depuis le corps : artefacts de la lecture miroir).
+- Sa consigne : builds de test = seulement les tatouages testés (mémoire). Trois plantages, tous jeu
+  en arrière-plan, non attribués. Jeu laissé avec Solo + build de 2 tatouages ; builds complets périmés.

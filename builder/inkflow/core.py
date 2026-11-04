@@ -806,7 +806,7 @@ def converted_textures(cli, s, it, refs, log):
         for code in codes:
             d = os.path.join(s.work, "tex", it.slug, "conv", code)
             ra, rb = refs[code][0], refs[code][1]
-            key = "|".join([stamp(src_xbm), stamp(ra), stamp(rb), it.conv[code], "v1"])
+            key = "|".join([stamp(src_xbm), stamp(ra), stamp(rb), it.conv[code], "v2"])
             marker = os.path.join(d, ".src")
             if cached(marker, key + "|empty"):
                 dropped.append(code)

@@ -900,15 +900,72 @@ ou chaîne ? » réutilisable pour tout écart UV / VTK signalé.
 | **Corps** : `v_overlay` VTK contre partie u > 0,22 de `fullbody_overlay_d01` UV | **identiques à 98,5 %** (Jaccard sur les triangles encrés) ; 0 % « VTK seul » au-dessus de z 1,40 ; écarts « UV seul » 5-22 % entre z 1,06 et 1,22 seulement (hanches). **Même auteur, ré-export : prouvé.** Le § 22 (« repeint », corrélation 0,13-0,38) comparait des mises à plat différentes : sans valeur. |
 | **Bras gauche** : texture VTK contre bande UV convertie | **divergent** : z 1,42-1,46 : VTK encré 30-60 %, UV **0** ; z 1,36-1,42 : VTK seul 18-29 % ; z 1,02-1,16 (poignet, main) : UV seul 18-99 %, VTK vide. Jaccard 14,5 %. |
 
-Lecture : l'auteur a ré-exporté le corps tel quel et **refait le bras** pour le framework ; sur le framework il n'a rien
+~~Lecture : l'auteur a ré-exporté le corps tel quel et **refait le bras** pour le framework ; sur le framework il n'a rien
 peint entre z 1,36 et 1,46 (haut du bras), ce qui n'a de sens que si cette bande y est **cachée sous l'épaule du
 corps**. Sur Angel cette bande est visible (le VTK du même auteur l'encre, et sa capture la montre) : le « patch
-manquant » est **la bande 1,36-1,46 du bras**, vide chez tous les peintres UV, donc systématique, comme il le dit.
+manquant » est **la bande 1,36-1,46 du bras**, vide chez tous les peintres UV, donc systématique, comme il le dit.~~
+**Faux (§ 24)** : tous les `seam*.py` lisent les textures avec v = y/h alors que la convention réelle est v = 1 − y/h ;
+chaque lecture « au point z » est en fait la lecture du point miroir dans la texture. Le « patch manquant » du deltoïde
+sur Angel était la conversion elle-même, retournée verticalement. Les étiquettes z de ce tableau sont sans valeur ; la
+divergence VTK / UV du bras existe (deux exports de l'artiste) mais sa position reste à mesurer avec la bonne convention.
 Mon rendu C (vanilla + bras framework, tampon de profondeur) la montrait nue aussi : il ne modélise pas ce que le jeu
 cache (masques de chunks des `.app`, ordre réel des surfaces), donc **il ne vaut pas preuve** pour cette bande.
 
 **Sa décision (18 h 35)** : faire les choses dans l'ordre, **regarder d'abord les UV sur Solo 2.0** (corps natif), puis
-seulement les UV sur VTK. Ce banc tranche la lecture ci-dessus : si sur Solo l'épaule du Samurai UV est pleine, la bande
+seulement les UV sur VTK. ~~Ce banc tranche la lecture ci-dessus : si sur Solo l'épaule du Samurai UV est pleine, la bande
 est bien cachée par le corps framework, et le remède côté chaîne pour les bras VTK est de **remplir la bande 1,36-1,46
-du bras converti depuis la texture du corps** (transfert 3D corps → bras, même outillage qu'`armconv.py`, source = corps
-vanilla). Si sur Solo l'épaule est nue aussi, la lecture tombe et il faudra regarder les `.app` du framework.
+du bras converti depuis la texture du corps**~~ sans objet (§ 24 : le banc Solo a mené à la vraie cause, un
+retournement vertical dans la conversion ; aucun remplissage de bande à faire).
+
+## 24. Banc Solo 2.0 : les bras convertis étaient retournés verticalement (2026-11-04, 17 h 35 → 19 h 15, Fable, « Reprends », son déverrouillage, 3 canaris en jeu)
+
+**Banc** (`tools\qa_2026-11-04\solo_bench.py`) : Angel + refits parqués, Solo OG 2.0 + bras Solo UV posés (framework 3.2.1
+déjà là), 1.4.0 rebâtie sur ce jeu (sa config + 16 UV, 35 tatouages, 346,8 Mo, 1 339 s). **Son QA** : Unknown Samurai (UV)
+= corps + deux bras propres, **épaule pleine** ; Samurai (VTK, bras convertis vers la bande) = corps propre sans coupure
+aux tibias, **aucune manche**. Donc UV sur corps UV et VTK corps sur corps UV marchent ; la conversion VTK → bande ne
+s'affiche pas.
+
+**Hors jeu, rien ne distingue le bras converti du bras UV direct** (toutes mesures sur le build posé, scripts dans le
+scratchpad de la séance) : en-tête `.xbm` identique (8K, BC7 `TCM_QualityColor`, `TEXG_Generic_Color`, 14 mips,
+streamable), maillages et matériaux des coques identiques (`DiffuseTexture` → la bonne texture), câblage du créateur
+identique (315 références chacun), octets identiques entre le dossier de pack et l'archive, tampon Kraken décompressé par
+**la DLL Oodle du jeu** (`oo2ext_7_win64.dll`, ctypes) = export brut de WolvenKit, chaîne de mips pleine jusqu'à 4 px,
+BC7 décodé par un décodeur indépendant (`texture2ddecoder`) = export WolvenKit au texel près, encre à 99,2 % dans
+l'empreinte UV du bras Solo (empreinte Solo = empreinte framework, IoU 99,8 %). Seule asymétrie : **l'export WolvenKit
+est l'image retournée verticalement du tampon brut**, pour les trois textures lues (artiste, convertie 8K, convertie
+4K du build Angel), donc cohérent et non discriminant.
+
+**Canaris en jeu (sa consigne : 2 tatouages par build, plus jamais sa liste entière)** :
+
+| Canari | Ce qui est posé | Son retour | Lecture |
+|---|---|---|---|
+| 1 `canari_swap.py` | build Solo, textures échangées par nom : Samurai VTK reçoit la texture UV, Unknown Samurai la texture convertie | Samurai VTK = manches identiques à l'Unknown Samurai | la **texture convertie** est en cause, pas le câblage |
+| 2 `canari2.py variants` | 2 tatouages ; les DEUX bras du Samurai VTK = texture UV dont seule la moitié **haute** de la bande (bras gauche selon v = y/h) est gardée | manche sur le bras **droit**, gauche nu | le jeu lit **v = 1 − y/h** dans l'image que WolvenKit exporte et importe |
+| 3 `canari2.py build` corrigé | 2 tatouages, `armconv` corrigé | Samurai VTK = corps + deux bras complets, même dessin que l'UV | **livré** |
+
+**Cause** : `armconv.convert` lisait la texture source ET écrivait la destination avec v = y/h. Deux retournements :
+l'encre lue au point miroir (contenu faux), posée à la ligne miroir (bras faux : la coque du bras gauche lit la moitié vide
+de sa texture, celle du bras droit aussi). Une texture UV d'artiste cache le défaut : son bras droit est le miroir
+vertical de son bras gauche (empreintes R(v) = L(1 − v)), donc une image retournée reste « propre ». Vers la mise à plat
+vanilla (Angel, § 22-23), le bras converti était retourné lui aussi : c'est le « deltoïde nu » du § 23, pas une peinture.
+
+**Correctif** (`armconv.py`, `convert`) : après l'appariement, `v ← 1 − v` sur les deux jeux d'UV (lecture et écriture) ;
+clé du cache des conversions `v1` → `v2` (`core.py`). Preuve hors jeu : le bras gauche converti du Samurai VTK recouvre le
+bras gauche peint par l'artiste dans sa version UV à **82 %** (Jaccard, moitié basse de la bande ; 0 % avant), 68 % du
+bras encré (56 % avant, lecture miroir). Preuve en jeu : canari 3, validé par lui. Écarts restants vus par lui = les deux
+versions de l'artiste : encre VTK un peu plus noire, patch ventral d'hexagones propre à l'UV, motifs décalés d'environ
+1 cm par endroits sans déformation. Opacité par tatouage = le bon réglage pour ça, rien à coder.
+
+**Conséquences** : le « bras UV G en haut, D en bas » de la passation du 04/11 (13 h) se lit dans l'image exportée
+**D en haut, G en bas** (mesh v < 0,5 = bras gauche = bas de l'image) ; § 22-23 : toutes
+les lectures de texture « au point z » des `seam*.py` et de `seam5.py` sont au point miroir, conclusions barrées ; la
+« bande 1,36-1,46 vide chez les peintres UV » n'existe pas telle quelle ; **le Samurai UV sur Angel doit être revu en jeu
+avec la conversion corrigée** (le deltoïde devrait être plein). `blank_uv_strip` (colonnes u < 0,22, toutes lignes) et la
+détection de mise à plat (u seul) ne dépendent pas de v : intacts. Non-régression 1.3.0 → 1.4.0 (947/947) : intacte
+(aucune conversion dans l'arbre vanilla).
+
+**Autres constats de la séance** : le `.app` de Solo 2.0 reste illisible au CLI 9.1.0 (masque FPP du torse = vanilla,
+point de QA ouvert) ; **trois plantages du jeu, tous pendant que le jeu était en arrière-plan** (Alt-Tab pour écrire sa
+QA, une fois avec une VM qui échouait à démarrer au même moment), jamais en jeu actif : non attribué, à surveiller
+(8 Go de VRAM, textures 8K en nombre : hypothèse, non mesurée). QA FPP / miroir / photo / TPP de la conversion corrigée
+non faite (plantage avant).

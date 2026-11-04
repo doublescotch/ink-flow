@@ -251,12 +251,22 @@ def convert(direction, van_mesh, strip_mesh, src_dds, out_dds, is_skin, appearan
     H, W = img.shape[:2]
     if direction == "full":
         dst_uv, src_uv, share = pairing(van_mesh, strip_mesh, is_skin, appearance)
+    else:
+        dst_uv, src_uv, share = pairing(strip_mesh, van_mesh, is_skin, appearance)
+    # Image rows run the other way than mesh v : in the picture WolvenKit exports and imports, row y of a texture of
+    # height h is mesh v = 1 - y / h (in-game canari of 2026-11-04 : a texture painted in the picture's top half, where
+    # the left arm's v < 0.5 would sit with v = y / h, rendered on the RIGHT arm). Both the source read and the
+    # destination write go through the picture, so both UV sets are flipped here ; a UV tattoo hid the mistake
+    # (its right arm is the vertical mirror of its left arm), a converted arm showed up on no arm at all.
+    dst_uv, src_uv = dst_uv.copy(), src_uv.copy()
+    dst_uv[..., 1] = 1.0 - dst_uv[..., 1]
+    src_uv[..., 1] = 1.0 - src_uv[..., 1]
+    if direction == "full":
         size = max(1024, W // 2)                    # the arm takes ~8 % of a UV texture, ~50 % of an arm texture
         region = (0, 0, size, size)
         top = src_uv[..., 1].mean() < 0.5
         crop = (0, 0 if top else H // 2, W // 4, H // 2)                # the arm's half of the strip, u < 0.25
     else:
-        dst_uv, src_uv, share = pairing(strip_mesh, van_mesh, is_skin, appearance)
         size = min(8192, W * 2)
         top = dst_uv[..., 1].mean() < 0.5
         if dst_uv[..., 0].max() > STRIP_U:
