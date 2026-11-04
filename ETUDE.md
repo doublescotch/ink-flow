@@ -969,3 +969,53 @@ point de QA ouvert) ; **trois plantages du jeu, tous pendant que le jeu était e
 QA, une fois avec une VM qui échouait à démarrer au même moment), jamais en jeu actif : non attribué, à surveiller
 (8 Go de VRAM, textures 8K en nombre : hypothèse, non mesurée). QA FPP / miroir / photo / TPP de la conversion corrigée
 non faite (plantage avant).
+
+## 25. Plantages du 04/11 : en-têtes de texture faux chez l'artiste, copiés tels quels (2026-11-04, 19 h 45 → 21 h 15, Fable, sa QA, rapports du jeu, jeu minimal)
+
+**Symptôme** : à partir de 18 h 13 (première session du banc Solo 1.4.0), cinq plantages en deux heures : miroir en
+défilant les tatouages (19 h 50, 20 h 14, reproduit deux fois « au clic sur Unknown Samurai UV »), chargement de
+sauvegarde (20 h 30, jeu réduit à 6 archives), plus deux gels « watchdog 120 s » jeu en arrière-plan (18 h 13, 20 h 40).
+Sa remarque : « le créateur ne coupait pas comme ça avant » ; jamais de plantage sur les builds Angel 1.0 → 1.4.0.
+
+**Rapports lus** (`%LOCALAPPDATA%\REDEngine\ReportQueue\`, sondes `red4ext\plugins\AppearanceRuntimePlugin\Logs\crash-*.txt`) :
+18 h 34, 20 h 14, 20 h 30 = **même signature**, `memcpy` `Cyberpunk2077.exe+0x196A3CC` appelé de `+0x343451`, copie
+d'une texture dont la source est lue **1 445 888 et 1 447 648 octets après son début** (18 h 34, 20 h 14) ou dès le
+premier octet (19 h 50). 19 h 13 = `D3D12Core.dll+0x52044` lit `0x98`. Historique : 24 rapports depuis le 28/10, 20 avant
+Ink Flow (7 « GPU crash » le 28/10, gels, IRF, Red Profiler), la signature `memcpy` n'existe qu'à partir du 04/11 18 h 34.
+
+**Mémoire mesurée** (`vram_log.py`, nvidia-smi + tasklist, 1 s) : poste au repos VRAM 3,0 / 8 Go et RAM 19,9 / 32 Go
+(deux VM, Opera) ; au plantage de 20 h 14, VRAM 7 353 Mo (montée de 6,4 à 7,35 Go en 75 s de défilé, 80 Mo par
+tatouage, jamais redescendue), RAM physique 29 Go, commit 47 Go. VM et Opera coupés + 420 archives parquées
+(`minimal_bench.py`) : le même défilé passe (VRAM max 6,6 Go, RAM 21,5 Go) **mais le chargement de sauvegarde plante
+à 5,5 Go de VRAM et 20,7 Go de RAM avec la même signature** : la pression mémoire aggrave, elle n'explique pas.
+
+**Textures passées au crible** (`tex_headers.py`, `tex_sigs.py` : export DDS + sérialisation WolvenKit, en-tête contre
+tampon) : 46 textures du build, 24 du framework UV, toutes carrées en puissances de deux ; les octets imprimés par la
+sonde ne sont dans aucun tampon (le moteur lisait au-delà de la source). **Trois textures ont un en-tête faux**, copiées
+octet pour octet depuis les archives de Kala : `Kala Japanese V2` VTK (`v_overlay.xbm`), `Kala Japanese V2` UV et
+`Kala Japanese V2 With Sleeves` UV (`fullbody_overlay_d01.xbm`) : `sizeInfo` 4096 × 4096, `textureInfo.mipCount` **1**,
+`textureDataSize` **1 398 128**, `hasMipchain` 0, table `mipMapInfo` de **11** niveaux (1024 px → 1), tampon de
+**22 369 648** octets (chaîne complète de 13 mips). 1 398 128 = la chaîne BC7 de 1024 px à 1 px : le moteur alloue cela,
+puis copie le mip 4096 (16 Mo) depuis ce tampon de 1,4 Mo = le dépassement de 1,44 Mo des rapports (+ 47 Ko d'alignement).
+Le pack masculin `Kala Japanese V2` (§ 19, « mips tronqués ») porte **le même en-tête faux** (mipCount 11, 1 398 128)
+: les bandes du 03/11 étaient ce défaut, pas seulement la chaîne. Les 43 autres textures du build sont cohérentes.
+
+**Pourquoi Angel ne plantait pas** : sur Angel, chaque texture UV passe par `blank_uv_strip` (export + import
+`--keep`), qui réécrit un en-tête cohérent (vérifié sur la copie de midi : 1 mip, 16 777 216 octets, cohérent) ;
+sur Solo (pas de bande à effacer) la texture de Kala arrive telle quelle. La Kala V2 VTK, elle, était copiée telle
+quelle sur Angel aussi : risque latent, jamais déclenché (le moteur ne lit le mip 4096 que quand il le streame).
+
+**Correctif** (`core.texture_headers` + `core.normalize_textures`, remplace `reencode_truncated`) : à l'extraction,
+chaque texture est sérialisée (un appel CLI par tatouage, caché, clé `mips2`) ; en-tête incohérent (mipCount ≠ table,
+taille déclarée ≠ tampon) **ou** chaîne tronquée ⇒ export DDS (mip 0) → chaîne complète par `armconv.write_dds`
+(boîte 2 × 2 pondérée par l'alpha) → import `--keep` sur une copie de l'original = **BC7 conservé** (2,5 Mo dans
+l'archive, 22 Mo en VRAM pour une 4K, contre 85 Mo pour le réencodage non compressé de la 1.1.0). Non carrée ou non
+puissance de deux ⇒ import simple. Preuve hors jeu (`test_normalize.py`) : Kala V2 UV, Kala V2 VTK, Kala V2 masculin →
+13 mips, table 13, 22 369 648 déclarés = tampon ; Samurai VTK (3 textures saines) intouché. Preuve en jeu : canari 3
+(`canari3.py`, Kala V2 UV + Samurai VTK, jeu minimal, passe 1 moteur actuel / passe 2 corrigé) : résultats dans le journal.
+
+**Hypothèse concurrente notée, non tranchée** : Solo OG 2.0 est signalé instable au chargement sur sa page Nexus
+(post du 28/08/2026, « crashes 2/3 du temps au chargement, même sur installation propre ») ; son `.app` est illisible
+au CLI (`castShadows` : fichier d'un ancien WolvenKit). Le canari 3 sur le jeu minimal, Solo présent dans les deux passes,
+le départage. Les gels « watchdog » jeu en arrière-plan restent non attribués (deux sur cinq événements, 6 archives
+ou 426).
