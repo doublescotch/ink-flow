@@ -15,10 +15,13 @@ REF = sys.argv[1] if len(sys.argv) > 1 else "HEAD"
 # engine of the last commit, next to its templates (core.templates_dir() = ../../templates)
 old = ROOT + r"\head_src"
 shutil.rmtree(old, ignore_errors=True)
-for rel in ["builder/inkflow/" + f for f in ("__init__.py", "core.py", "env.py", "config.py", "rdar.py")]:
+for rel in ["builder/inkflow/" + f for f in ("__init__.py", "core.py", "env.py", "config.py", "rdar.py", "armconv.py")]:
+    r = subprocess.run(["git", "-C", PROJ, "show", REF + ":" + rel], capture_output=True)
+    if r.returncode:          # file absent at that ref (armconv.py before 1.4.0)
+        continue
     dst = os.path.join(old, rel)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    open(dst, "wb").write(subprocess.run(["git", "-C", PROJ, "show", REF + ":" + rel], capture_output=True, check=True).stdout)
+    open(dst, "wb").write(r.stdout)
 shutil.copytree(os.path.join(PROJ, "templates"), os.path.join(old, "templates"), dirs_exist_ok=True)
 
 

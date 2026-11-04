@@ -881,46 +881,95 @@ def dds_mips(path):
     return w, h, max(1, struct.unpack_from("<I", head, 28)[0])
 
 
-def reencode_truncated(cli, game, d, log):
-    """Textures whose mip chain stops before 1x1 (11 levels on a 4096 : the male Kala / Gymfiend packs) render as
-    stripes or not at all through the decal material, while the same image with one level or a full chain is clean
-    (QA Hell_Kaiser 2026-11-03, 14 textures out of 14, canary ETUDE § 19). Those, and only those, go through
-    WolvenKit export -> import, which writes a full chain (uncompressed). Healthy textures are left byte for byte."""
+def texture_headers(cli, d):
+    """{xbm path: (width, height, mipCount, textureDataSize, mip table entries, buffer bytes)} of every .xbm under
+    `d`, read from WolvenKit's serialization (one CLI call, the JSON files removed afterwards). The buffer length is
+    taken from the base64 string without decoding it (an 8K texture serializes to 120 MB of JSON)."""
     xbms = [os.path.join(r, f) for r, _, fs in os.walk(d) for f in fs if f.endswith(".xbm")]
     if not xbms:
+        return {}
+    cli.run("convert", "serialize", d, what="serialize textures (header check)")
+    out = {}
+    for x in xbms:
+        js = x + ".json"
+        if not os.path.isfile(js):
+            raise BuildError("texture not serialized for the header check: " + x)
+        try:
+            with open(js, encoding="utf-8") as f:
+                blob = json.load(f)["Data"]["RootChunk"]["renderTextureResource"]["renderResourceBlobPC"]["Data"]
+            info, size = blob["header"]["textureInfo"], blob["header"]["sizeInfo"]
+            b = blob["textureData"]["Bytes"]
+            buf = len(b) * 3 // 4 - b[-2:].count("=")
+            out[x] = (size["width"], size["height"], info["mipCount"], info["textureDataSize"],
+                      len(blob["header"]["mipMapInfo"]), buf)
+        except (KeyError, TypeError, ValueError) as e:
+            raise BuildError(f"texture header unreadable ({e!r}): " + x)
+        finally:
+            os.remove(js)
+    return out
+
+
+def normalize_textures(cli, game, d, log):
+    """Every extracted texture is checked and rebuilt when its header cannot be trusted :
+    (a) header inconsistent with its data : mip count != mip table, declared data size != buffer. Kala's Japanese V2
+        (VTK and UV) say « 4096 x 4096, 1 mip, 1 398 128 bytes » over a full 13-mip buffer of 22 369 648 bytes ; the
+        engine copies the 4096 mip out of a 1.4 MB buffer and crashes (ReportQueue 2026-11-04 18 h 34, 20 h 14, 20 h 30 :
+        read 1.44 MB past the source ; ETUDE § 25). Angel never crashed because its strip-cleared copy had been rebuilt ;
+    (b) mip chain stopping before 1x1 (11 levels on a 4096 : the male Kala / Gymfiend packs) : stripes or nothing
+        through the decal material (QA Hell_Kaiser 2026-11-03, 14 textures out of 14, canary ETUDE § 19).
+    Rebuild = WolvenKit export (top mip, RGBA8) -> full alpha-weighted box-filtered chain (`armconv.write_dds`) ->
+    import `--keep` on a copy of the original, which keeps its texture setup : BC7 stays BC7 (22 MB of video memory
+    for a 4K, not the 85 MB of the uncompressed re-encode of 1.1.0). A texture that is not square or not a power of two
+    takes the plain import instead (full chain, uncompressed). Healthy textures are left byte for byte."""
+    headers = texture_headers(cli, d)
+    if not headers:
         return
     tmp = d + ".dds"
     shutil.rmtree(tmp, ignore_errors=True)
     os.makedirs(tmp)
     try:
         cli.run("export", d, "-o", tmp, "-gp", game, what="export textures (mip check)")
-        for x in xbms:
+        for x, (hw, hh, hmips, hsize, hmm, hbuf) in headers.items():
             dds = os.path.join(tmp, os.path.relpath(x, d))[:-4] + ".dds"
             if not os.path.isfile(dds):
                 raise BuildError("texture not exported for the mip check: " + x)
             w, h, mips = dds_mips(dds)
             full = max(w, h).bit_length()
-            if mips in (1, full):
+            reasons = []
+            if hmips != hmm or hsize != hbuf:
+                reasons.append(f"header says {hmips} mip(s) / {hsize} bytes, data holds {hmm} mip(s) / {hbuf} bytes")
+            if mips not in (1, full):
+                reasons.append(f"mip chain stops at {mips} of {full} levels")
+            if not reasons:
                 continue
             out = os.path.join(tmp, "import")
             shutil.rmtree(out, ignore_errors=True)
             os.makedirs(out)
-            cli.run("import", dds, "-o", out, what="re-encode texture")
+            if w == h and w & (w - 1) == 0:
+                src = os.path.join(tmp, "full", os.path.basename(x)[:-4] + ".dds")
+                os.makedirs(os.path.dirname(src), exist_ok=True)
+                armconv.write_dds(src, w, (0, 0, w, h), armconv.np.array(armconv.dds_top(dds)))
+                shutil.copyfile(x, os.path.join(out, os.path.basename(x)))
+                cli.run("import", src, "-o", out, "--keep", what="rebuild texture (keep setup)")
+                how = f"full chain of {full}, setup kept"
+            else:
+                cli.run("import", dds, "-o", out, what="rebuild texture")
+                how = "plain import"
             new = os.path.join(out, os.path.basename(x))
             if not os.path.isfile(new):
-                raise BuildError("re-encoded texture not produced: " + new)
+                raise BuildError("rebuilt texture not produced: " + new)
             shutil.move(new, x)
-            log(f"  texture re-encoded ({w}x{h}, {mips} mips -> full chain of {full}): {os.path.relpath(x, d)}")
+            log(f"  texture rebuilt ({w}x{h}, {'; '.join(reasons)} -> {how}): {os.path.relpath(x, d)}")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
 
 def extract_textures(cli, game, archive, slug, work, log):
-    """All target textures of one tattoo archive -> work\\tex\\<slug>\\<game path> (cached), truncated mip chains
-    re-encoded (`reencode_truncated`)."""
+    """All target textures of one tattoo archive -> work\\tex\\<slug>\\<game path> (cached), untrustworthy headers and
+    truncated mip chains rebuilt (`normalize_textures`)."""
     d = os.path.join(work, "tex", slug)
     marker = os.path.join(d, ".src")
-    key = stamp(archive) + "|" + TEX_REGEX + "|mips1"
+    key = stamp(archive) + "|" + TEX_REGEX + "|mips2"
     if not cached(marker, key):
         shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d)
@@ -932,7 +981,7 @@ def extract_textures(cli, game, archive, slug, work, log):
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 shutil.move(os.path.join(d, f), dst)
                 log(f"  path restored from its hash: {HASH_PATH[int(m.group(1))]}")
-        reencode_truncated(cli, game, d, log)
+        normalize_textures(cli, game, d, log)
         with open(marker, "w") as f:
             f.write(key)
     return d

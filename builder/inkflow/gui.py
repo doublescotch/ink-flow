@@ -8,6 +8,7 @@ import subprocess
 import sys
 import threading
 import tkinter as tk
+import tkinter.font as tkfont
 import webbrowser
 from tkinter import filedialog, messagebox, simpledialog, ttk
 from tkinter.scrolledtext import ScrolledText
@@ -237,6 +238,10 @@ class App(tk.Tk):
         f.columnconfigure(0, weight=1)
         f.rowconfigure(0, weight=1)
         cols = ("on", "file", "targets", "name", "alpha", "note")
+        # Row height follows the font : ttk keeps a fixed 20 px whatever the Windows display scaling, so at 125 % or
+        # 150 % the rows overlap and the names look cut (Nexus post, 2026-11-04, screenshot at 150 %).
+        line = tkfont.nametofont("TkDefaultFont").metrics("linespace")
+        ttk.Style(self).configure("Treeview", rowheight=line + 6)
         self.tree = ttk.Treeview(f, columns=cols, show="headings", selectmode="extended")
         heads = {"on": T["col_on"], "file": T["col_file"], "targets": T["col_targets"], "name": T["col_name"],
                  "alpha": T["col_alpha"], "note": T["col_note"]}
