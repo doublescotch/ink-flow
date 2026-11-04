@@ -682,6 +682,73 @@ def mesh_layout(mesh_json):
                 u_max=u_max, strip_share=(n_strip / n_all) if n_all else 0.0, hidden=hidden, strip_chunks=strip_chunks)
 
 
+def blank_uv_strip(cli, game, src_xbm, dst_xbm, tmp, log, keep=True):
+    """Copy of a UV body texture whose arm strip (u < UV_STRIP) is cleared at every mip level : for the body shell of
+    a mesh that unwraps some of its skin into the strip (Angel's feet and ankles), so the shell shows the body ink
+    and nothing on those parts, instead of hiding whole chunks (QA Hell_Kaiser 2026-11-04 : the ankle ring was
+    lost). WolvenKit export (DDS, uncompressed RGBA8, DX10 header) -> bytes cleared in place -> import (`--keep`
+    on a copy of the original keeps its texture setup). ~10 s for a 4K, ~3 min for an 8K ; cached by the caller."""
+    shutil.rmtree(tmp, ignore_errors=True)
+    os.makedirs(tmp)
+    try:
+        cli.run("export", src_xbm, "-o", tmp, "-gp", game, what="export UV texture (strip)")
+        dds = next((os.path.join(r, f) for r, _, fs in os.walk(tmp) for f in fs if f.lower().endswith(".dds")), None)
+        if not dds:
+            raise BuildError("UV texture not exported: " + src_xbm)
+        with open(dds, "rb") as f:
+            data = bytearray(f.read())
+        h, w = struct.unpack_from("<II", data, 12)
+        mips = max(1, struct.unpack_from("<I", data, 28)[0])
+        dx10 = data[84:88] == b"DX10"
+        off = 148 if dx10 else 128
+        if dx10:
+            dxgi = struct.unpack_from("<I", data, 128)[0]
+            if dxgi not in (28, 29):            # R8G8B8A8_UNORM / _SRGB : what WolvenKit writes for colour textures
+                raise BuildError(f"UV texture exported in an unexpected DDS format (DXGI {dxgi}): " + src_xbm)
+        elif struct.unpack_from("<I", data, 88)[0] != 32:
+            raise BuildError("UV texture exported in an unexpected DDS format (not 32 bpp): " + src_xbm)
+        for level in range(mips):
+            lw, lh = max(1, w >> level), max(1, h >> level)
+            cols = min(lw, math.ceil(UV_STRIP * lw))
+            zero = bytes(cols * 4)
+            for row in range(lh):
+                start = off + row * lw * 4
+                data[start:start + cols * 4] = zero
+            off += lw * lh * 4
+        if off > len(data):
+            raise BuildError("UV texture DDS shorter than its header says: " + src_xbm)
+        with open(dds, "wb") as f:
+            f.write(data)
+        out = os.path.join(tmp, "import")
+        os.makedirs(out)
+        if keep:
+            shutil.copyfile(src_xbm, os.path.join(out, os.path.basename(src_xbm)))
+        cli.run("import", dds, "-o", out, *(["--keep"] if keep else []), what="import UV texture (strip cleared)")
+        new = os.path.join(out, os.path.basename(src_xbm))
+        if not os.path.isfile(new):
+            raise BuildError("strip-cleared texture not produced: " + new)
+        os.makedirs(os.path.dirname(dst_xbm), exist_ok=True)
+        shutil.move(new, dst_xbm)
+        log(f"  UV texture copied with the arm strip cleared ({w}x{h}, {mips} mips): {os.path.basename(src_xbm)}")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def blanked_texture(cli, s, slug, src_xbm, log):
+    """`blank_uv_strip` cached in work\\tex\\<slug>\\blank\\ (key : source texture stamp + strip width)."""
+    d = os.path.join(s.work, "tex", slug, "blank")
+    dst = os.path.join(d, os.path.basename(src_xbm))
+    marker = os.path.join(d, ".src")
+    key = stamp(src_xbm) + f"|{UV_STRIP}|keep"
+    if not (cached(marker, key) and os.path.isfile(dst)):
+        shutil.rmtree(d, ignore_errors=True)
+        os.makedirs(d)
+        blank_uv_strip(cli, s.game, src_xbm, dst, d + ".tmp", log)
+        with open(marker, "w") as f:
+            f.write(key)
+    return dst
+
+
 def shell_mask(layouts, code, family, is_body, base=TEMPLATE_MASK):
     """`chunkMask` (string) of a shell component, or None when the template's own mask already fits."""
     lay = layouts.get(code)
@@ -894,6 +961,7 @@ class Item:
     targets: list = None         # TARGETS dicts built for this item : entry.targets minus the arms `run_build` skips
     skipped: list = field(default_factory=list)   # "Arm L: UV tattoo on VTK / vanilla arms"…, for the log
     no_fpp: set = field(default_factory=set)      # FPP companion codes skipped (first-person arm layout mismatch)
+    blanked: set = field(default_factory=set)     # body codes whose shell reads the UV texture with the arm strip cleared
 
     def __post_init__(self):
         if self.targets is None:
@@ -1044,6 +1112,12 @@ def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
             src_tex = os.path.join(it.texdir, it.entry.tex.get(t["code"], t["tex"]))
             if not os.path.isfile(src_tex):
                 raise BuildError("texture missing after extraction: " + src_tex)
+            if fam == "uv" and t["code"] in BODY_CODES and layouts.get(t["code"], {}).get("strip_chunks"):
+                # The body unwraps skin into the arm strip (Angel's feet) : the body shell reads a copy of the UV
+                # texture with the strip cleared, and keeps every chunk (ETUDE § 21, QA of the ankles).
+                src_tex = blanked_texture(cli, s, slug, src_tex, log)
+                pp.tex = pp.tex[:-4] + "_noarms.xbm"
+                it.blanked.add(t["code"])
             dst = os.path.join(src, pp.tex)
             if not os.path.isfile(dst):            # a UV texture is shared by the body and arm shells : one copy
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
@@ -1056,15 +1130,15 @@ def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
                 morph, nt = retarget_morph(morphs[t["code"]], t, pp.mesh)
                 save(pp.morph, morph)
                 expected.append(pp.morph)
-            mask = shell_mask(layouts, t["code"], fam, t["code"] in BODY_CODES)
+            mask = shell_mask(layouts, t["code"], "vtk" if t["code"] in it.blanked else fam, t["code"] in BODY_CODES)
             if s.route1 and t["code"] == "body":
                 save(pp.app, make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_{slug}", f"w__{slug}", mask))
                 expected.append(pp.app)
             for n_ in slots:
                 save(pp.slot_app(n_), make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_slot{n_}_{slug}{t['suffix']}", f"w__{slug}{t['suffix']}", mask))
                 expected.append(pp.slot_app(n_))
-            parts.append(f"{t['code']}{' (UV)' if fam == 'uv' else ''} {nv} vertices / {nm} mat." + (f" / {nt} morphs" if nt else "")
-                         + (f" / mask {mask}" if mask else ""))
+            parts.append(f"{t['code']}{' (UV)' if fam == 'uv' else ''}{' strip cleared' if t['code'] in it.blanked else ''} {nv} vertices / {nm} mat."
+                         + (f" / {nt} morphs" if nt else "") + (f" / mask {mask}" if mask else ""))
         if s.fpp:
             for t in it.targets:
                 f = FPP_BY_PARENT.get(t["code"])
@@ -1072,6 +1146,9 @@ def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
                     continue
                 fam = it.family(t)
                 pt, pf = Paths(slug, t, fam), Paths(slug, f)
+                if t["code"] in it.blanked:
+                    pt.tex = pt.tex[:-4] + "_noarms.xbm"
+                    fam = "vtk"                 # the strip is cleared in the texture : no strip mask needed
                 if f["mesh"]:
                     mesh, nm, nv = shell(meshes[f["code"]], pt.tex, alpha, f"[{slug}] {f['code']}")
                     save(pf.mesh, mesh)
