@@ -12,27 +12,32 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 17 h 30) : canari v4 « états des pieds » posé à 17 h 29 ; sa QA créateur attendue
+## État (2026-11-05, 18 h) : corps vanilla propre partout (canari v4, sa QA) ; restent mains, cheville du créateur, Angel
 
-- **Validé par sa QA (16 h 35, canari v3, corps vanilla, Samurai + Bedellia)** : FPP tête baissée,
-  FPP assise, mode photo, inventaire propres ; manche jusqu'à la cheville. Torse plein à confirmer avec
+- **Validé par sa QA (18 h, canari v4 posé à 17 h 29, corps vanilla, Samurai + Bedellia)** : modificateur
+  de l'appartement, créateur de nouvelle partie, mode photo, FPP assise jambe croisée : propres, aucun
+  trou. Avec le v3 (16 h 35) : FPP tête baissée et inventaire propres. Torse plein à confirmer avec
   Promiscuity ou Vale (Samurai et Bedellia ont le ventre vide : leurs textures).
-- **Mécanique mesurée (ETUDE § 28)** : le jeu dessine le bas des jambes par deux options **cachées** de
-  sa personnalisation, `lifted_feet` (corps chunks 5-7, pied levé : créateur, charcudoc) et `flat_feet`
-  (`cs_flat` : en jeu pieds nus), chacune dans son groupe ; `TPP_Body` n'en liste aucune. ArchiveXL
-  `&feet=` suit la chaussure, pas le contexte : piste abandonnée.
-- **Codé v4** : coque de corps aux chunks 0-4 (masque lu dans l'app du corps) ; compagnon `legs_lifted`
-  (coque de corps, chunks 5-7, nommée `t0_000_pwa_base__full`) dans `character_creation` +
-  `lifted_feet` ; `legs_flat` dans `flat_feet` seul ; FPP inchangée. Commité avec ce bloc.
+- **Mécanique (ETUDE § 28)** : le bas des jambes = deux options **cachées** du jeu, `lifted_feet` (corps
+  chunks 5-7, pied levé) et `flat_feet` (`cs_flat`), chacune dans son groupe. Coques v4 : corps chunks
+  0-4, `legs_lifted` dans `character_creation` + `lifted_feet`, `legs_flat` dans `flat_feet` seul.
+- **Constat 1 de sa QA, non mesuré** : dessus de la main, le dernier hexagone de Samurai est coupé net,
+  partout (créateur, photo). Hypothèse à trancher : l'encre de la texture continue sur la main, mais la
+  main est dessinée par un autre maillage ou chunk que nos coques de bras. Mesure : quel composant
+  dessine la main (sonde du 02/11, maillages `arms_hq`), puis l'encre de la texture à cet endroit.
+- **Constat 2, non mesuré** : dans le **créateur seul**, l'encre de la cheville descend plus bas (marches
+  noires, petit « V » rouge sous les écailles) ; photo, inventaire, modificateur et FPP s'arrêtent à la
+  bande noire. Le créateur = coque levée (corps chunks 5-7), le reste = coque à plat (`cs_flat`, mêmes
+  UV mesurées au § 27 bis) : comparer leurs UV sommet par sommet aux chevilles, et les mips.
+- **Sa question VTK** : le correctif n'est pas propre au vanilla. Masques et maillages se lisent dans
+  l'archive active : Angel, Solo et Songbird livrent leurs apps de jambes et `cs_flat` ; aucun ne livre
+  l'app du corps (repli sur celle du jeu, chunks 0-4). **Jamais vu en jeu sur Angel** : prochain banc.
+- **Prochain geste** : canari v4 rebâti sur Angel (même script, son jeu Angel à reposer) ; puis les
+  deux constats ; puis talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable Feet ;
+  maillage vanilla toujours en hash `15467513564352523783`) ; pack complet ; exe rebâti ; crochets de
+  `NEXUS.md` / README / sticky réécrits **après** ces QA.
 - **Canari v4** : `tools\qa_2026-11-05\canari_feet.py`, sortie `gen\uv104\out_canari_feet` (SHA
-  `bed06d81…`, 22,2 Mo), vérifié dépaqueté, **posé à 17 h 29** sur son go (SHA identiques dans le jeu ; v3 sauvegardé dans
-  `%LOCALAPPDATA%\InkFlowackup6-11-05_172940`, sa sortie reste dans `out_canari_fpp`).
-- **QA attendue** : créateur et modificateur de l'appartement, tibias de face sans trous. **Risque annoncé
-  à regarder** : photo, inventaire, pieds nus en jeu (la coque à plat ne dépend plus que de `flat_feet`) ;
-  si l'encre des tibias disparaît là, `legs_flat` retourne dans `TPP_Body`.
-- **Puis** : talons (Togglable Feet livre `l0_000_pwa_base__cs_heel.mesh`, chemin du maillage vanilla
-  toujours en hash `15467513564352523783`) ; Angel avec le même canari ; pack complet ; exe rebâti ;
-  crochets de `NEXUS.md` / README / sticky réécrits **après** ces QA.
+  `bed06d81…`, 22,2 Mo) ; v3 sauvegardé dans `%LOCALAPPDATA%\InkFlow\backup\2026-11-05_172940`.
 - **Son jeu** : instance Virgin + Load Begone + canari v4 ; Red Hot Tools BETA13 posé par lui ; ses piles
   1-3 à reposer ; overlay NVIDIA coupé ; aucun plantage ni gel de la journée.
 - **Ouvert, même mécanique** : « V habillée » (les habits masquent le corps par nom) ; V masculin :

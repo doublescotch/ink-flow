@@ -1287,3 +1287,9 @@ Songbird livrent tous `l0_000_pwa_base__cs_flat.mesh` et les apps des jambes TPP
 `l0_000_base__cs_flat.app` ; **Angel seul** livre `l0_000_pwa_base__cs_heel.mesh` (le chemin de Togglable Feet). Sans
 effet sur le build : `extract_mesh` copie le maillage du propriétaire actif. Togglable Feet sur Angel remplacerait ses
 apps de jambes par les vanilla : à ne pas poser avec un corps moddé (sa page le dit).
+
+**Sa QA du canari v4 (18 h, corps vanilla)** : modificateur de l'appartement, créateur de nouvelle partie, mode photo,
+FPP assise jambe croisée : **propres, aucun trou** ; le risque annoncé (coque à plat dans `flat_feet` seul) ne s'est pas
+produit en photo. Deux constats neufs, non mesurés : (1) dessus de la main, dernier hexagone de Samurai coupé net,
+partout ; (2) dans le créateur seul, l'encre de la cheville descend plus bas (marches noires, « V » rouge) que sur la
+coque à plat (photo, inventaire, modificateur, FPP).

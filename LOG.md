@@ -483,3 +483,15 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - Ses questions : Togglable Feet (corps vanilla seul, trois états de pieds par étiquette de chaussure, § 28) ; lecture des
   pages sans capture (le texte de Nexus ne sort pas par l'extraction de texte, il sort par une lecture du DOM).
 - Fable coupé en cours de séance (quota), reprise par Opus sur sa commande.
+
+## 2026-11-05 (17 h 30 → 18 h) — Sa QA du canari v4 : corps vanilla propre partout ; deux constats neufs (Opus)
+
+- Canari v4 posé à 17 h 29 sur son « vas y pose » (SHA identiques, v3 sauvegardé). Sa QA : modificateur, créateur de
+  nouvelle partie, mode photo, FPP assise : propres, aucun trou. Le risque annoncé (coque à plat dans `flat_feet` seul)
+  ne s'est pas produit en photo.
+- Constats neufs, non mesurés : hexagone de Samurai coupé net sur le dessus de la main, partout ; encre de cheville plus
+  longue dans le créateur seul (marches noires, « V » rouge). Hypothèses et mesures dans la passation.
+- Mesuré pour sa question VTK : Angel, Solo, Songbird livrent apps de jambes et `cs_flat`, aucun l'app du corps ; Angel
+  seul livre le pied talon de Togglable Feet. ETUDE § 27 ter corrigé (il disait l'inverse pour `cs_flat`).
+- Passation : la ligne de sauvegarde écrite à 17 h 29 portait des octets de contrôle (`\b`, `\2` d'un remplacement
+  Python) ; réécrite.
