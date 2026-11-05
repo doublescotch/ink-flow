@@ -495,3 +495,11 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   seul livre le pied talon de Togglable Feet. ETUDE § 27 ter corrigé (il disait l'inverse pour `cs_flat`).
 - Passation : la ligne de sauvegarde écrite à 17 h 29 portait des octets de contrôle (`\b`, `\2` d'un remplacement
   Python) ; réécrite.
+
+## 2026-11-05 (18 h 20 → 18 h 35) — Canari v4 sur Angel : posé (Opus)
+
+- « Reprends ». Son déverrouillage du dossier du jeu (18 h 25) : 7 archives de sa config minimale Angel copiées de
+  l'arbre `3_Bodies` dans `archive\pc\mod` (`cmp` identique), jeu fermé.
+- `canari_feet.py` prend `CANARI_BODY=angel` (dossiers de travail et de sortie à part, le v4 vanilla reste). Build 156 s,
+  48,0 Mo, 52 fichiers ; corps = maillage d'Angel (4,2 Mo) ; groupes identiques au v4 vanilla. Posé à 18 h 31 (SHA
+  `1d2b193e…` identiques), v4 vanilla sauvegardé dans `backup\2026-11-05_183135`. Sa QA attendue.

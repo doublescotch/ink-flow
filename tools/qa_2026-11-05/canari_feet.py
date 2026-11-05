@@ -13,6 +13,10 @@ from inkflow.config import Config
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"
 ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\uv104"
 WORK, OUT = os.path.join(ROOT, "work_canari_fpp"), os.path.join(ROOT, "out_canari_feet")
+# 2026-11-05, 18 h 30 : same canary on Angel (his game gets Angel back) : CANARI_BODY=angel -> own work and output
+# folders, so the vanilla v4 output stays as it is.
+if os.environ.get("CANARI_BODY"):
+    WORK, OUT = WORK + "_" + os.environ["CANARI_BODY"], OUT + "_" + os.environ["CANARI_BODY"]
 TATTOOS = [r"D:\OneDrive - NS2I\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive",
            # run 2 (15 h 40) : Bedellia body added for the first-person torso (the Samurai texture has no chest ink, his
            # QA of 15 h 30) ; the lower-legs fix (§ 27 bis : chunks 6-7 hidden, flat-foot legs shell) is in this run too.

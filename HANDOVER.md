@@ -12,7 +12,7 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 18 h) : corps vanilla propre partout (canari v4, sa QA) ; restent mains, cheville du créateur, Angel
+## État (2026-11-05, 18 h 30) : vanilla propre partout (canari v4) ; canari v4 Angel POSÉ, sa QA attendue
 
 - **Validé par sa QA (18 h, canari v4 posé à 17 h 29, corps vanilla, Samurai + Bedellia)** : modificateur
   de l'appartement, créateur de nouvelle partie, mode photo, FPP assise jambe croisée : propres, aucun
@@ -32,14 +32,21 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
 - **Sa question VTK** : le correctif n'est pas propre au vanilla. Masques et maillages se lisent dans
   l'archive active : Angel, Solo et Songbird livrent leurs apps de jambes et `cs_flat` ; aucun ne livre
   l'app du corps (repli sur celle du jeu, chunks 0-4). **Jamais vu en jeu sur Angel** : prochain banc.
-- **Prochain geste** : canari v4 rebâti sur Angel (même script, son jeu Angel à reposer) ; puis les
-  deux constats ; puis talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable Feet ;
+- **Canari v4 Angel posé à 18 h 31** (son déverrouillage du dossier du jeu, 18 h 25) : 7 archives de
+  sa config minimale Angel copiées de l'arbre `3_Bodies` (identiques octet pour octet), puis
+  `CANARI_BODY=angel canari_feet.py build | check | install` : 156 s, 48,0 Mo, 52 fichiers, corps =
+  maillage d'Angel (4,2 Mo contre 333 Ko vanilla), SHA `1d2b193e…` ; v4 vanilla sauvegardé dans
+  `backup\2026-11-05_183135`. Attendu : coupure nette du Samurai à la cheville (§ 21, déjà connue).
+- **Prochain geste** : sa QA du canari Angel (créateur, modificateur, photo, inventaire, FPP) ; puis
+  les deux constats ; puis talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable Feet ;
   maillage vanilla toujours en hash `15467513564352523783`) ; pack complet ; exe rebâti ; crochets de
   `NEXUS.md` / README / sticky réécrits **après** ces QA.
-- **Canari v4** : `tools\qa_2026-11-05\canari_feet.py`, sortie `gen\uv104\out_canari_feet` (SHA
-  `bed06d81…`, 22,2 Mo) ; v3 sauvegardé dans `%LOCALAPPDATA%\InkFlow\backup\2026-11-05_172940`.
-- **Son jeu** : instance Virgin + Load Begone + canari v4 ; Red Hot Tools BETA13 posé par lui ; ses piles
-  1-3 à reposer ; overlay NVIDIA coupé ; aucun plantage ni gel de la journée.
+- **Canari v4** : `tools\qa_2026-11-05\canari_feet.py`, sortie `gen\uv104\out_canari_feet` (vanilla,
+  SHA `bed06d81…`, 22,2 Mo) et `out_canari_feet_angel` (`CANARI_BODY=angel`, travail à part) ; v3
+  sauvegardé dans `%LOCALAPPDATA%\InkFlow\backup\2026-11-05_172940`.
+- **Son jeu** : instance Virgin + Load Begone + config minimale Angel (corps, Refits, tête VTK HD ×3,
+  UV Framework 3.2.1) + canari v4 Angel ; Red Hot Tools BETA13 posé par lui ; ses piles 1-3 à reposer ;
+  overlay NVIDIA coupé ; aucun plantage ni gel de la journée.
 - **Ouvert, même mécanique** : « V habillée » (les habits masquent le corps par nom) ; V masculin :
   jambes jamais mesurées.
 - **1.4.0 : tout est bâti, rien n'est publiable** : pack complet 465,8 Mo (`gen\uv104\out_pack`, SHA
