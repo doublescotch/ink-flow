@@ -513,3 +513,5 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   l'encre finit plus haut. Cause du créateur non trouvée, non bloquante (son choix in-prompt : mesure puis build).
 - Exe 1.4.0 rebâti (`8802c4d1…`, 22,7 Mo) ; pack complet rebâti (1 577 s, 42 tatouages, 633,6 Mo, 2 646 fichiers,
   `36e00ca4…`), ancien pack gardé de côté. Rien posé : son déverrouillage a expiré à 19 h 25.
+- 19 h 50 : ses ArasakaWorkshop Vibrant ×6 mesurés hors jeu (pied vanilla peint jusqu'au sol, Angel 0 % : pieds dans la
+  bande, ETUDE § 29) ; pack rebâti posé sur son go in-prompt (déverrouillage de 19 h 21), SHA identiques.

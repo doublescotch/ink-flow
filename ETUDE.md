@@ -1317,3 +1317,10 @@ levée. Hypothèse non mesurée : au créateur, un second calque se dessine en p
 tranche : canari coloré (coque levée et coque à plat chacune d'une teinte unie) ou sonde au créateur (exige Redscript,
 Codeware et CET, absents de l'instance). Défaut cosmétique, créateur seul : proposé **non bloquant pour la 1.4.0**
 (son choix du 05/11, 19 h : « mesure puis build », pack et exe rebâtis ensuite) ; limite à écrire sur la page.
+
+**Pieds sur Angel, mesure du 05/11 à 19 h 50** (`feet_ink.py`, ses deux corps ArasakaWorkshop Vibrant 01 et 02 ajoutés
+par lui à `3_Bodies\__Tattoos`, hors du pack bâti) : sur le corps **vanilla**, l'encre couvre 81 % / 77 % des triangles
+du pied et descend à 0,5 cm du sol ; sur **Angel**, 0 % au pied et la même ligne de cheville (20,4 cm levé, 18,8 cm à
+plat) pour les trois textures, Samurai compris. Angel range ses pieds dans la bande u < 0,24 (§ 21) : un tatouage peint
+pour la mise à plat vanilla n'y arrive jamais. Remède déjà nommé : rééchantillonner les pieds comme les bras
+(`armconv`, appariement de triangles Angel ↔ vanilla). Arasaka Vibrant = tatouage de test des pieds (1.4.1).
