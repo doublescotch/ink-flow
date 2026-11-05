@@ -57,6 +57,16 @@ FPP_TORSO_APP = r"base\characters\common\player_base_bodies\appearances\t0_000_f
 FPP_LEGS_APP = r"base\characters\common\player_base_bodies\appearances\l0_000_fpp__full.app"
 FPP_TORSO_MASK = "18446744073709551391"     # 0xFFFFFFFFFFFFFF1F : chunks 0-4, fallback when the torso app is not readable
 FPP_LEGS_MASK = "18446744073709551584"      # 0xFFFFFFFFFFFFFFE0 : chunks 5-7, fallback for the legs app
+# Lower legs of female V (ETUDE § 27 bis, measured 2026-11-05 in the base game and the probe logs of 2026-11-02) : in every
+# view the game draws her calves and feet with the flat-foot legs mesh `l0_000_pwa_base__cs_flat.mesh` (3 chunks, same
+# vertices and UVs as body chunks 5-7, feet reposed flat : chunk 5 coincides within 0.02 mm, chunks 6-7 sit 17 to 60 mm
+# away) and hides body chunks 5-7 by NAME (`t0_000_pwa_base__full` gets mask 0x…FF1F). A body shell keeps its own name,
+# so its chunks 6-7 stayed and fought the legs mesh : the holes below the knees at the inventory, in photo mode and in
+# first person (his QA of 2026-11-05). Remedy : body shells hide every chunk lying entirely below `FLAT_LEGS_Z`, and a
+# companion shell copies the legs mesh ; it carries the game's own component name so footwear overrides hide it too.
+FLAT_LEGS_MESH = BODY_DIR + r"\l0_000_pwa_base__cs_flat.mesh"
+FLAT_LEGS_NAME = "l0_000_pwa_base__cs_flat"
+FLAT_LEGS_Z = 0.30                          # body chunk 6 tops at 0.29 m, chunk 5 (coincident) spans 0.28-0.53 m
 FPP_INDEX_OFFSET = 25                       # follower switchers at 1066-1074 : free in vanilla (1065 = last body_scars entry, 1090 = genitals)
 # Male V (ETUDE § 19, measured 2026-11-03 in the base game, Gymfiend VTK 1.4.3 and MV Head VTK) : other paths, a body
 # WITHOUT morphtarget (plain garment component), and no dedicated FPP meshes : the FPP apps show the TPP body (no
@@ -130,6 +140,17 @@ FPP_TARGETS = [
 FPP_BY_PARENT = {}                              # parent target code -> its FPP companions (the body has two)
 for _f in FPP_TARGETS:
     FPP_BY_PARENT.setdefault(_f["parent"], []).append(_f)
+# Third-person companions : shells driven by the slot's own switcher next to the targets (listed in every group, like the
+# targets), copies of a game mesh that the body texture also covers. `comp` = the component name written in the .app
+# (the game's own, so the overrides that hide that game component hide the shell too).
+TPP_COMPANIONS = [
+    dict(code="legs_flat", label="Legs", parent="body", gender="f", mesh=FLAT_LEGS_MESH, morph=None, comp=FLAT_LEGS_NAME,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_legs"),
+]
+TPP_BY_PARENT = {}
+for _c in TPP_COMPANIONS:
+    TPP_BY_PARENT.setdefault(_c["parent"], []).append(_c)
 TARGET_BY_TEX = {t["tex"]: t for t in TARGETS}
 # UV Framework family (ETUDE § 21, measured 2026-11-04). ONE texture for body + both arms, drawn in the vanilla body
 # layout (skin in u > 0.22) with the UV arms re-unwrapped into the left strip (u < 0.22 : left arm in v < 0.5, right
@@ -649,15 +670,18 @@ def mesh_layout(mesh_json):
                     u < 0.22 (Angel's feet and ankles) : for body shells under a UV texture, which keeps the arms there ;
       arms        : "strip" when the skin UVs (LOD 0) stay under u 0.22 = UV Framework arms, else "full" = the vanilla
                     arm layout (vanilla, VTK) ;
-      u_max, strip_share, hidden, strip_chunks : the figures behind it, for the log."""
+      low_mask    : chunk mask hiding the chunks lying entirely below `FLAT_LEGS_Z` (the body's lower shins and feet,
+                    drawn by the flat-foot legs mesh in game, ETUDE § 27 bis) : for female body shells ;
+      u_max, strip_share, hidden, strip_chunks, low_chunks : the figures behind it, for the log."""
     root = load(mesh_json)["Data"]["RootChunk"]
     rb = root["renderResourceBlob"]["Data"]
     header = rb["header"]
     buf = base64.b64decode(rb["renderBuffer"]["Bytes"])
+    qs, qo = header.get("quantizationScale") or {}, header.get("quantizationOffset") or {}
     app = next((a["Data"] for a in root.get("appearances", []) if a["Data"]["name"]["$value"] == MESH_APPEARANCE), None)
     chunk_mats = [c["$value"] for c in app["chunkMaterials"]] if app else []
-    skin_mask, strip_mask = ALL_CHUNKS, ALL_CHUNKS
-    hidden, strip_chunks = [], []
+    skin_mask, strip_mask, low_mask = ALL_CHUNKS, ALL_CHUNKS, ALL_CHUNKS
+    hidden, strip_chunks, low_chunks = [], [], []
     u_max, n_strip, n_all = 0.0, 0, 0
     for n, ci in enumerate(header["renderChunkInfos"]):
         mat = chunk_mats[n] if n < len(chunk_mats) else "01_ca_pale"
@@ -667,6 +691,16 @@ def mesh_layout(mesh_json):
             continue
         cv = ci["chunkVertices"]
         lay = cv["vertexLayout"]["elements"]["Elements"]
+        pos = next((e for e in lay if e["usage"] == "PS_Position" and e["type"] == "PT_Short4N"), None)
+        if pos is not None and "Z" in qs and "Z" in qo:
+            pstream = [e for e in lay if e["streamIndex"] == pos["streamIndex"] and e["streamType"] == "ST_PerVertex"]
+            pstride = sum(VTX_SIZE.get(e["type"], 4) for e in pstream)
+            ppos = sum(VTX_SIZE.get(e["type"], 4) for e in pstream[:pstream.index(pos)])
+            pbase = cv["byteOffsets"]["Elements"][pos["streamIndex"]]
+            z_max = max((struct.unpack_from("<h", buf, pbase + i * pstride + ppos + 4)[0] for i in range(ci["numVertices"])), default=32767)
+            if ci["numVertices"] and z_max / 32767.0 * qs["Z"] + qo["Z"] < FLAT_LEGS_Z:
+                low_mask &= ~(1 << n)
+                low_chunks.append(n)
         tex = next((e for e in lay if e["usage"] == "PS_TexCoord" and e["usageIndex"] == 0), None)
         if tex is None:
             continue
@@ -697,8 +731,9 @@ def mesh_layout(mesh_json):
         skin_mask, strip_mask, strip_chunks = ALL_CHUNKS, ALL_CHUNKS, []
         hidden = ["(none recognised as skin, every chunk kept: " + ", ".join(hidden) + ")"] if hidden else []
         u_max = 1.0
-    return dict(skin_mask=skin_mask, strip_mask=strip_mask, arms="strip" if u_max <= UV_STRIP + 0.03 else "full",
-                u_max=u_max, strip_share=(n_strip / n_all) if n_all else 0.0, hidden=hidden, strip_chunks=strip_chunks)
+    return dict(skin_mask=skin_mask, strip_mask=strip_mask, low_mask=low_mask, arms="strip" if u_max <= UV_STRIP + 0.03 else "full",
+                u_max=u_max, strip_share=(n_strip / n_all) if n_all else 0.0, hidden=hidden, strip_chunks=strip_chunks,
+                low_chunks=low_chunks)
 
 
 def blank_uv_strip(cli, game, src_xbm, dst_xbm, tmp, log, keep=True):
@@ -879,14 +914,17 @@ def converted_textures(cli, s, it, refs, log):
     return dropped
 
 
-def shell_mask(layouts, code, family, is_body, base=TEMPLATE_MASK):
-    """`chunkMask` (string) of a shell component, or None when the template's own mask already fits."""
+def shell_mask(layouts, code, family, is_body, base=TEMPLATE_MASK, low=False):
+    """`chunkMask` (string) of a shell component, or None when the template's own mask already fits. `low` : hide the
+    chunks below `FLAT_LEGS_Z` too (female body shells : the game draws those with the flat-foot legs mesh, § 27 bis)."""
     lay = layouts.get(code)
     m = base
     if lay:
         m &= lay["skin_mask"]
         if is_body and family == "uv":
             m &= lay["strip_mask"]
+        if low:
+            m &= lay["low_mask"]
     return None if m == base else str(m)
 
 
@@ -1169,8 +1207,12 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
     route 1 (female only). Male V needs no follower : its FPP shows the TPP meshes (§ 19)."""
     cc = copy.deepcopy(tpl_cc)
     root = cc["Data"]["RootChunk"]
-    targets = [t for t in TARGETS if t["gender"] == gender]
+    targets = [t for t in TARGETS if t["gender"] == gender] + [c for c in TPP_COMPANIONS if c["gender"] == gender]
     followers = s.fpp and gender == "f"
+
+    def has(it, t):
+        """The item builds this column : a target it carries, or a companion whose parent it carries."""
+        return t in it.targets if "parent" not in t else TARGET_BY_CODE[t["parent"]] in it.targets
     entries, names_all, names_fpp = [], [], []
     body_t = TARGETS[0]
 
@@ -1208,7 +1250,7 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
         for i, it in enumerate(items, 1):
             names = []
             for t in targets:
-                if t in it.targets:
+                if has(it, t):
                     nm = f"inkflow_slot{n_}_{it.slug}{t['suffix']}"
                     infos.append(info(nm, ui[t["code"]], Paths(it.slug, t).slot_app(n_), f"w__{it.slug}{t['suffix']}"))
                     names.append(nm)
@@ -1318,7 +1360,7 @@ def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None):
                 morph, nt = retarget_morph(morphs[t["code"]], t, pp.mesh)
                 save(pp.morph, morph)
                 expected.append(pp.morph)
-            mask = shell_mask(layouts, t["code"], "vtk" if t["code"] in it.blanked else fam, t["code"] in BODY_CODES)
+            mask = shell_mask(layouts, t["code"], "vtk" if t["code"] in it.blanked else fam, t["code"] in BODY_CODES, low=t["code"] == "body")
             if s.route1 and t["code"] == "body":
                 save(pp.app, make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_{slug}", f"w__{slug}", mask))
                 expected.append(pp.app)
@@ -1328,6 +1370,20 @@ def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None):
             parts.append(f"{t['code']}{' (UV)' if fam == 'uv' else ''}{' strip cleared' if t['code'] in it.blanked else ''}"
                          f"{' converted to ' + it.conv[t['code']] if t['code'] in it.conv else ''} {nv} vertices / {nm} mat."
                          + (f" / {nt} morphs" if nt else "") + (f" / mask {mask}" if mask else ""))
+        for t in it.targets:
+            for c in TPP_BY_PARENT.get(t["code"], []):
+                if c["code"] not in meshes:
+                    continue
+                fam = "vtk" if t["code"] in it.blanked else it.family(t)
+                pc = Paths(slug, c)
+                mesh, nm, nv = shell(meshes[c["code"]], it.texpath[t["code"]], alpha, f"[{slug}] {c['code']}")
+                save(pc.mesh, mesh)
+                expected.append(pc.mesh)
+                mask = shell_mask(layouts, c["code"], fam, False)
+                parts.append(f"{c['code']} {nv} vertices / {nm} mat. as {c['comp']}" + (f" / mask {mask}" if mask else ""))
+                for n_ in slots:
+                    save(pc.slot_app(n_), make_app(tpls[c["tpl"]], c, pc.mesh, c["comp"], f"w__{slug}{c['suffix']}", mask))
+                    expected.append(pc.slot_app(n_))
         if s.fpp:
             for t in it.targets:
                 for f in FPP_BY_PARENT.get(t["code"], []):
@@ -1351,7 +1407,7 @@ def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None):
                         parts.append(f"{f['code']} {nv} vertices / {nm} mat." + (f" / mask {mask}" if mask else ""))
                     else:
                         resource = pt.mesh
-                        mask = shell_mask(layouts, t["code"], fam, True, base) or (str(base) if read else None)
+                        mask = shell_mask(layouts, t["code"], fam, True, base, low=True) or (str(base) if read else None)
                         parts.append(f"{f['code']} = body shell, mask {mask}")
                     for n_ in slots:
                         save(pf.slot_app(n_), make_app(tpls[f["tpl"]], f, resource, f"inkflow_slot{n_}_{slug}{f['suffix']}", f"w__{slug}{f['suffix']}", mask))
@@ -1490,14 +1546,17 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     step(1, "Extracting the active body meshes")
     log("2. active meshes")
     needed = [t for t in TARGETS if any(t in it.targets for it in built)]
-    active = {t["code"]: extract_mesh(cli, s.game, s.work, t, log) for t in needed}
+    companions = [c for c in TPP_COMPANIONS if TARGET_BY_CODE[c["parent"]] in needed]
+    active = {t["code"]: extract_mesh(cli, s.game, s.work, t, log) for t in needed + companions}
     # UV layouts (ETUDE § 21) : arm targets whose texture family does not match the active arm mesh are skipped
     layouts = {c: mesh_layout(m) for c, (m, _) in active.items()}
+    labels = {**{t["code"]: t["label"] for t in TARGETS}, **{c["code"]: c["label"] for c in TPP_COMPANIONS}}
     for c, lay in layouts.items():
-        log(f"  {TARGET_BY_CODE[c]['label']:6s}: {'UV' if lay['arms'] == 'strip' else 'vanilla / VTK'} layout "
+        log(f"  {labels[c]:6s}: {'UV' if lay['arms'] == 'strip' else 'vanilla / VTK'} layout "
             f"(u max {lay['u_max']:.2f}, {lay['strip_share']:.0%} of the skin in the UV strip)"
             + (f", non-skin chunks hidden in the shells: {', '.join(lay['hidden'])}" if lay["hidden"] else "")
-            + (f", chunks in the strip (hidden under a UV texture): {lay['strip_chunks']}" if lay["strip_chunks"] and c in BODY_CODES else ""))
+            + (f", chunks in the strip (hidden under a UV texture): {lay['strip_chunks']}" if lay["strip_chunks"] and c in BODY_CODES else "")
+            + (f", chunks below {FLAT_LEGS_Z:.2f} m (hidden, drawn by the legs mesh): {lay['low_chunks']}" if lay["low_chunks"] and c == "body" else ""))
     refs = {}                                   # arm code -> (vanilla json, strip json, owner) | BuildError (reason)
     for it in built:
         keep = []
