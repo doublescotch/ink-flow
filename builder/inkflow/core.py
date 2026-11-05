@@ -67,6 +67,21 @@ FPP_LEGS_MASK = "18446744073709551584"      # 0xFFFFFFFFFFFFFFE0 : chunks 5-7, f
 FLAT_LEGS_MESH = BODY_DIR + r"\l0_000_pwa_base__cs_flat.mesh"
 FLAT_LEGS_NAME = "l0_000_pwa_base__cs_flat"
 FLAT_LEGS_Z = 0.30                          # body chunk 6 tops at 0.29 m, chunk 5 (coincident) spans 0.28-0.53 m
+# Third person, the feet states (ETUDE § 28, measured 2026-11-05 in `female_cco_ep1.inkcharcustomization` and the base
+# body apps). The game's own customization carries two HIDDEN options for the lower legs : `lifted_feet` (uiSlot
+# `lifted_feet`, groups `character_creation` and `lifted_feet` : the body morphtarget through the legs app
+# `l0_000_base__full.app`, chunks 5-7, feet lifted) and `flat_feet` (group `flat_feet` : the flat-foot mesh through
+# `l0_000_base__cs_flat.app`) ; the body option shows chunks 0-4 (`t0_000_base__full.app`). The engine applies one group
+# or the other with the footwear (creator and ripperdoc = lifted, barefoot in game = flat), not ArchiveXL (its `&feet=`
+# attribute reads `flat` in both, no footwear equipped). The shells copy that split : body shell = the body app's mask ;
+# lifted-legs shell = the same morphtarget through the legs app's mask, listed in the lifted groups, carrying the game's
+# component name so footwear overrides hide it ; flat-legs shell listed in `flat_feet` only.
+TPP_BODY_APP = r"base\characters\common\player_base_bodies\appearances\t0_000_base__full.app"
+TPP_LEGS_APP = r"base\characters\common\player_base_bodies\appearances\l0_000_base__full.app"
+TPP_BODY_MASK = "18446744073709551391"      # 0xFFFFFFFFFFFFFF1F : chunks 0-4, fallback when the body app is not readable
+TPP_LEGS_MASK = "18446744073709551584"      # 0xFFFFFFFFFFFFFFE0 : chunks 5-7, fallback for the legs app
+BODY_COMP_NAME = "t0_000_pwa_base__full"    # the game's body component (the legs app draws the body under that name too)
+FEET_GROUPS = {"lifted": ("character_creation", "lifted_feet"), "flat": ("flat_feet",)}   # feet kind -> groups listing it
 FPP_INDEX_OFFSET = 25                       # follower switchers at 1066-1074 : free in vanilla (1065 = last body_scars entry, 1090 = genitals)
 # Male V (ETUDE § 19, measured 2026-11-03 in the base game, Gymfiend VTK 1.4.3 and MV Head VTK) : other paths, a body
 # WITHOUT morphtarget (plain garment component), and no dedicated FPP meshes : the FPP apps show the TPP body (no
@@ -149,10 +164,16 @@ for _f in FPP_TARGETS:
 # Third-person companions : shells driven by the slot's own switcher next to the targets (listed in every group, like the
 # targets), copies of a game mesh that the body texture also covers. `comp` = the component name written in the .app
 # (the game's own, so the overrides that hide that game component hide the shell too).
+# `feet` = the feet state the shell belongs to (`FEET_GROUPS`) : listed in those groups only, the engine shows one state.
 TPP_COMPANIONS = [
-    dict(code="legs_flat", label="Legs", parent="body", gender="f", mesh=FLAT_LEGS_MESH, morph=None, comp=FLAT_LEGS_NAME,
-         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
+    dict(code="legs_flat", label="Legs (flat)", parent="body", gender="f", mesh=FLAT_LEGS_MESH, morph=None, comp=FLAT_LEGS_NAME,
+         feet="flat", tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
          old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_legs"),
+    # No mesh of its own : the body shell (morphtarget) through the legs app's mask (chunks 5-7, feet lifted).
+    dict(code="legs_lifted", label="Legs (lifted)", parent="body", gender="f", mesh=None, morph=None, comp=BODY_COMP_NAME,
+         feet="lifted", app=TPP_LEGS_APP, default_mask=TPP_LEGS_MASK,
+         tpl="chest_tattoo.app.json", keep="w__chest_tattoo", ctype="entMorphTargetSkinnedMeshComponent",
+         old=r"your_name\ccxl\chest_tattoo_demo\meshes\chest_tattoo\your_chest_tattoo_pwa.morphtarget", suffix="_legs_up"),
 ]
 TPP_BY_PARENT = {}
 for _c in TPP_COMPANIONS:
@@ -616,35 +637,49 @@ def extract_mesh(cli, game, work, t, log):
 
 def fpp_app_mask(cli, game, work, f, log):
     """Chunk mask of the FPP torso mesh in the active FPP appearance `f["app"]` (torso app or legs app) : what the game
-    shows of that mesh in first person through this appearance. The companion shell `f` gets the same mask. Cached on
-    the source archive ; `f["default_mask"]` (the measured vanilla value) is the fallback (the app may not be readable)."""
-    app, default, what = f["app"], f["default_mask"], f["label"] + " app"
+    shows of that mesh in first person through this appearance. The companion shell `f` gets the same mask."""
+    return app_mask(cli, game, work, "fpp_app_" + f["code"], f["app"], f["default_mask"], f["label"] + " app", log, mesh=FPP_TORSO_MESH)
+
+
+def tpp_app_mask(cli, game, work, code, log):
+    """Chunk mask of the body morphtarget (`BODY_COMP_NAME`) in the active third-person body app (`code` = "body") or
+    legs app ("legs_lifted") : what the game shows of the body in each of its two options (ETUDE § 28)."""
+    app, default, what = (TPP_BODY_APP, TPP_BODY_MASK, "TPP body app") if code == "body" else (TPP_LEGS_APP, TPP_LEGS_MASK, "TPP legs app")
+    return app_mask(cli, game, work, "tpp_app_" + code, app, default, what, log, comp=BODY_COMP_NAME)
+
+
+def app_mask(cli, game, work, cache, app, default, what, log, mesh=None, comp=None):
+    """Chunk mask of the first component on `mesh` (path) or named `comp` in the active appearance file `app`, read in
+    the archive that ships it (`find_owner`) and cached under `work\\mesh\\<cache>` on that archive ; `default` (the
+    measured vanilla value) is the fallback (the app may not be readable at this CLI version)."""
     src, owners = find_owner(game, app)
     who = who_ships(owners)
     try:
         if not os.path.isfile(src) or rdar.fnv1a64(app) not in rdar.index(src):
             log(f"  {what}: not found ({who}), default mask {default}")
             return default
-        d = os.path.join(work, "mesh", "fpp_app_" + f["code"])
+        d = os.path.join(work, "mesh", cache)
         marker = os.path.join(d, ".src")
         key = stamp(src) + "|" + src.lower() + "|" + app
         app_json = os.path.join(d, app + ".json")
         if not (cached(marker, key) and os.path.isfile(app_json)):
             shutil.rmtree(d, ignore_errors=True)
             os.makedirs(d)
-            cli.run("unbundle", src, "-o", d, "-r", re.escape("\\" + os.path.basename(app)) + "$", what=f"unbundle {f['code']} app")
-            cli.run("convert", "serialize", os.path.join(d, os.path.dirname(app)), what=f"serialize {f['code']} app")
+            cli.run("unbundle", src, "-o", d, "-r", re.escape("\\" + os.path.basename(app)) + "$", what=f"unbundle {cache}")
+            cli.run("convert", "serialize", os.path.join(d, os.path.dirname(app)), what=f"serialize {cache}")
             if not os.path.isfile(app_json):
                 raise BuildError("expected file missing after extraction: " + app_json)
             with open(marker, "w") as fh:
                 fh.write(key)
         for a in load(app_json)["Data"]["RootChunk"]["appearances"]:
             for c in a["Data"].get("components") or []:
-                mesh = ((c.get("mesh") or {}).get("DepotPath") or {}).get("$value") or ""
-                if mesh.lower() == FPP_TORSO_MESH.lower() and c.get("chunkMask") is not None:
+                cmesh = ((c.get("mesh") or {}).get("DepotPath") or {}).get("$value") or ""
+                cname_ = (c.get("name") or {}).get("$value") or ""
+                hit = (mesh and cmesh.lower() == mesh.lower()) or (comp and cname_ == comp)
+                if hit and c.get("chunkMask") is not None:
                     log(f"  {what}: {who}, mask {c['chunkMask']}")
                     return c["chunkMask"]
-        log(f"  ! {what}: {who}, no component on the FPP torso mesh: default mask {default}")
+        log(f"  ! {what}: {who}, no component {'on ' + os.path.basename(mesh) if mesh else 'named ' + comp}: default mask {default}")
     except (BuildError, OSError, ValueError, KeyError, TypeError) as e:
         log(f"  ! {what}: {who}, not readable ({e}): default mask {default}")
     return default
@@ -1220,6 +1255,7 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
         """The item builds this column : a target it carries, or a companion whose parent it carries."""
         return t in it.targets if "parent" not in t else TARGET_BY_CODE[t["parent"]] in it.targets
     entries, names_all, names_fpp = [], [], []
+    feet_of = {}            # option name -> feet state of its shell ("lifted" / "flat"), None for the others
     body_t = TARGETS[0]
 
     with_body = [it for it in items if body_t in it.targets]
@@ -1252,6 +1288,8 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
         s2["options"] = [copy.deepcopy(tk_switcher["options"][0])]
         s2["options"][0]["names"] = [cname(off_name[t["code"]]) for t in targets]
         offs = [off(off_name[t["code"]], ui[t["code"]]) for t in targets]
+        for t in targets:
+            feet_of[off_name[t["code"]]] = t.get("feet")
         infos = []
         for i, it in enumerate(items, 1):
             names = []
@@ -1260,6 +1298,7 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
                     nm = f"inkflow_slot{n_}_{it.slug}{t['suffix']}"
                     infos.append(info(nm, ui[t["code"]], Paths(it.slug, t).slot_app(n_), f"w__{it.slug}{t['suffix']}"))
                     names.append(nm)
+                    feet_of[nm] = t.get("feet")
                 else:
                     names.append(off_name[t["code"]])
             s2["options"].append(option(i, f"UI-Customization-inkflow_{it.slug}", names))
@@ -1303,14 +1342,29 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
             names_fpp += [f"inkflow_slot{n_}_fpp"] + [o["name"]["$value"] for o in foffs] + [x["name"]["$value"] for x in finfos]
 
     root["bodyCustomizationOptions"] = [{"HandleId": str(i), "Data": d} for i, d in enumerate(entries)]
+    # The feet-state shells go to the game's feet groups only (`FEET_GROUPS`, § 28) ; ArchiveXL merges our groups into
+    # the game's by name, so the two feet groups are added to the template's three when a female shell needs them.
+    kinds = {k for k in feet_of.values() if k}
+    have = {grp["name"]["$value"] for grp in root["bodyGroups"]}
+    for kind in sorted(kinds):
+        for gname in FEET_GROUPS[kind]:
+            if gname not in have:
+                grp = copy.deepcopy(root["bodyGroups"][0])
+                set_cname(grp, "name", gname)
+                root["bodyGroups"].append(grp)
+                have.add(gname)
     for grp in root["bodyGroups"]:
-        fpp_group = followers and grp["name"]["$value"] == "FPP_Body"
-        grp["options"] = [cname(x) for x in (names_fpp if fpp_group else names_all)]
+        gname = grp["name"]["$value"]
+        if followers and gname == "FPP_Body":
+            grp["options"] = [cname(x) for x in names_fpp]
+            continue
+        wanted = {k for k, groups in FEET_GROUPS.items() if gname in groups}
+        grp["options"] = [cname(x) for x in names_all if feet_of.get(x) is None or feet_of[x] in wanted]
     return cc
 
 
 
-def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None):
+def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None, tpp_masks=None):
     """items: list of Item ; active: target code -> (mesh json, morph json) ; fpp_masks: FPP companion code -> chunk mask
     read in its FPP appearance (`fpp_app_mask`, when `s.fpp`) ; layouts: target code -> `mesh_layout` (chunk masks).
     -> (archive, xl, listing)."""
@@ -1366,7 +1420,12 @@ def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None):
                 morph, nt = retarget_morph(morphs[t["code"]], t, pp.mesh)
                 save(pp.morph, morph)
                 expected.append(pp.morph)
-            mask = shell_mask(layouts, t["code"], "vtk" if t["code"] in it.blanked else fam, t["code"] in BODY_CODES, low=t["code"] == "body")
+            if t["code"] == "body" and "body" in (tpp_masks or {}):
+                # Female body : the game's body option shows chunks 0-4, the legs are the feet-state shells (§ 28)
+                base = int(tpp_masks["body"])
+                mask = shell_mask(layouts, "body", "vtk" if t["code"] in it.blanked else fam, True, base) or str(base)
+            else:
+                mask = shell_mask(layouts, t["code"], "vtk" if t["code"] in it.blanked else fam, t["code"] in BODY_CODES)
             if s.route1 and t["code"] == "body":
                 save(pp.app, make_app(tpls[t["tpl"]], t, pp.resource, f"inkflow_{slug}", f"w__{slug}", mask))
                 expected.append(pp.app)
@@ -1378,17 +1437,25 @@ def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None):
                          + (f" / {nt} morphs" if nt else "") + (f" / mask {mask}" if mask else ""))
         for t in it.targets:
             for c in TPP_BY_PARENT.get(t["code"], []):
-                if c["code"] not in meshes:
-                    continue
                 fam = "vtk" if t["code"] in it.blanked else it.family(t)
                 pc = Paths(slug, c)
-                mesh, nm, nv = shell(meshes[c["code"]], it.texpath[t["code"]], alpha, f"[{slug}] {c['code']}")
-                save(pc.mesh, mesh)
-                expected.append(pc.mesh)
-                mask = shell_mask(layouts, c["code"], fam, False)
-                parts.append(f"{c['code']} {nv} vertices / {nm} mat. as {c['comp']}" + (f" / mask {mask}" if mask else ""))
+                if c["mesh"]:
+                    if c["code"] not in meshes:
+                        continue
+                    mesh, nm, nv = shell(meshes[c["code"]], it.texpath[t["code"]], alpha, f"[{slug}] {c['code']}")
+                    save(pc.mesh, mesh)
+                    expected.append(pc.mesh)
+                    resource = pc.mesh
+                    mask = shell_mask(layouts, c["code"], fam, False)
+                    parts.append(f"{c['code']} {nv} vertices / {nm} mat. as {c['comp']}" + (f" / mask {mask}" if mask else ""))
+                else:
+                    # The parent's shell through another mask (lifted legs : the body morphtarget, legs app's mask)
+                    base = int((tpp_masks or {}).get(c["code"], c["default_mask"]))
+                    resource = Paths(slug, t, fam).resource
+                    mask = shell_mask(layouts, t["code"], fam, True, base) or str(base)
+                    parts.append(f"{c['code']} = {t['code']} shell as {c['comp']} / mask {mask}")
                 for n_ in slots:
-                    save(pc.slot_app(n_), make_app(tpls[c["tpl"]], c, pc.mesh, c["comp"], f"w__{slug}{c['suffix']}", mask))
+                    save(pc.slot_app(n_), make_app(tpls[c["tpl"]], c, resource, c["comp"], f"w__{slug}{c['suffix']}", mask))
                     expected.append(pc.slot_app(n_))
         if s.fpp:
             for t in it.targets:
@@ -1553,7 +1620,7 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     step(1, "Extracting the active body meshes")
     log("2. active meshes")
     needed = [t for t in TARGETS if any(t in it.targets for it in built)]
-    companions = [c for c in TPP_COMPANIONS if TARGET_BY_CODE[c["parent"]] in needed]
+    companions = [c for c in TPP_COMPANIONS if TARGET_BY_CODE[c["parent"]] in needed and c["mesh"]]
     active = {t["code"]: extract_mesh(cli, s.game, s.work, t, log) for t in needed + companions}
     # UV layouts (ETUDE § 21) : arm targets whose texture family does not match the active arm mesh are skipped
     layouts = {c: mesh_layout(m) for c, (m, _) in active.items()}
@@ -1563,7 +1630,7 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
             f"(u max {lay['u_max']:.2f}, {lay['strip_share']:.0%} of the skin in the UV strip)"
             + (f", non-skin chunks hidden in the shells: {', '.join(lay['hidden'])}" if lay["hidden"] else "")
             + (f", chunks in the strip (hidden under a UV texture): {lay['strip_chunks']}" if lay["strip_chunks"] and c in BODY_CODES else "")
-            + (f", chunks below {FLAT_LEGS_Z:.2f} m (hidden, drawn by the legs mesh): {lay['low_chunks']}" if lay["low_chunks"] and c == "body" else ""))
+            + (f", chunks below {FLAT_LEGS_Z:.2f} m (hidden in the FPP legs shell, drawn by the flat-foot mesh): {lay['low_chunks']}" if lay["low_chunks"] and c == "body" else ""))
     refs = {}                                   # arm code -> (vanilla json, strip json, owner) | BuildError (reason)
     for it in built:
         keep = []
@@ -1614,6 +1681,11 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
                             log(f"  ! [{it.slug}] {f['label']} skipped: first-person arms have the other layout")
             if f.get("app"):
                 fpp_masks[f["code"]] = fpp_app_mask(cli, s.game, s.work, f, log)
+    tpp_masks = {}                              # "body" / "legs_lifted" -> chunk mask read in the TPP body / legs app (§ 28)
+    if TARGETS[0] in needed:
+        log("2c. third person : body and lifted-legs masks")
+        for code in ("body", "legs_lifted"):
+            tpp_masks[code] = tpp_app_mask(cli, s.game, s.work, code, log)
 
     log("3. textures")
     for i, it in enumerate(built):
@@ -1635,7 +1707,7 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     step(2 + len(built), "Building the archive")
     log("4. build")
     try:
-        arc, xl, listing = build_archive(s, cli, built, active, log, fpp_masks, layouts)
+        arc, xl, listing = build_archive(s, cli, built, active, log, fpp_masks, layouts, tpp_masks)
     except Cancelled:
         for p in (os.path.join(s.out, s.name + ".archive"), os.path.join(s.out, s.name + ".archive.xl")):
             if os.path.isfile(p):

@@ -5,42 +5,38 @@ porte sa passation et son journal dans son dossier ; `cp:HANDOVER.md` ne garde q
 **Réécrite le 2026-11-04 à 22 h 30 sur sa remarque** (« pourquoi le handover s'est transformé en
 log d'état ») : vingt-deux blocs « État » barrés, empilés heure par heure, sont partis ; la
 chronologie est dans `LOG.md` (une entrée par séance, mêmes heures), les mesures, décisions et
-acquis dans `ETUDE.md` (§ 1-25). Ce fichier ne porte que **l'état vivant** : un seul bloc d'état,
+acquis dans `ETUDE.md` (§ 1-28). Ce fichier ne porte que **l'état vivant** : un seul bloc d'état,
 réécrit à chaque séance, puis ce qui est ouvert et ce qui attend Hell_Kaiser. Une entrée livrée ou
 tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se réécrit, il ne s'empile pas.
 
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 16 h 40) : FPP, photo, inventaire validés par lui (canari v3) ; reste le bas des jambes dans le créateur / modificateur (état des pieds)
+## État (2026-11-05, 17 h 30) : canari v4 « états des pieds » bâti et vérifié, pas posé ; sa QA créateur attendue
 
-- **Validé par sa QA (16 h 35, canari v3, corps vanilla, Samurai + Bedellia)** : FPP tête baissée
-  (torse, ETUDE § 27), FPP assise jambe croisée, mode photo, inventaire : propres, plus rien ne bouge
-  avec la caméra, manche jusqu'à la bande de cheville de l'artiste (jamais couverte avant). Reste à
-  confirmer le torse plein avec Promiscuity ou Vale (Samurai et Bedellia ont le ventre vide : textures).
-- **Mécanique gravée (§ 27 bis, ter)** : en jeu, mollets et pieds de V = maillage « pieds à plat »
-  `l0_000_pwa_base__cs_flat` (chunk 5 coïncident, 6-7 à 17-60 mm), corps masqué par **nom** ; dans le
-  créateur / modificateur, jambes = second exemplaire du corps (`…584`, pied **levé**), pas de `cs_flat`.
-  Trois états de pieds : levé (créateur), à plat (jeu, pieds nus / plates), talons (maillage à part).
-- **Codé** : `low_mask` (chunks sous 0,30 m) sur coque de corps féminine et FPP jambes ; compagnons
-  `legs_flat` (TPP) et `fpp_legs` (FPP) = copies de `cs_flat` nommées `l0_000_pwa_base__cs_flat` ;
-  `fpp_torso`. Canari v3 dans le jeu depuis 16 h 20 (`gen\uv104\out_canari_fpp`, SHA `32f27edb…`).
-- **Seul défaut restant** : bas des tibias de face, trous mobiles, **créateur de nouvelle partie et
-  modificateur de l'appartement** (charcudoc présumé pareil) : la coque à plat se bat avec le pied levé
-  du corps, et la coque de corps y cache 6-7. **Prochaine mesure** : les apparences dynamiques ArchiveXL
-  (`&feet=flat` / `lifted`) s'appliquent-elles aux `.app` du créateur ? Canari à une condition ; sinon,
-  sonde en créateur (Redscript à reposer : `r6\scripts` vide depuis sa régénération).
-- **Puis** : talons (chemin du maillage `high_heels` à résoudre, hash `15467513564352523783`, sa QA
-  talons jamais faite) ; Angel avec le même canari ; pack complet (`pack_build.py build`, ≈ 1 000 s) ;
-  exe rebâti ; crochets de `NEXUS.md` / README / sticky réécrits **après** ces QA.
-- **Son jeu** : instance Virgin + Load Begone + canari v3 ; Red Hot Tools BETA13 posé par lui à la main
-  (WolvenKit avait posé la RC3 du 20/10 : plantage au boot, § 27 ter) ; ses piles 1-3 à reposer ;
-  aucun plantage ni gel de la journée, overlay NVIDIA coupé.
+- **Validé par sa QA (16 h 35, canari v3, corps vanilla, Samurai + Bedellia)** : FPP tête baissée,
+  FPP assise, mode photo, inventaire propres ; manche jusqu'à la cheville. Torse plein à confirmer avec
+  Promiscuity ou Vale (Samurai et Bedellia ont le ventre vide : leurs textures).
+- **Mécanique mesurée (ETUDE § 28)** : le jeu dessine le bas des jambes par deux options **cachées** de
+  sa personnalisation, `lifted_feet` (corps chunks 5-7, pied levé : créateur, charcudoc) et `flat_feet`
+  (`cs_flat` : en jeu pieds nus), chacune dans son groupe ; `TPP_Body` n'en liste aucune. ArchiveXL
+  `&feet=` suit la chaussure, pas le contexte : piste abandonnée.
+- **Codé v4** : coque de corps aux chunks 0-4 (masque lu dans l'app du corps) ; compagnon `legs_lifted`
+  (coque de corps, chunks 5-7, nommée `t0_000_pwa_base__full`) dans `character_creation` +
+  `lifted_feet` ; `legs_flat` dans `flat_feet` seul ; FPP inchangée. Commité avec ce bloc.
+- **Canari v4** : `tools\qa_2026-11-05\canari_feet.py`, sortie `gen\uv104\out_canari_feet` (SHA
+  `bed06d81…`, 22,2 Mo), vérifié dépaqueté. **Pas posé** (son choix) : pose = `canari_feet.py install`,
+  jeu fermé, sur son déverrouillage. Le v3 reste dans `out_canari_fpp` et dans le jeu.
+- **QA attendue** : créateur et modificateur de l'appartement, tibias de face sans trous. **Risque annoncé
+  à regarder** : photo, inventaire, pieds nus en jeu (la coque à plat ne dépend plus que de `flat_feet`) ;
+  si l'encre des tibias disparaît là, `legs_flat` retourne dans `TPP_Body`.
+- **Puis** : talons (Togglable Feet livre `l0_000_pwa_base__cs_heel.mesh`, chemin du maillage vanilla
+  toujours en hash `15467513564352523783`) ; Angel avec le même canari ; pack complet ; exe rebâti ;
+  crochets de `NEXUS.md` / README / sticky réécrits **après** ces QA.
+- **Son jeu** : instance Virgin + Load Begone + canari v3 ; Red Hot Tools BETA13 posé par lui ; ses piles
+  1-3 à reposer ; overlay NVIDIA coupé ; aucun plantage ni gel de la journée.
 - **Ouvert, même mécanique** : « V habillée » (les habits masquent le corps par nom) ; V masculin :
-  jambes jamais mesurées, `low_mask` non appliqué.
-- **Son jeu** : instance re-régénérée depuis « Virgin » à 2 h, `archive\pc\mod` = Load Begone + Ink
-  Flow 1.1 Samurai seul sur corps vanilla (15,5 Mo, SHA `08d84f60…`). Ses piles 1-3 à reposer par
-  lui. Overlay NVIDIA coupé (gels, § 25). `minimal_angel.py` reste utilisable. Rien écrit par moi.
+  jambes jamais mesurées.
 - **1.4.0 : tout est bâti, rien n'est publiable** : pack complet 465,8 Mo (`gen\uv104\out_pack`, SHA
   `da5757d2…`) et exe `exe\dist\InkFlowBuilder.exe` (SHA `a1bf1701…`) **d'avant le correctif**, à
   rebâtir ; zip non fait. `NEXUS.md`, README, sticky de `NEXUS_POSTS.md` : crochets « TO REWRITE

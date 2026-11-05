@@ -1237,3 +1237,46 @@ conflit noté avec V's Body) règle l'état à la main. Angel, Solo, Songbird li
 sans low_mask quand `feet=lifted` ; sinon chercher comment le jeu choisit l'état (sonde en créateur) ; (2) coque des
 talons : résoudre le chemin du maillage `high_heels` (hash ↔ liste de chemins WolvenKit) ; (3) vêtements : masques par nom
 (V habillée), même mécanique.
+
+## 28. États des pieds : deux options cachées du jeu, pas ArchiveXL ; canari v4 (2026-11-05, 16 h 45 → 17 h 30, Fable puis Opus, « Reprends », hors jeu)
+
+**Question du § 27 ter tranchée par la lecture du code** (ArchiveXL, dépôt `psiberx/cp2077-archive-xl`, branche `main`,
+`Garment\Dynamic.cpp`, `PuppetState\Handler.cpp`) : l'attribut `&feet=` vaut `flat` par défaut et ne passe à `lifted`,
+`high_heels` ou `flat_shoes` que selon la **chaussure équipée** (étiquettes `HighHeels`, `FlatShoes`, `force_FlatFeet` de
+l'objet du slot `Feet`). Pieds nus, créateur et jeu donnent donc la même valeur : une coque à condition `&feet=` ne
+distingue pas le créateur du jeu. Piste ArchiveXL abandonnée pour ce défaut.
+
+**Mécanisme mesuré dans le jeu de base** (`ep1_2_gamedata` : `female_cco_ep1.inkcharcustomization` ;
+`basegame_4_appearance` : `t0_000_base__full.app`, `l0_000_base__full.app`, `l0_000_base__cs_flat.app` ; extraits dans
+`C:\__DEV\cyberpunk\ink_flow\x\ents\`) : la personnalisation féminine porte deux options **cachées** (`hidden` 1) :
+`lifted_feet` (index 1200, uiSlot `lifted_feet`, ressource `l0_000_base__full.app` = morph `t0_000_pwa_base__full`
+masque `…584`, chunks 5-7, pied levé) et `flat_feet` (index 1210, `l0_000_base__cs_flat.app` = garment
+`l0_000_pwa_base__cs_flat` plein). Groupes : `character_creation` et `lifted_feet` listent `lifted_feet` ; `flat_feet` liste
+`flat_feet` ; **`TPP_Body` ne liste aucune des deux**. Le corps (`t0_000_base__full.app`) a le masque `…391`, chunks 0-4.
+Le moteur applique l'un ou l'autre groupe selon le contexte : la sonde du 02/11 montre le corps attaché deux fois (`…391`
++ `…584`) sur `player_wa_tpp.ent` au créateur, et `…391` + `cs_flat` en jeu. Les quatre `.ent` joueur ne portent ni
+apparence ni masque de jambes (mesuré : `player_wa_tpp`, `_reflexion`, `player_wa_tpp_ep1`, `player_wa_fpp_ep1`).
+
+**Correctif v4 (`core.py`)** : la coque de corps prend le masque de l'app du corps (`tpp_app_mask`, lu dans l'archive qui
+la livre, repli `…391`) au lieu de `low_mask` ; nouveau compagnon TPP **`legs_lifted`** (sans maillage : la coque de corps
+par le masque de l'app des jambes, repli `…584`, composant nommé `t0_000_pwa_base__full` comme le jeu, suffixe
+`_legs_up`) listé dans `character_creation` et `lifted_feet` ; `legs_flat` listé dans `flat_feet` seulement
+(`FEET_GROUPS`, groupes ajoutés au modèle et fusionnés par nom par ArchiveXL). `fpp_app_mask` devient un cas de
+`app_mask` (par maillage ou par nom de composant). FPP inchangée (`low_mask` reste sur la coque FPP des jambes).
+
+**Canari v4** (`tools\qa_2026-11-05\canari_feet.py`, Samurai + Bedellia, corps vanilla, sortie
+`gen\uv104\out_canari_feet`, le v3 reste dans `out_canari_fpp`) : 31 s, 22,2 Mo, 52 fichiers, SHA `bed06d81…`.
+Dépaqueté : corps `…391`, `legs_up` = morphtarget du tatouage `…584` sous `t0_000_pwa_base__full`, `legs` = `cs_flat`
+plein ; groupes `character_creation` et `lifted_feet` = `_legs_up`, `flat_feet` = `_legs`, `TPP_Body` = aucune
+coque de jambes, `FPP_Body` inchangé ; switcher à 6 uiSlots. **Rien posé dans le jeu.**
+
+**QA attendue** : créateur et modificateur de l'appartement, tibias de face sans trous ; **risque annoncé** : en jeu (photo,
+inventaire, pieds nus), la coque à plat ne dépend plus que du groupe `flat_feet` ; si les tibias perdent l'encre là, le
+moteur n'applique pas ce groupe à nos options et `legs_flat` retourne dans `TPP_Body`. Chaussures et talons : non
+mesurés, la coque levée porte le nom du corps et devrait suivre ses masques de chaussure.
+
+**Togglable Feet (7049, `11_Fashion`)**, lu le 05/11 (page Nexus et zip) : l'archive remplace `l0_000_base__full.app`,
+`l0_000_fpp__full.app` et ajoute `l0_000_pwa_base__cs_heel.mesh` (pied en talon), pour le corps vanilla seulement (la
+page le dit en rouge). Il donne au corps vanilla les trois états de pieds d'ArchiveXL / EquipmentEx, pilotés par les
+étiquettes `HighHeels` / `FlatShoes` des chaussures. Avec Ink Flow : le masque de l'app des jambes est relu dans
+l'archive qui la livre, donc suivi ; la coque talon n'existe pas encore (§ 27 ter, point 2).

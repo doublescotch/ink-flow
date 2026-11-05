@@ -471,3 +471,15 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   FPP) ; créateur / modificateur troués en bas de face (sonde : là, jambes = second exemplaire du corps, pied levé, pas
   de `cs_flat`). v3 : compagnon `fpp_legs` ; canari posé à 16 h 20 ; **sa QA : FPP assise propre, Bedellia FPP propre,
   photo / inventaire inchangés**. ETUDE § 27 ter. Reste : créateur (état des pieds, apparences dynamiques à mesurer).
+
+## 2026-11-05 (16 h 45 → 17 h 30) — États des pieds : deux options cachées du jeu ; canari v4 bâti (Fable puis Opus)
+
+- « Reprends » : source ArchiveXL lue (`&feet=` dépend de la chaussure, pieds nus = `flat` partout : ne distingue pas le
+  créateur du jeu). `female_cco_ep1` extrait : options cachées `lifted_feet` (corps chunks 5-7) et `flat_feet`
+  (`cs_flat`), dans leurs groupes, absentes de `TPP_Body`. ETUDE § 28.
+- Codé dans `core.py` : coque de corps au masque de l'app du corps (chunks 0-4), compagnon `legs_lifted` (corps par
+  l'app des jambes, nom du corps du jeu) dans `character_creation` + `lifted_feet`, `legs_flat` dans `flat_feet` seul.
+  Canari v4 `canari_feet.py` : 31 s, 22,2 Mo, vérifié dépaqueté ; **pas posé**, son choix in-prompt (bâtir seulement).
+- Ses questions : Togglable Feet (corps vanilla seul, trois états de pieds par étiquette de chaussure, § 28) ; lecture des
+  pages sans capture (le texte de Nexus ne sort pas par l'extraction de texte, il sort par une lecture du DOM).
+- Fable coupé en cours de séance (quota), reprise par Opus sur sa commande.
