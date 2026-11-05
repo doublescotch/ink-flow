@@ -12,7 +12,7 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 19 h 45) : canari v4 validé vanilla ET Angel ; pack 1.4.0 + exe REBÂTIS, non posés
+## État (2026-11-05, 19 h 50) : canari v4 validé vanilla ET Angel ; pack 1.4.0 rebâti POSÉ, sa passe attendue
 
 - **Sa QA du canari Angel (19 h)** : propre partout, identique au vanilla ; cheville plus longue au créateur seul.
   **Mesure (ETUDE § 29)** : le Samurai n'a aucune encre sur le pied, bord net ; même ensemble d'UV dans les deux
@@ -20,7 +20,11 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
 - **Rebâtis avec le moteur actuel (son choix 19 h « mesure puis build »)** : exe `exe\dist\InkFlowBuilder.exe`
   22,7 Mo, SHA `8802c4d1…` ; pack complet `gen\uv104\out_pack` 1 577 s, 42 tatouages, **633,6 Mo / 2 646 fichiers**
   (avant correctif : 465,8 Mo / 1 632, gardé dans `out_pack_pre_fix_2026-11-05_0036`), SHA `36e00ca4…`, aucun
-  conflit. Journal : `gen\uv104\pack_build_2026-11-05_1920.log`. **Pose sur son déverrouillage, puis sa passe courte.**
+  conflit. Journal : `gen\uv104\pack_build_2026-11-05_1920.log`. **Posé à 19 h 50 sur son go in-prompt** (SHA
+  identiques, canari Angel dans `backup\2026-11-05_195044`) : sa passe courte attendue.
+- **Pieds sur Angel (ETUDE § 29, fin)** : ses ArasakaWorkshop Vibrant ×6 (hors pack) peignent le pied vanilla
+  jusqu'au sol ; sur Angel 0 % (pieds dans la bande, § 21). Remède = conversion des pieds comme les bras :
+  1.4.1, test Arasaka. Deux de ses fichiers finissent par `Arm_Leftrm` (affiché « … Arm Leftrm ») : pas touché.
 - **Validé par sa QA (18 h, canari v4 posé à 17 h 29, corps vanilla, Samurai + Bedellia)** : modificateur
   de l'appartement, créateur de nouvelle partie, mode photo, FPP assise jambe croisée : propres, aucun
   trou. Avec le v3 (16 h 35) : FPP tête baissée et inventaire propres. Torse plein à confirmer avec
@@ -38,8 +42,7 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   Codeware, CET à poser). 1.4.1.
 - **Canari v4 Angel** posé à 18 h 31 (7 archives de sa config minimale Angel copiées de l'arbre `3_Bodies`,
   `CANARI_BODY=angel`, SHA `1d2b193e…`, v4 vanilla dans `backup\2026-11-05_183135`) ; validé par lui à 19 h.
-- **Prochain geste** : poser le pack rebâti (`pack_build.py install`, son déverrouillage) ; sa passe courte
-  sur Angel (Samurai UV bras convertis, V masculin, bascules de slots longues, VRAM : le pack a grossi de
+- **Prochain geste** : sa passe courte sur Angel (Samurai UV bras convertis, V masculin, bascules de slots longues, VRAM : le pack a grossi de
   36 %) ; zip ; crochets de `NEXUS.md` / README / sticky réécrits **après** cette passe ; upload. 1.4.1 :
   main, cheville du créateur, talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable
   Feet ; maillage vanilla toujours en hash `15467513564352523783`).
