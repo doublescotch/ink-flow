@@ -1230,8 +1230,9 @@ inventaire inchangés.** Reste : bas des tibias de face dans le créateur / modi
 (l'état en jeu pieds nus et chaussures plates), `l0_000_pwa_base__high_heels` → maillage **talons** (chemin non résolu,
 hash `15467513564352523783`). ArchiveXL expose l'état aux apparences dynamiques (`&feet=flat`, `GetFeetStateSuffix` ;
 wiki redmodding « Dynamic appearances », états cités : flat, lifted, high_heels) ; Toggleable Feet (dans son dépôt,
-conflit noté avec V's Body) règle l'état à la main. Angel, Solo, Songbird livrent l'app des jambes mais **pas** `cs_flat`
-: en jeu pieds nus, leurs jambes basses sont le `cs_flat` vanilla, donc notre coque est juste pour eux aussi.
+conflit noté avec V's Body) règle l'état à la main. ~~Angel, Solo, Songbird livrent l'app des jambes mais **pas** `cs_flat`
+: en jeu pieds nus, leurs jambes basses sont le `cs_flat` vanilla, donc notre coque est juste pour eux aussi.~~
+**Faux, corrigé au § 28** : les trois livrent `l0_000_pwa_base__cs_flat.mesh` ; la coque copie celui du propriétaire actif.
 **Non mesuré, prochaine séance** : (1) les apparences dynamiques ArchiveXL s'appliquent-elles aux `.app` référencés par
 `inkcharcustomization` (nos coques) ? Si oui : `w__<slug>_legs&feet=flat` (coque à plat seulement à plat), coque de corps
 sans low_mask quand `feet=lifted` ; sinon chercher comment le jeu choisit l'état (sonde en créateur) ; (2) coque des
@@ -1280,3 +1281,9 @@ mesurés, la coque levée porte le nom du corps et devrait suivre ses masques de
 page le dit en rouge). Il donne au corps vanilla les trois états de pieds d'ArchiveXL / EquipmentEx, pilotés par les
 étiquettes `HighHeels` / `FlatShoes` des chaussures. Avec Ink Flow : le masque de l'app des jambes est relu dans
 l'archive qui la livre, donc suivi ; la coque talon n'existe pas encore (§ 27 ter, point 2).
+
+**Correction du § 27 ter (mesure du 05/11, 17 h 40, index `rdar` des archives de `src\` et `dl\uv\`)** : Angel, Solo et
+Songbird livrent tous `l0_000_pwa_base__cs_flat.mesh` et les apps des jambes TPP / FPP ; Angel et Songbird livrent aussi
+`l0_000_base__cs_flat.app` ; **Angel seul** livre `l0_000_pwa_base__cs_heel.mesh` (le chemin de Togglable Feet). Sans
+effet sur le build : `extract_mesh` copie le maillage du propriétaire actif. Togglable Feet sur Angel remplacerait ses
+apps de jambes par les vanilla : à ne pas poser avec un corps moddé (sa page le dit).
