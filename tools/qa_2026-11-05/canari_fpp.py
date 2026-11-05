@@ -15,7 +15,10 @@ from inkflow.config import Config
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"
 ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\uv104"
 WORK, OUT = os.path.join(ROOT, "work_canari_fpp"), os.path.join(ROOT, "out_canari_fpp")
-TATTOOS = [r"D:\OneDrive - NS2I\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive"]
+TATTOOS = [r"D:\OneDrive - NS2I\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive",
+           # run 2 (15 h 40) : Bedellia body added for the first-person torso (the Samurai texture has no chest ink, his
+           # QA of 15 h 30) ; the lower-legs fix (§ 27 bis : chunks 6-7 hidden, flat-foot legs shell) is in this run too.
+           r"D:\OneDrive - NS2I\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Bedellia_Unrelated_Body.archive"]
 cfg = Config()
 CLI = env.find_wolvenkit(cfg["cli"])
 mode = sys.argv[1] if len(sys.argv) > 1 else "build"
@@ -45,7 +48,7 @@ elif mode == "check":
     if os.path.isdir(v):
         import shutil
         shutil.rmtree(v)
-    rx = r"(_fpp_torso\.(mesh|app)|_slot1_fpp\.app|_fpp_arm_l\.mesh|_slot1\.app|\.inkcharcustomization)$"
+    rx = r"(_fpp_torso\.(mesh|app)|_legs\.(mesh|app)|_slot1_fpp\.app|_fpp_arm_l\.mesh|_slot1\.app|\.inkcharcustomization)$"
     subprocess.run([CLI, "unbundle", arc, "-o", v, "-r", rx], check=True, capture_output=True)
     subprocess.run([CLI, "convert", "serialize", os.path.join(v, "inkflow")], check=True, capture_output=True)
     files = sorted(glob.glob(os.path.join(v, "**", "*.json"), recursive=True))

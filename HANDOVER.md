@@ -12,24 +12,25 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 14 h 50) : correctif FPP codé et vérifié sur canari, QA en jeu à lui ; trous à distance ouverts
+## État (2026-11-05, 15 h 45) : FPP torse validé par lui ; trous sous les genoux expliqués, coque « jambes à plat » posée (canari v2), sa QA en cours
 
-- **Correctif FPP codé (ETUDE § 27), non vu en jeu.** Cause corrigée par la mesure : le corps en FPP
-  est dessiné par **deux** apps vanilla sur le torse FPP (même découpe que le corps complet) : torse
-  `t0_000_fpp__full.app` = chunks 0-4, jambes `l0_000_fpp__full.app` = chunks 5-7 ; notre coque ne
-  portait que le masque des jambes (mollets : ce qu'il a vu). `Body:ANGEL` = étiquette, dessine rien.
-- `core.py` : compagnon **`fpp_torso`** (copie du torse FPP actif, masque lu dans l'app torse, repli
-  `…391`), `fpp_body` = « FPP legs » (inchangé), `fpp_app_mask`, suiveur à 4 uiSlots. **Canari**
-  `tools\qa_2026-11-05\canari_fpp.py` : `build` fait (Samurai VTK seul, corps vanilla, 15,7 Mo,
-  `gen\uv104\out_canari_fpp`), `check` vert (torse 4 641 sommets / 24 décals / `…391`, jambes `…584`).
-- **Sa QA, premier geste** : `canari_fpp.py install` sur sa formule (jeu fermé), puis tête baissée
-  hors miroir : torse + cuisses + mollets tatoués ; bras FPP, créateur, miroir, photo inchangés.
-  Effets possibles annoncés : trait cuisses / mollets ; torse de la coque visible sous un vêtement.
-  Ensuite Angel (même canari, Angel reposé) puis le pack complet (`pack_build.py build`, 1 000 s).
-- **Trous dans le bas des jambes à l'inventaire et en mode photo** (sa QA du 05/11, Samurai 8K,
-  créateur propre) : même coque TPP partout, donc la vue (distance, mips). Mesures à faire : Kala
-  Body 4K dans les mêmes vues ; alpha par mip du Samurai. Remède probable : mips reconstruits au
-  build. Non commencé.
+- **FPP torse : vu bon par lui (15 h 30)** sur le canari FPP (ETUDE § 27 : le corps en FPP = deux
+  apps, torse 0-4 + jambes 5-7 ; compagnon `fpp_torso` codé). Samurai n'a pas d'encre sur la
+  poitrine (sa texture) : Bedellia au slot 2 du canari v2 pour voir le torse plein.
+- **Trous sous les genoux (photo, inventaire, FPP assis), cause mesurée (ETUDE § 27 bis)** : le jeu
+  dessine mollets et pieds avec `l0_000_pwa_base__cs_flat` (pieds à plat ; chunk 5 coïncident, 6-7
+  à 17-60 mm) et masque les chunks 5-7 du corps **par nom de composant** ; notre coque, nommée
+  autrement, gardait 6-7. Texture éliminée (mips du Samurai sains). Pas une question de vue.
+- **Correctif v2 codé** : `low_mask` (chunks sous 0,30 m) sur coque de corps féminine et FPP jambes ;
+  compagnon TPP `legs_flat` = copie de `cs_flat`, texture du corps, **nommé `l0_000_pwa_base__cs_flat`**
+  pour suivre les masquages des chaussures (hypothèse, à trancher par sa QA talons). Canari v2
+  (Samurai + Bedellia, corps vanilla, 22 Mo) vérifié et **posé à 15 h 44** (sauvegarde `backup\2026-11-05_154440`).
+- **Sa QA en cours** : tibias sans trous, cheville / pied encrés ; torse Bedellia en FPP ; talons =
+  coque cachée sans trous (sinon repli : coque des talons, maillage `high_heels` = hash non résolu) ;
+  jonction genou ; créateur / miroir inchangés. Ensuite Angel (même canari) puis le pack complet.
+- **Ouvert, même mécanique** : « V habillée » (les habits masquent le corps par nom, pas nos coques :
+  piste = nommer chaque coque comme le composant du jeu qu'elle copie, à mesurer après sa QA talons) ;
+  V masculin : jambes jamais mesurées, `low_mask` non appliqué.
 - **Son jeu** : instance re-régénérée depuis « Virgin » à 2 h, `archive\pc\mod` = Load Begone + Ink
   Flow 1.1 Samurai seul sur corps vanilla (15,5 Mo, SHA `08d84f60…`). Ses piles 1-3 à reposer par
   lui. Overlay NVIDIA coupé (gels, § 25). `minimal_angel.py` reste utilisable. Rien écrit par moi.

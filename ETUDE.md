@@ -1158,3 +1158,47 @@ bras FPP inchangés ; créateur, miroir, mode photo inchangés (la coque TPP res
 un trait à la jonction cuisses / mollets (deux coques, mêmes sommets, masques complémentaires : le vanilla fait pareil)
 et, sous un vêtement, le torse FPP de la coque visible là où le jeu cache le sien (jamais mesuré, « V habillée » ouvert).
 Puis Angel (torse FPP = copie du corps complet, même masque 0-4) avec le même canari rebâti.
+
+## 27 bis. Trous sous les genoux : le jeu dessine mollets et pieds avec un autre maillage, masqué par nom ; coque « jambes à plat » (2026-11-05, 15 h → 15 h 45, Fable, sa QA du canari FPP, mesures hors jeu)
+
+**Sa QA du canari FPP (15 h 30, Samurai VTK, corps vanilla, overlay NVIDIA coupé : plus aucun gel en 2 h de jeu)** : torse et
+cuisses encrés en FPP tête baissée (Samurai n'a pas d'encre sur la poitrine : sa texture, vide là ; Bedellia, Promiscuity,
+Vale couvrent le torse, à lui de confirmer) ; tibias invisibles en FPP debout (derrière les cuisses), vus assis sur le canapé
+jambe croisée : **trous**, idem mode photo du genou au pied, et **les trous bougent avec la caméra** (approche, recul, pas de
+côté changent leur forme).
+
+**Texture éliminée par la mesure** : Samurai `v_overlay` exporté en DDS (8192², 14 mips, RGBA8, 358 Mo) : l'alpha de chaque
+niveau = celui d'un filtre boîte du niveau 0 (moyenne 81,9 partout, a > 128 : 35,3 % → 32,8 % au 16², identique au calcul) :
+chaîne saine, rien à reconstruire. Des trous dont la forme suit la caméra = deux surfaces non coïncidentes, pas une texture.
+
+**Cause mesurée** (sonde du 02/11 relue, `player_wa_photomode_ep1.ent`, `player_wa_tpp.ent`, `player_wa_tpp_ep1.ent`,
+`player_wa_fpp_ep1.ent`) : sur tous les pantins, le corps morph `t0_000_pwa_base__full` porte le masque **`…391` = chunks
+0-4** et un garment **`l0_000_pwa_base__cs_flat`** (maillage « pieds à plat », masque plein) est activé : du genou au pied,
+la peau de V est **ce maillage-là**, pas le corps. Extrait et mesuré : `l0_000_pwa_base__cs_flat.mesh` = 3 chunks de 260,
+396, 848 sommets = les comptes des chunks 5, 6, 7 du corps, **mêmes UV** (écart 0) ; positions : chunk 5 ↔ 0 **coïncident**
+(médiane 0,02 mm, 14 sommets > 1 mm, max 2 mm), chunk 6 ↔ 1 **26 mm** (médiane, max 60), chunk 7 ↔ 2 **17 mm** (max 52) : le
+bas du tibia et le pied sont reposés à plat. Notre coque de corps (copie du corps, masque plein, autre nom) gardait ses
+chunks 6-7 et les dessinait 2 à 6 cm à côté de la peau visible : trous mobiles, du genou au pied, sur tout corps (vanilla,
+Angel : mêmes chunks 6-7 détectés). Le masque `…391` du corps est posé **par nom de composant** (`partsOverrides` →
+`componentsOverrides` ciblent `t0_000_pwa_base__full`, wiki redmodding « influencing other items » ; ArchiveXL étend la
+cible à tout composant de `player.ent`) : une coque nommée autrement n'est jamais masquée. Même mécanique pour les
+vêtements (« V habillée », jamais vue : la coque passera à travers les habits serrés, à mesurer). `Body:ANGEL` du § 26 =
+étiquette. Qui livre `cs_flat` : personne (131 archives), jeu de base seul. Les apps vanilla FPP (`partsOverrides`) ne
+ciblent que leur propre part ; les `.ent` joueur (`player_wa_tpp.ent`, `player_wa_fpp.ent`, extraits) ne portent aucun
+masque de corps : c'est la chaussure / l'état des pieds qui pose le masque, mécanisme exact non lu (apps des chaussures
+non trouvées dans `basegame_4_appearance` avec mes regex).
+
+**Correctif v2 (`core.py`)** : `mesh_layout` lit les hauteurs (PT_Short4N + quantification) et rend `low_mask` = chunks
+entièrement sous **`FLAT_LEGS_Z` = 0,30 m** (vanilla et Angel : 6, 7) ; `shell_mask(…, low=True)` sur la coque du corps
+féminin et sur la coque FPP des jambes (masque `…392` = chunk 5 seul) ; compagnon TPP **`legs_flat`** (`TPP_COMPANIONS`,
+parent corps, copie de `l0_000_pwa_base__cs_flat.mesh` du propriétaire actif, texture du corps, masque plein, listé dans
+tous les groupes et dans les `uiSlots` du maître comme une cible) ; **composant nommé `l0_000_pwa_base__cs_flat`** (le nom
+du jeu) pour que les `partsOverrides` des chaussures (talons) la cachent avec le maillage du jeu : hypothèse à trancher
+par sa QA talons. Masculin : intouché (jambes du V masculin jamais mesurées). Canari v2 (Samurai + Bedellia corps, 2 slots,
+corps vanilla) : build 40 s, 22,0 Mo, 42 fichiers ; dépaqueté : corps masque `…615` (6-7 cachés), `legs_flat` 1 504 sommets
+/ 38 décals, garment `l0_000_pwa_base__cs_flat` masque plein, maître à 5 `uiSlots` (`_legs`). Posé à 15 h 44 sur son go.
+
+**QA attendue** : tibias sans trous (photo, inventaire, canapé en FPP), cheville et pied encrés (Samurai) ; torse FPP
+avec Bedellia ; talons : coque des jambes cachée (cheville nue, sans trous) sinon le nommage ne suffit pas (repli : coque
+des talons, chemin du maillage `high_heels` non résolu = hash `15467513564352523783`) ; créateur et miroir inchangés ;
+jonction genou (chunk 5 / coque) à regarder.

@@ -446,3 +446,18 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   « FPP legs », `fpp_app_mask` lit les deux apps avec repli, `FPP_BY_PARENT` en listes, 4 uiSlots par suiveur.
   Canari `tools\qa_2026-11-05\canari_fpp.py` (Samurai VTK seul, corps vanilla) : build 96 s, `check` = coque de torse
   4 641 sommets / 24 décals / masque `…391`, jambes `…584`. **Rien posé dans le jeu** : pose et QA à lui (sa formule).
+
+## 2026-11-05 (15 h → 15 h 45) — Sa QA : torse FPP bon ; trous sous les genoux = maillage « pieds à plat », coque v2 posée (Fable)
+
+- Canari FPP posé à 15 h 09 sur son déverrouillage. Sa QA : torse et cuisses encrés en FPP (Samurai vide sur la poitrine
+  = sa texture ; Bedellia / Promiscuity / Vale couvrent le torse) ; tibias troués assis en FPP et en mode photo, trous qui
+  **bougent avec la caméra**. Plus aucun gel en 2 h de jeu, overlay NVIDIA coupé.
+- Mips du Samurai mesurés sains (14 niveaux, alpha = filtre boîte) : texture éliminée. Sonde du 02/11 relue : sur tous les
+  pantins le corps est masqué à 0-4 et les mollets / pieds sont le garment `l0_000_pwa_base__cs_flat` ; ce maillage a les
+  sommets et UV des chunks 5-7 du corps, chunk 5 coïncident (0,02 mm), chunks 6-7 à 17-60 mm (pieds à plat). Masquage par
+  nom de composant (`partsOverrides`) : notre coque n'est jamais masquée. ETUDE § 27 bis.
+- Codé : `low_mask` (chunks sous 0,30 m) sur les coques de corps féminines et FPP jambes ; compagnon TPP `legs_flat`
+  (copie de `cs_flat`, nommé comme le composant du jeu). Canari v2 (Samurai + Bedellia) bâti 40 s, 22 Mo, vérifié, posé à
+  15 h 44 sur son go in-prompt. Red Hot Tools 1.3.0 BETA13 (2.5) posé par lui via WolvenKit pendant ce temps.
+- Sa parenthèse : fichiers `.xl` de suppression de nœuds (mods de lieux, son V's North Oak Villa) cassés par les mises à
+  jour ; conversion vers 2.5 à étudier en séance dédiée (ArchiveXL `nodeDeletions`, Red Hot Tools 2.5 à tester par lui).
