@@ -130,6 +130,12 @@ FPP_TARGETS = [
          app=FPP_LEGS_APP, default_mask=FPP_LEGS_MASK,
          tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
          old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_fpp"),
+    # The flat-foot legs mesh is drawn in first person too (probe 2026-11-02 : `l0_000_pwa_base__cs_flat` enabled on the
+    # FPP puppet) while the third-person companion is not (his QA 2026-11-05, 16 h : seated, ink stops above the ankle
+    # and the upper calf shows holes where that mesh pokes through the body legs) : a copy in the FPP group as well.
+    dict(code="fpp_legs", label="FPP legs (flat)", parent="body", mesh=FLAT_LEGS_MESH, morph=None, comp=FLAT_LEGS_NAME,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_fpp_legs"),
     dict(code="fpp_arm_l", label="FPP arm L", parent="arm_l", mesh=FPP_DIR + r"\a0_000_pwa_fpp__full_l.mesh", morph=None,
          tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
          old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_fpp_arm_l"),
@@ -1404,13 +1410,14 @@ def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None):
                         expected.append(pf.mesh)
                         resource = pf.mesh
                         mask = shell_mask(layouts, f["code"], fam, f.get("is_body", False), base) or (str(base) if read else None)
-                        parts.append(f"{f['code']} {nv} vertices / {nm} mat." + (f" / mask {mask}" if mask else ""))
+                        parts.append(f"{f['code']} {nv} vertices / {nm} mat." + (f" as {f['comp']}" if f.get("comp") else "") + (f" / mask {mask}" if mask else ""))
                     else:
                         resource = pt.mesh
                         mask = shell_mask(layouts, t["code"], fam, True, base, low=True) or (str(base) if read else None)
                         parts.append(f"{f['code']} = body shell, mask {mask}")
                     for n_ in slots:
-                        save(pf.slot_app(n_), make_app(tpls[f["tpl"]], f, resource, f"inkflow_slot{n_}_{slug}{f['suffix']}", f"w__{slug}{f['suffix']}", mask))
+                        comp = f.get("comp") or f"inkflow_slot{n_}_{slug}{f['suffix']}"
+                        save(pf.slot_app(n_), make_app(tpls[f["tpl"]], f, resource, comp, f"w__{slug}{f['suffix']}", mask))
                         expected.append(pf.slot_app(n_))
         log(f"  [{slug}] \"{it.name}\" (opacity {alpha:g}): " + " ; ".join(parts))
 

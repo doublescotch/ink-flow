@@ -461,3 +461,13 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   15 h 44 sur son go in-prompt. Red Hot Tools 1.3.0 BETA13 (2.5) posé par lui via WolvenKit pendant ce temps.
 - Sa parenthèse : fichiers `.xl` de suppression de nœuds (mods de lieux, son V's North Oak Villa) cassés par les mises à
   jour ; conversion vers 2.5 à étudier en séance dédiée (ArchiveXL `nodeDeletions`, Red Hot Tools 2.5 à tester par lui).
+
+## 2026-11-05 (15 h 50 → 16 h 40) — QA v2 / v3 : photo, inventaire, FPP propres ; reste le créateur ; Red Hot Tools périmé (Fable)
+
+- Jeu mort au chargement de `RedHotTools.dll` (0xc0000005, journal RED4ext coupé net) : WolvenKit avait posé la RC3 du
+  20/10 et un module CET de juillet, et sa « désinstallation » n'a rien retiré. BETA13 (2.5) téléchargée et vérifiée (SHA
+  `782635a6…`), posée par lui à la main, zip rangé dans `1_Core` avec la mention WOLVENKIT INIT BROKEN.
+- QA v2 : photo et inventaire propres, manche jusqu'à la cheville ; FPP assise encore trouée (coque à plat absente en
+  FPP) ; créateur / modificateur troués en bas de face (sonde : là, jambes = second exemplaire du corps, pied levé, pas
+  de `cs_flat`). v3 : compagnon `fpp_legs` ; canari posé à 16 h 20 ; **sa QA : FPP assise propre, Bedellia FPP propre,
+  photo / inventaire inchangés**. ETUDE § 27 ter. Reste : créateur (état des pieds, apparences dynamiques à mesurer).

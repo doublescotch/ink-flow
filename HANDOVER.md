@@ -12,25 +12,32 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 15 h 45) : FPP torse validé par lui ; trous sous les genoux expliqués, coque « jambes à plat » posée (canari v2), sa QA en cours
+## État (2026-11-05, 16 h 40) : FPP, photo, inventaire validés par lui (canari v3) ; reste le bas des jambes dans le créateur / modificateur (état des pieds)
 
-- **FPP torse : vu bon par lui (15 h 30)** sur le canari FPP (ETUDE § 27 : le corps en FPP = deux
-  apps, torse 0-4 + jambes 5-7 ; compagnon `fpp_torso` codé). Samurai n'a pas d'encre sur la
-  poitrine (sa texture) : Bedellia au slot 2 du canari v2 pour voir le torse plein.
-- **Trous sous les genoux (photo, inventaire, FPP assis), cause mesurée (ETUDE § 27 bis)** : le jeu
-  dessine mollets et pieds avec `l0_000_pwa_base__cs_flat` (pieds à plat ; chunk 5 coïncident, 6-7
-  à 17-60 mm) et masque les chunks 5-7 du corps **par nom de composant** ; notre coque, nommée
-  autrement, gardait 6-7. Texture éliminée (mips du Samurai sains). Pas une question de vue.
-- **Correctif v2 codé** : `low_mask` (chunks sous 0,30 m) sur coque de corps féminine et FPP jambes ;
-  compagnon TPP `legs_flat` = copie de `cs_flat`, texture du corps, **nommé `l0_000_pwa_base__cs_flat`**
-  pour suivre les masquages des chaussures (hypothèse, à trancher par sa QA talons). Canari v2
-  (Samurai + Bedellia, corps vanilla, 22 Mo) vérifié et **posé à 15 h 44** (sauvegarde `backup\2026-11-05_154440`).
-- **Sa QA en cours** : tibias sans trous, cheville / pied encrés ; torse Bedellia en FPP ; talons =
-  coque cachée sans trous (sinon repli : coque des talons, maillage `high_heels` = hash non résolu) ;
-  jonction genou ; créateur / miroir inchangés. Ensuite Angel (même canari) puis le pack complet.
-- **Ouvert, même mécanique** : « V habillée » (les habits masquent le corps par nom, pas nos coques :
-  piste = nommer chaque coque comme le composant du jeu qu'elle copie, à mesurer après sa QA talons) ;
-  V masculin : jambes jamais mesurées, `low_mask` non appliqué.
+- **Validé par sa QA (16 h 35, canari v3, corps vanilla, Samurai + Bedellia)** : FPP tête baissée
+  (torse, ETUDE § 27), FPP assise jambe croisée, mode photo, inventaire : propres, plus rien ne bouge
+  avec la caméra, manche jusqu'à la bande de cheville de l'artiste (jamais couverte avant). Reste à
+  confirmer le torse plein avec Promiscuity ou Vale (Samurai et Bedellia ont le ventre vide : textures).
+- **Mécanique gravée (§ 27 bis, ter)** : en jeu, mollets et pieds de V = maillage « pieds à plat »
+  `l0_000_pwa_base__cs_flat` (chunk 5 coïncident, 6-7 à 17-60 mm), corps masqué par **nom** ; dans le
+  créateur / modificateur, jambes = second exemplaire du corps (`…584`, pied **levé**), pas de `cs_flat`.
+  Trois états de pieds : levé (créateur), à plat (jeu, pieds nus / plates), talons (maillage à part).
+- **Codé** : `low_mask` (chunks sous 0,30 m) sur coque de corps féminine et FPP jambes ; compagnons
+  `legs_flat` (TPP) et `fpp_legs` (FPP) = copies de `cs_flat` nommées `l0_000_pwa_base__cs_flat` ;
+  `fpp_torso`. Canari v3 dans le jeu depuis 16 h 20 (`gen\uv104\out_canari_fpp`, SHA `32f27edb…`).
+- **Seul défaut restant** : bas des tibias de face, trous mobiles, **créateur de nouvelle partie et
+  modificateur de l'appartement** (charcudoc présumé pareil) : la coque à plat se bat avec le pied levé
+  du corps, et la coque de corps y cache 6-7. **Prochaine mesure** : les apparences dynamiques ArchiveXL
+  (`&feet=flat` / `lifted`) s'appliquent-elles aux `.app` du créateur ? Canari à une condition ; sinon,
+  sonde en créateur (Redscript à reposer : `r6\scripts` vide depuis sa régénération).
+- **Puis** : talons (chemin du maillage `high_heels` à résoudre, hash `15467513564352523783`, sa QA
+  talons jamais faite) ; Angel avec le même canari ; pack complet (`pack_build.py build`, ≈ 1 000 s) ;
+  exe rebâti ; crochets de `NEXUS.md` / README / sticky réécrits **après** ces QA.
+- **Son jeu** : instance Virgin + Load Begone + canari v3 ; Red Hot Tools BETA13 posé par lui à la main
+  (WolvenKit avait posé la RC3 du 20/10 : plantage au boot, § 27 ter) ; ses piles 1-3 à reposer ;
+  aucun plantage ni gel de la journée, overlay NVIDIA coupé.
+- **Ouvert, même mécanique** : « V habillée » (les habits masquent le corps par nom) ; V masculin :
+  jambes jamais mesurées, `low_mask` non appliqué.
 - **Son jeu** : instance re-régénérée depuis « Virgin » à 2 h, `archive\pc\mod` = Load Begone + Ink
   Flow 1.1 Samurai seul sur corps vanilla (15,5 Mo, SHA `08d84f60…`). Ses piles 1-3 à reposer par
   lui. Overlay NVIDIA coupé (gels, § 25). `minimal_angel.py` reste utilisable. Rien écrit par moi.

@@ -48,7 +48,7 @@ elif mode == "check":
     if os.path.isdir(v):
         import shutil
         shutil.rmtree(v)
-    rx = r"(_fpp_torso\.(mesh|app)|_legs\.(mesh|app)|_slot1_fpp\.app|_fpp_arm_l\.mesh|_slot1\.app|\.inkcharcustomization)$"
+    rx = r"(_fpp_torso\.(mesh|app)|_legs\.(mesh|app)|_fpp_legs\.(mesh|app)|_slot1_fpp\.app|_fpp_arm_l\.mesh|_slot1\.app|\.inkcharcustomization)$"
     subprocess.run([CLI, "unbundle", arc, "-o", v, "-r", rx], check=True, capture_output=True)
     subprocess.run([CLI, "convert", "serialize", os.path.join(v, "inkflow")], check=True, capture_output=True)
     files = sorted(glob.glob(os.path.join(v, "**", "*.json"), recursive=True))

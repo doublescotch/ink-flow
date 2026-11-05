@@ -1202,3 +1202,38 @@ corps vanilla) : build 40 s, 22,0 Mo, 42 fichiers ; dépaqueté : corps masque `
 avec Bedellia ; talons : coque des jambes cachée (cheville nue, sans trous) sinon le nommage ne suffit pas (repli : coque
 des talons, chemin du maillage `high_heels` non résolu = hash `15467513564352523783`) ; créateur et miroir inchangés ;
 jonction genou (chunk 5 / coque) à regarder.
+
+## 27 ter. Sa QA v2 et v3 : photo, inventaire, FPP propres ; reste le créateur (jambes du corps, pied levé) (2026-11-05, 15 h 50 → 16 h 40, Fable)
+
+**QA v2 (16 h)** : mode photo et inventaire **propres**, plus rien ne bouge avec la caméra, la manche descend jusqu'à la
+bande noire de l'artiste à la cheville (avant, elle s'arrêtait plus haut, coupée dans le dessin : les pieds n'avaient
+jamais été couverts). Bedellia : torse encré sous les seins en FPP (texture vide au ventre, comme Samurai ; Promiscuity ou
+Vale pour une couverture complète, à lui). **FPP assise (jambe croisée) : encore des trous**, sur le haut du mollet, encre
+arrêtée au-dessus de la cheville (capture) : la coque TPP « pieds à plat » n'est pas dessinée en FPP, et le jeu y
+superpose les jambes du corps (morph `…584`) et le maillage à plat (sonde : les deux activés sur `player_wa_fpp_ep1`) ;
+en pose assise, les deux se décalent par le skinning (garment contre morph) et le maillage à plat passe devant la coque.
+**Créateur de nouvelle partie et modificateur de l'appartement : trous mobiles en bas des tibias de face**, dos presque
+propre. Sonde relue (session créateur du 02/11 à 18 h 02-18 h 10) : là, **pas de `cs_flat`** ; le corps est attaché
+**deux fois** sous le même nom `t0_000_pwa_base__full`, masques `…391` (torse) et `…584` (jambes, pied levé) : les
+jambes du créateur sont celles du corps. Notre coque de corps cache 6-7 (low_mask) et la coque à plat se bat avec le
+pied levé. Miroir : jambes invisibles dans le reflet (angle), charcudoc non testé (même pantin que le créateur, à
+supposer). Aucun plantage de la journée (overlay NVIDIA coupé).
+
+**Correctif v3 (`core.py`)** : compagnon FPP `fpp_legs` (copie de `cs_flat`, nom `l0_000_pwa_base__cs_flat`, listé dans
+`FPP_Body` par le suiveur, 5 uiSlots) ; `make_app` reçoit le nom du composant du jeu quand le compagnon le demande
+(`comp`). Constantes `FLAT_LEGS_*` remontées avant `FPP_TARGETS`. Canari v3 : 23 s, 22,2 Mo, 48 fichiers, posé à 16 h 20
+(SHA `32f27edb…`). **Sa QA v3 (16 h 35) : FPP assise propre, Bedellia en FPP propre (torse et jambes), photo et
+inventaire inchangés.** Reste : bas des tibias de face dans le créateur / modificateur.
+
+**États des pieds, ce qui est mesuré** : l'app des jambes vanilla liste trois composants = trois états : jambes du corps
+(torse FPP chunks 5-7, pied **levé**, l'état du créateur), `l0_000_pwa_base__flat_shoes` → maillage **à plat** `cs_flat`
+(l'état en jeu pieds nus et chaussures plates), `l0_000_pwa_base__high_heels` → maillage **talons** (chemin non résolu,
+hash `15467513564352523783`). ArchiveXL expose l'état aux apparences dynamiques (`&feet=flat`, `GetFeetStateSuffix` ;
+wiki redmodding « Dynamic appearances », états cités : flat, lifted, high_heels) ; Toggleable Feet (dans son dépôt,
+conflit noté avec V's Body) règle l'état à la main. Angel, Solo, Songbird livrent l'app des jambes mais **pas** `cs_flat`
+: en jeu pieds nus, leurs jambes basses sont le `cs_flat` vanilla, donc notre coque est juste pour eux aussi.
+**Non mesuré, prochaine séance** : (1) les apparences dynamiques ArchiveXL s'appliquent-elles aux `.app` référencés par
+`inkcharcustomization` (nos coques) ? Si oui : `w__<slug>_legs&feet=flat` (coque à plat seulement à plat), coque de corps
+sans low_mask quand `feet=lifted` ; sinon chercher comment le jeu choisit l'état (sonde en créateur) ; (2) coque des
+talons : résoudre le chemin du maillage `high_heels` (hash ↔ liste de chemins WolvenKit) ; (3) vêtements : masques par nom
+(V habillée), même mécanique.
