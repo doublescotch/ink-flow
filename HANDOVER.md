@@ -12,7 +12,7 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 17 h 30) : canari v4 « états des pieds » bâti et vérifié, pas posé ; sa QA créateur attendue
+## État (2026-11-05, 17 h 30) : canari v4 « états des pieds » posé à 17 h 29 ; sa QA créateur attendue
 
 - **Validé par sa QA (16 h 35, canari v3, corps vanilla, Samurai + Bedellia)** : FPP tête baissée,
   FPP assise, mode photo, inventaire propres ; manche jusqu'à la cheville. Torse plein à confirmer avec
@@ -25,15 +25,15 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   (coque de corps, chunks 5-7, nommée `t0_000_pwa_base__full`) dans `character_creation` +
   `lifted_feet` ; `legs_flat` dans `flat_feet` seul ; FPP inchangée. Commité avec ce bloc.
 - **Canari v4** : `tools\qa_2026-11-05\canari_feet.py`, sortie `gen\uv104\out_canari_feet` (SHA
-  `bed06d81…`, 22,2 Mo), vérifié dépaqueté. **Pas posé** (son choix) : pose = `canari_feet.py install`,
-  jeu fermé, sur son déverrouillage. Le v3 reste dans `out_canari_fpp` et dans le jeu.
+  `bed06d81…`, 22,2 Mo), vérifié dépaqueté, **posé à 17 h 29** sur son go (SHA identiques dans le jeu ; v3 sauvegardé dans
+  `%LOCALAPPDATA%\InkFlowackup6-11-05_172940`, sa sortie reste dans `out_canari_fpp`).
 - **QA attendue** : créateur et modificateur de l'appartement, tibias de face sans trous. **Risque annoncé
   à regarder** : photo, inventaire, pieds nus en jeu (la coque à plat ne dépend plus que de `flat_feet`) ;
   si l'encre des tibias disparaît là, `legs_flat` retourne dans `TPP_Body`.
 - **Puis** : talons (Togglable Feet livre `l0_000_pwa_base__cs_heel.mesh`, chemin du maillage vanilla
   toujours en hash `15467513564352523783`) ; Angel avec le même canari ; pack complet ; exe rebâti ;
   crochets de `NEXUS.md` / README / sticky réécrits **après** ces QA.
-- **Son jeu** : instance Virgin + Load Begone + canari v3 ; Red Hot Tools BETA13 posé par lui ; ses piles
+- **Son jeu** : instance Virgin + Load Begone + canari v4 ; Red Hot Tools BETA13 posé par lui ; ses piles
   1-3 à reposer ; overlay NVIDIA coupé ; aucun plantage ni gel de la journée.
 - **Ouvert, même mécanique** : « V habillée » (les habits masquent le corps par nom) ; V masculin :
   jambes jamais mesurées.

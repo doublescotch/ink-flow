@@ -479,7 +479,7 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   (`cs_flat`), dans leurs groupes, absentes de `TPP_Body`. ETUDE § 28.
 - Codé dans `core.py` : coque de corps au masque de l'app du corps (chunks 0-4), compagnon `legs_lifted` (corps par
   l'app des jambes, nom du corps du jeu) dans `character_creation` + `lifted_feet`, `legs_flat` dans `flat_feet` seul.
-  Canari v4 `canari_feet.py` : 31 s, 22,2 Mo, vérifié dépaqueté ; **pas posé**, son choix in-prompt (bâtir seulement).
+  Canari v4 `canari_feet.py` : 31 s, 22,2 Mo, vérifié dépaqueté ; bâti seul sur son choix in-prompt, puis **posé à 17 h 29** sur son « vas y pose » (SHA identiques).
 - Ses questions : Togglable Feet (corps vanilla seul, trois états de pieds par étiquette de chaussure, § 28) ; lecture des
   pages sans capture (le texte de Nexus ne sort pas par l'extraction de texte, il sort par une lecture du DOM).
 - Fable coupé en cours de séance (quota), reprise par Opus sur sa commande.
