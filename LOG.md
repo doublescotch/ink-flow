@@ -503,3 +503,13 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - `canari_feet.py` prend `CANARI_BODY=angel` (dossiers de travail et de sortie à part, le v4 vanilla reste). Build 156 s,
   48,0 Mo, 52 fichiers ; corps = maillage d'Angel (4,2 Mo) ; groupes identiques au v4 vanilla. Posé à 18 h 31 (SHA
   `1d2b193e…` identiques), v4 vanilla sauvegardé dans `backup\2026-11-05_183135`. Sa QA attendue.
+
+## 2026-11-05 (18 h 55 → 19 h 50) — Sa QA Angel validée ; mesure de la cheville ; pack 1.4.0 et exe rebâtis (Opus)
+
+- Sa QA du canari v4 Angel : propre partout, identique au vanilla ; cheville plus longue au créateur seul. Sa question
+  sur la stabilité des UV : relue dans ce journal (gels = overlay NVIDIA, réglé ; `memcpy` = Solo seul, le correctif
+  d'en-tête n'en était pas la cause ; aucun test Solo après les deux correctifs).
+- Mesure hors jeu (ETUDE § 29) : aucune encre du Samurai sur le pied ; mêmes UV dans les deux coques ; au créateur
+  l'encre finit plus haut. Cause du créateur non trouvée, non bloquante (son choix in-prompt : mesure puis build).
+- Exe 1.4.0 rebâti (`8802c4d1…`, 22,7 Mo) ; pack complet rebâti (1 577 s, 42 tatouages, 633,6 Mo, 2 646 fichiers,
+  `36e00ca4…`), ancien pack gardé de côté. Rien posé : son déverrouillage a expiré à 19 h 25.

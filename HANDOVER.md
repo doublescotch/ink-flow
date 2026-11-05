@@ -12,8 +12,15 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 18 h 30) : vanilla propre partout (canari v4) ; canari v4 Angel POSÉ, sa QA attendue
+## État (2026-11-05, 19 h 45) : canari v4 validé vanilla ET Angel ; pack 1.4.0 + exe REBÂTIS, non posés
 
+- **Sa QA du canari Angel (19 h)** : propre partout, identique au vanilla ; cheville plus longue au créateur seul.
+  **Mesure (ETUDE § 29)** : le Samurai n'a aucune encre sur le pied, bord net ; même ensemble d'UV dans les deux
+  coques ; au créateur l'encre finit même plus haut. Cause = autre chose (second calque ?), non bloquant.
+- **Rebâtis avec le moteur actuel (son choix 19 h « mesure puis build »)** : exe `exe\dist\InkFlowBuilder.exe`
+  22,7 Mo, SHA `8802c4d1…` ; pack complet `gen\uv104\out_pack` 1 577 s, 42 tatouages, **633,6 Mo / 2 646 fichiers**
+  (avant correctif : 465,8 Mo / 1 632, gardé dans `out_pack_pre_fix_2026-11-05_0036`), SHA `36e00ca4…`, aucun
+  conflit. Journal : `gen\uv104\pack_build_2026-11-05_1920.log`. **Pose sur son déverrouillage, puis sa passe courte.**
 - **Validé par sa QA (18 h, canari v4 posé à 17 h 29, corps vanilla, Samurai + Bedellia)** : modificateur
   de l'appartement, créateur de nouvelle partie, mode photo, FPP assise jambe croisée : propres, aucun
   trou. Avec le v3 (16 h 35) : FPP tête baissée et inventaire propres. Torse plein à confirmer avec
@@ -25,22 +32,17 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   partout (créateur, photo). Hypothèse à trancher : l'encre de la texture continue sur la main, mais la
   main est dessinée par un autre maillage ou chunk que nos coques de bras. Mesure : quel composant
   dessine la main (sonde du 02/11, maillages `arms_hq`), puis l'encre de la texture à cet endroit.
-- **Constat 2, non mesuré** : dans le **créateur seul**, l'encre de la cheville descend plus bas (marches
-  noires, petit « V » rouge sous les écailles) ; photo, inventaire, modificateur et FPP s'arrêtent à la
-  bande noire. Le créateur = coque levée (corps chunks 5-7), le reste = coque à plat (`cs_flat`, mêmes
-  UV mesurées au § 27 bis) : comparer leurs UV sommet par sommet aux chevilles, et les mips.
-- **Sa question VTK** : le correctif n'est pas propre au vanilla. Masques et maillages se lisent dans
-  l'archive active : Angel, Solo et Songbird livrent leurs apps de jambes et `cs_flat` ; aucun ne livre
-  l'app du corps (repli sur celle du jeu, chunks 0-4). **Jamais vu en jeu sur Angel** : prochain banc.
-- **Canari v4 Angel posé à 18 h 31** (son déverrouillage du dossier du jeu, 18 h 25) : 7 archives de
-  sa config minimale Angel copiées de l'arbre `3_Bodies` (identiques octet pour octet), puis
-  `CANARI_BODY=angel canari_feet.py build | check | install` : 156 s, 48,0 Mo, 52 fichiers, corps =
-  maillage d'Angel (4,2 Mo contre 333 Ko vanilla), SHA `1d2b193e…` ; v4 vanilla sauvegardé dans
-  `backup\2026-11-05_183135`. Attendu : coupure nette du Samurai à la cheville (§ 21, déjà connue).
-- **Prochain geste** : sa QA du canari Angel (créateur, modificateur, photo, inventaire, FPP) ; puis
-  les deux constats ; puis talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable Feet ;
-  maillage vanilla toujours en hash `15467513564352523783`) ; pack complet ; exe rebâti ; crochets de
-  `NEXUS.md` / README / sticky réécrits **après** ces QA.
+- **Constat 2, mesuré (§ 29)** : au **créateur seul**, encre de cheville plus longue en escalier (vanilla et
+  Angel, forme un peu différente). Ni texture, ni UV, ni étirement : hypothèse = second calque au créateur
+  (coque à plat flottante ?). Mesure qui tranche : canari coloré (une teinte par coque) ou sonde (Redscript,
+  Codeware, CET à poser). 1.4.1.
+- **Canari v4 Angel** posé à 18 h 31 (7 archives de sa config minimale Angel copiées de l'arbre `3_Bodies`,
+  `CANARI_BODY=angel`, SHA `1d2b193e…`, v4 vanilla dans `backup\2026-11-05_183135`) ; validé par lui à 19 h.
+- **Prochain geste** : poser le pack rebâti (`pack_build.py install`, son déverrouillage) ; sa passe courte
+  sur Angel (Samurai UV bras convertis, V masculin, bascules de slots longues, VRAM : le pack a grossi de
+  36 %) ; zip ; crochets de `NEXUS.md` / README / sticky réécrits **après** cette passe ; upload. 1.4.1 :
+  main, cheville du créateur, talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable
+  Feet ; maillage vanilla toujours en hash `15467513564352523783`).
 - **Canari v4** : `tools\qa_2026-11-05\canari_feet.py`, sortie `gen\uv104\out_canari_feet` (vanilla,
   SHA `bed06d81…`, 22,2 Mo) et `out_canari_feet_angel` (`CANARI_BODY=angel`, travail à part) ; v3
   sauvegardé dans `%LOCALAPPDATA%\InkFlow\backup\2026-11-05_172940`.

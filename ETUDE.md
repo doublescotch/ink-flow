@@ -1293,3 +1293,27 @@ FPP assise jambe croisée : **propres, aucun trou** ; le risque annoncé (coque 
 produit en photo. Deux constats neufs, non mesurés : (1) dessus de la main, dernier hexagone de Samurai coupé net,
 partout ; (2) dans le créateur seul, l'encre de la cheville descend plus bas (marches noires, « V » rouge) que sur la
 coque à plat (photo, inventaire, modificateur, FPP).
+
+## 29. Canari v4 sur Angel validé ; cheville du créateur : ni la texture ni les UV (2026-11-05, 18 h 30 → 19 h 20, Opus, hors jeu)
+
+**Sa QA du canari v4 Angel (posé à 18 h 31, `CANARI_BODY=angel`, SHA `1d2b193e…`)** : modificateur, mode photo, FPP
+assise : propres, identiques au vanilla ; manche un peu moins longue qu'au créateur. Au créateur seul, encre de cheville
+plus longue avec un effet d'escalier, de forme « pas exactement » celle du vanilla selon lui.
+
+**Mesure** (`C:\__DEV\cyberpunk\ink_flow\measure_ankle\scripts\ankle.py`, `faint.py`, `uvset.py` ; texture du Samurai
+exportée en 8192², alpha lu sous chaque triangle, 91 points par triangle, ligne y = (1 − v)·h, § 24) :
+- **Pieds (chunk 7, sous 11 cm) : 0 % d'encre**, alpha 0 partout, Angel comme vanilla, pied levé comme à plat. Le
+  tatouage de l'auteur ne descend pas sur le pied ; rien n'est perdu en jeu.
+- **Cheville (chunk 6)** : la même part de triangles est encrée dans les deux poses (Angel 18,9 %, vanilla 31,4 %) ; bord
+  net (aucun alpha entre 0 et 8 sous la ligne). Bas de l'encre : Angel 20,4 cm levé / 18,8 cm à plat ; vanilla
+  17,0 / 14,6 cm. L'encre du créateur est donc plus HAUTE, pas plus basse ; aire encrée plus petite (349 contre 398 cm²).
+- **UV** : corps chunks 5-7 et `cs_flat` portent exactement le même ensemble d'UV, Angel comme vanilla (§ 27 bis
+  confirmé), dans un ordre de sommets différent sauf le chunk 5 vanilla ; `cs_flat` d'Angel a 25 sommets de plus au pied
+  (chunk 7, sans encre).
+
+**Conclusion** : l'encre plus longue du créateur ne vient ni de la texture, ni des UV, ni d'un étirement de la coque
+levée. Hypothèse non mesurée : au créateur, un second calque se dessine en plus de la coque levée (la coque à plat
+`legs_flat`, flottante à 17-60 mm du pied levé, ou un calque du jeu), et deux bords décalés font l'escalier. Mesure qui
+tranche : canari coloré (coque levée et coque à plat chacune d'une teinte unie) ou sonde au créateur (exige Redscript,
+Codeware et CET, absents de l'instance). Défaut cosmétique, créateur seul : proposé **non bloquant pour la 1.4.0**
+(son choix du 05/11, 19 h : « mesure puis build », pack et exe rebâtis ensuite) ; limite à écrire sur la page.
