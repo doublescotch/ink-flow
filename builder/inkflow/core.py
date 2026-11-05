@@ -12,8 +12,9 @@ Same recipe, same output (ETUDE § 8-13) :
   - N switchers (route 2, Heterochromia pattern : one option drives one uiSlot per target), options Off + one per
     tattoo ; route 1 (an option in the vanilla « Body Tattoos » switcher) is off by default ;
   - first person (default on) : per slot a hidden follower switcher linked to the slot's switcher (vanilla
-    `fpp_body_tattoo` -> `body_tattoo` pattern) drives FPP shells : the body shell again, shown through the chunk mask
-    of the active FPP torso, and copies of the active FPP arm meshes ; listed in the `FPP_Body` group only ;
+    `fpp_body_tattoo` -> `body_tattoo` pattern) drives FPP shells : a copy of the active FPP torso mesh through the
+    mask of the FPP torso appearance, the body shell again through the mask of the FPP legs appearance, and copies of
+    the active FPP arm meshes ; listed in the `FPP_Body` group only ;
   - names shown in game come from the Catalogue (player-editable `name`, immutable `slug`) ;
   - nothing is written to the game by the engine ; `install()` does it on demand.
 
@@ -45,9 +46,17 @@ DECAL_MI = (r"base\characters\common\skin\character_mat_instance\__parameters\cu
 ARMS_TEX = r"base\characters\player\femme\body\arms\textures"
 HEAD_DIR = r"base\characters\head\player_base_heads\player_female_average"
 FPP_DIR = BODY_DIR + r"\fpp"
-FPP_APP = r"base\characters\common\player_base_bodies\appearances\l0_000_fpp__full.app"
 FPP_TORSO_MESH = FPP_DIR + r"\t0_000_pwa_fpp__torso.mesh"
-FPP_TORSO_MASK = "18446744073709551584"     # 0xFFFFFFFFFFFFFFE0 : body chunks 5-7, what the vanilla/Angel FPP app shows (measured 2026-11-01)
+# What female V sees of her body in first person (ETUDE § 16, § 26 ; measured 2026-11-05 in the base game, Angel and the
+# probe logs) : the FPP torso mesh (same chunk layout as the full body mesh, 8 chunks head to feet) drawn by TWO
+# appearances with complementary masks. The torso app shows chunks 0-4 (torso and thighs, 0.51-1.53 m) ; the legs app
+# shows chunks 5-7 (calves and feet, 0.01-0.53 m). Body mods ship the legs app and their own FPP torso mesh (Angel, Solo,
+# Songbird) and leave the torso app to the base game. Until 1.4.0 the body had ONE first-person shell, the body shell
+# through the legs mask : calves and feet only, nothing on the torso (two users reported it ; measured 2026-11-05).
+FPP_TORSO_APP = r"base\characters\common\player_base_bodies\appearances\t0_000_fpp__full.app"
+FPP_LEGS_APP = r"base\characters\common\player_base_bodies\appearances\l0_000_fpp__full.app"
+FPP_TORSO_MASK = "18446744073709551391"     # 0xFFFFFFFFFFFFFF1F : chunks 0-4, fallback when the torso app is not readable
+FPP_LEGS_MASK = "18446744073709551584"      # 0xFFFFFFFFFFFFFFE0 : chunks 5-7, fallback for the legs app
 FPP_INDEX_OFFSET = 25                       # follower switchers at 1066-1074 : free in vanilla (1065 = last body_scars entry, 1090 = genitals)
 # Male V (ETUDE § 19, measured 2026-11-03 in the base game, Gymfiend VTK 1.4.3 and MV Head VTK) : other paths, a body
 # WITHOUT morphtarget (plain garment component), and no dedicated FPP meshes : the FPP apps show the TPP body (no
@@ -97,12 +106,18 @@ TARGETS = [
 for _t in TARGETS:
     _t.setdefault("gender", "f")
 TARGET_BY_CODE = {t["code"]: t for t in TARGETS}
-# First person (ETUDE § 16). What V sees of herself in first person : the FPP torso, a byte-identical copy of the TPP
-# body mesh shown through a chunk mask (so the body shell is reused, masked the same way), and two dedicated FPP arm
-# meshes (copied as decals like the TPP arms). The head is never seen in first person. `parent` = the target whose
-# texture (and, for the body, whose shell) the companion uses.
+# First person (ETUDE § 16, § 26). What V sees of herself in first person : the FPP torso mesh through the torso app's
+# mask (chunks 0-4 : a dedicated shell, copy of that mesh), the same mesh through the legs app's mask (chunks 5-7 : the
+# body shell again, the FPP torso mesh having the body's chunk layout), and two dedicated FPP arm meshes (copied as
+# decals like the TPP arms). The head is never seen in first person. `parent` = the target whose texture (and, for the
+# legs, whose shell) the companion uses ; `app` + `default_mask` = where its chunk mask is read (`fpp_app_mask`).
 FPP_TARGETS = [
-    dict(code="fpp_body", label="FPP body", parent="body", mesh=None, morph=None,
+    dict(code="fpp_torso", label="FPP torso", parent="body", mesh=FPP_TORSO_MESH, morph=None, is_body=True,
+         app=FPP_TORSO_APP, default_mask=FPP_TORSO_MASK,
+         tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
+         old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_fpp_torso"),
+    dict(code="fpp_body", label="FPP legs", parent="body", mesh=None, morph=None, is_body=True,
+         app=FPP_LEGS_APP, default_mask=FPP_LEGS_MASK,
          tpl="arm_tattoo.app.json", keep="w__arm_tattoo_left", ctype="entGarmentSkinnedMeshComponent",
          old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_left_pwa.mesh", suffix="_fpp"),
     dict(code="fpp_arm_l", label="FPP arm L", parent="arm_l", mesh=FPP_DIR + r"\a0_000_pwa_fpp__full_l.mesh", morph=None,
@@ -112,7 +127,9 @@ FPP_TARGETS = [
          tpl="arm_tattoo.app.json", keep="w__arm_tattoo_right", ctype="entGarmentSkinnedMeshComponent",
          old=r"your_name\ccxl\arm_tattoo_demo\meshes\arm_tattoo\your_arm_tattoo_right_pwa.mesh", suffix="_fpp_arm_r"),
 ]
-FPP_BY_PARENT = {t["parent"]: t for t in FPP_TARGETS}
+FPP_BY_PARENT = {}                              # parent target code -> its FPP companions (the body has two)
+for _f in FPP_TARGETS:
+    FPP_BY_PARENT.setdefault(_f["parent"], []).append(_f)
 TARGET_BY_TEX = {t["tex"]: t for t in TARGETS}
 # UV Framework family (ETUDE § 21, measured 2026-11-04). ONE texture for body + both arms, drawn in the vanilla body
 # layout (skin in u > 0.22) with the UV arms re-unwrapped into the left strip (u < 0.22 : left arm in v < 0.5, right
@@ -162,7 +179,7 @@ class BuildError(Exception):
 
 
 class Cancelled(Exception):
-    """The player pressed Cancel. Not a BuildError : no fallback (`fpp_torso_mask`) may swallow it."""
+    """The player pressed Cancel. Not a BuildError : no fallback (`fpp_app_mask`) may swallow it."""
 
 
 def templates_dir():
@@ -570,39 +587,40 @@ def extract_mesh(cli, game, work, t, log):
     return mesh_json, morph_json
 
 
-def fpp_torso_mask(cli, game, work, log):
-    """Chunk mask of the FPP torso in the active FPP body .app : what the game shows of the body mesh in first person.
-    The FPP body shell gets the same mask. Cached on the source archive ; the measured vanilla/Angel value is the
-    fallback (the app may live elsewhere than the mesh, or not be readable)."""
-    src, owners = find_owner(game, FPP_APP)
+def fpp_app_mask(cli, game, work, f, log):
+    """Chunk mask of the FPP torso mesh in the active FPP appearance `f["app"]` (torso app or legs app) : what the game
+    shows of that mesh in first person through this appearance. The companion shell `f` gets the same mask. Cached on
+    the source archive ; `f["default_mask"]` (the measured vanilla value) is the fallback (the app may not be readable)."""
+    app, default, what = f["app"], f["default_mask"], f["label"] + " app"
+    src, owners = find_owner(game, app)
     who = who_ships(owners)
     try:
-        if not os.path.isfile(src) or rdar.fnv1a64(FPP_APP) not in rdar.index(src):
-            log(f"  FPP app: not found ({who}), default mask {FPP_TORSO_MASK}")
-            return FPP_TORSO_MASK
-        d = os.path.join(work, "mesh", "fpp_app")
+        if not os.path.isfile(src) or rdar.fnv1a64(app) not in rdar.index(src):
+            log(f"  {what}: not found ({who}), default mask {default}")
+            return default
+        d = os.path.join(work, "mesh", "fpp_app_" + f["code"])
         marker = os.path.join(d, ".src")
-        key = stamp(src) + "|" + src.lower() + "|" + FPP_APP
-        app_json = os.path.join(d, FPP_APP + ".json")
+        key = stamp(src) + "|" + src.lower() + "|" + app
+        app_json = os.path.join(d, app + ".json")
         if not (cached(marker, key) and os.path.isfile(app_json)):
             shutil.rmtree(d, ignore_errors=True)
             os.makedirs(d)
-            cli.run("unbundle", src, "-o", d, "-r", re.escape("\\" + os.path.basename(FPP_APP)) + "$", what="unbundle fpp app")
-            cli.run("convert", "serialize", os.path.join(d, os.path.dirname(FPP_APP)), what="serialize fpp app")
+            cli.run("unbundle", src, "-o", d, "-r", re.escape("\\" + os.path.basename(app)) + "$", what=f"unbundle {f['code']} app")
+            cli.run("convert", "serialize", os.path.join(d, os.path.dirname(app)), what=f"serialize {f['code']} app")
             if not os.path.isfile(app_json):
                 raise BuildError("expected file missing after extraction: " + app_json)
-            with open(marker, "w") as f:
-                f.write(key)
+            with open(marker, "w") as fh:
+                fh.write(key)
         for a in load(app_json)["Data"]["RootChunk"]["appearances"]:
-            for c in a["Data"]["components"]:
+            for c in a["Data"].get("components") or []:
                 mesh = ((c.get("mesh") or {}).get("DepotPath") or {}).get("$value") or ""
                 if mesh.lower() == FPP_TORSO_MESH.lower() and c.get("chunkMask") is not None:
-                    log(f"  FPP app: {who}, torso mask {c['chunkMask']}")
+                    log(f"  {what}: {who}, mask {c['chunkMask']}")
                     return c["chunkMask"]
-        log(f"  ! FPP app: {who}, no torso component: default mask {FPP_TORSO_MASK}")
+        log(f"  ! {what}: {who}, no component on the FPP torso mesh: default mask {default}")
     except (BuildError, OSError, ValueError, KeyError, TypeError) as e:
-        log(f"  ! FPP app: {who}, not readable ({e}): default mask {FPP_TORSO_MASK}")
-    return FPP_TORSO_MASK
+        log(f"  ! {what}: {who}, not readable ({e}): default mask {default}")
+    return default
 
 
 # ----------------------------------------------------------------------------- 2c. UV layouts (ETUDE § 21)
@@ -1244,10 +1262,11 @@ def gender_customization(s, tpl_cc, tk_switcher, gender, items, slots, tags, opt
 
 
 
-def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
-    """items: list of Item ; active: target code -> (mesh json, morph json) ; fpp_mask: chunk mask of the FPP body shell
-    (`fpp_torso_mask`, when `s.fpp`) ; layouts: target code -> `mesh_layout` (chunk masks). -> (archive, xl, listing)."""
-    layouts = layouts or {}
+def build_archive(s, cli, items, active, log, fpp_masks=None, layouts=None):
+    """items: list of Item ; active: target code -> (mesh json, morph json) ; fpp_masks: FPP companion code -> chunk mask
+    read in its FPP appearance (`fpp_app_mask`, when `s.fpp`) ; layouts: target code -> `mesh_layout` (chunk masks).
+    -> (archive, xl, listing)."""
+    layouts, fpp_masks = layouts or {}, fpp_masks or {}
     tdir = templates_dir()
     src = os.path.join(s.work, "pack", s.name)
     shutil.rmtree(src, ignore_errors=True)
@@ -1311,28 +1330,32 @@ def build_archive(s, cli, items, active, log, fpp_mask=None, layouts=None):
                          + (f" / {nt} morphs" if nt else "") + (f" / mask {mask}" if mask else ""))
         if s.fpp:
             for t in it.targets:
-                f = FPP_BY_PARENT.get(t["code"])
-                if not f or f["code"] in it.no_fpp:
-                    continue
-                fam = it.family(t)
-                pt, pf = Paths(slug, t, fam), Paths(slug, f)
-                pt.tex = it.texpath[t["code"]]      # the parent's texture : as copied, cleared strip or converted arm
-                if t["code"] in it.blanked:
-                    fam = "vtk"                 # the strip is cleared in the texture : no strip mask needed
-                if f["mesh"]:
-                    mesh, nm, nv = shell(meshes[f["code"]], pt.tex, alpha, f"[{slug}] {f['code']}")
-                    save(pf.mesh, mesh)
-                    expected.append(pf.mesh)
-                    resource, mask = pf.mesh, shell_mask(layouts, f["code"], fam, False)
-                    parts.append(f"{f['code']} {nv} vertices / {nm} mat." + (f" / mask {mask}" if mask else ""))
-                else:
-                    base = int(fpp_mask) if fpp_mask is not None else TEMPLATE_MASK
-                    resource = pt.mesh
-                    mask = shell_mask(layouts, t["code"], fam, True, base) or (str(base) if fpp_mask is not None else None)
-                    parts.append(f"{f['code']} = body shell, mask {mask}")
-                for n_ in slots:
-                    save(pf.slot_app(n_), make_app(tpls[f["tpl"]], f, resource, f"inkflow_slot{n_}_{slug}{f['suffix']}", f"w__{slug}{f['suffix']}", mask))
-                    expected.append(pf.slot_app(n_))
+                for f in FPP_BY_PARENT.get(t["code"], []):
+                    if f["code"] in it.no_fpp:
+                        continue
+                    fam = it.family(t)
+                    pt, pf = Paths(slug, t, fam), Paths(slug, f)
+                    pt.tex = it.texpath[t["code"]]      # the parent's texture : as copied, cleared strip or converted arm
+                    if t["code"] in it.blanked:
+                        fam = "vtk"                 # the strip is cleared in the texture : no strip mask needed
+                    # The mask the game applies to this companion's mesh in first person (`fpp_app_mask`) when it was
+                    # read ; the template's full mask otherwise (the arms : the whole FPP arm mesh).
+                    read = f["code"] in fpp_masks
+                    base = int(fpp_masks[f["code"]]) if read else TEMPLATE_MASK
+                    if f["mesh"]:
+                        mesh, nm, nv = shell(meshes[f["code"]], pt.tex, alpha, f"[{slug}] {f['code']}")
+                        save(pf.mesh, mesh)
+                        expected.append(pf.mesh)
+                        resource = pf.mesh
+                        mask = shell_mask(layouts, f["code"], fam, f.get("is_body", False), base) or (str(base) if read else None)
+                        parts.append(f"{f['code']} {nv} vertices / {nm} mat." + (f" / mask {mask}" if mask else ""))
+                    else:
+                        resource = pt.mesh
+                        mask = shell_mask(layouts, t["code"], fam, True, base) or (str(base) if read else None)
+                        parts.append(f"{f['code']} = body shell, mask {mask}")
+                    for n_ in slots:
+                        save(pf.slot_app(n_), make_app(tpls[f["tpl"]], f, resource, f"inkflow_slot{n_}_{slug}{f['suffix']}", f"w__{slug}{f['suffix']}", mask))
+                        expected.append(pf.slot_app(n_))
         log(f"  [{slug}] \"{it.name}\" (opacity {alpha:g}): " + " ; ".join(parts))
 
     tpl_cc = load(os.path.join(tdir, "your_tattoo_pwa.inkcharcustomization.json"))
@@ -1504,23 +1527,27 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     if not built:
         raise BuildError("no tattoo left to build: every target was skipped (see the arm layouts above)")
     needed = [t for t in TARGETS if any(t in it.targets for it in built)]
-    fpp_mask = None
+    fpp_masks = {}                              # FPP companion code -> chunk mask read in its FPP appearance
     if s.fpp:
         log("2b. first person")
         for f in FPP_TARGETS:
-            if f["mesh"] and TARGET_BY_CODE[f["parent"]] in needed:
+            if TARGET_BY_CODE[f["parent"]] not in needed:
+                continue
+            if f["mesh"]:
                 active[f["code"]] = extract_mesh(cli, s.game, s.work, f, log)
                 layouts[f["code"]] = lay = mesh_layout(active[f["code"]][0])
                 log(f"  {f['label']:9s}: {'UV' if lay['arms'] == 'strip' else 'vanilla / VTK'} layout (u max {lay['u_max']:.2f})"
-                    + (f", non-skin chunks hidden: {', '.join(lay['hidden'])}" if lay["hidden"] else ""))
-                for it in built:
-                    fam = it.entry.family.get(f["parent"], "vtk")
-                    want = it.conv.get(f["parent"]) or ("strip" if fam == "uv" else "full")   # a converted arm : its new layout
-                    if TARGET_BY_CODE[f["parent"]] in it.targets and lay["arms"] != want:
-                        it.no_fpp.add(f["code"])
-                        log(f"  ! [{it.slug}] {f['label']} skipped: first-person arms have the other layout")
-        if TARGET_BY_CODE["body"] in needed:
-            fpp_mask = fpp_torso_mask(cli, s.game, s.work, log)
+                    + (f", non-skin chunks hidden: {', '.join(lay['hidden'])}" if lay["hidden"] else "")
+                    + (f", chunks in the strip (hidden under a UV texture): {lay['strip_chunks']}" if lay["strip_chunks"] and f.get("is_body") else ""))
+                if f["parent"] in ARM_CODES:
+                    for it in built:
+                        fam = it.entry.family.get(f["parent"], "vtk")
+                        want = it.conv.get(f["parent"]) or ("strip" if fam == "uv" else "full")   # a converted arm : its new layout
+                        if TARGET_BY_CODE[f["parent"]] in it.targets and lay["arms"] != want:
+                            it.no_fpp.add(f["code"])
+                            log(f"  ! [{it.slug}] {f['label']} skipped: first-person arms have the other layout")
+            if f.get("app"):
+                fpp_masks[f["code"]] = fpp_app_mask(cli, s.game, s.work, f, log)
 
     log("3. textures")
     for i, it in enumerate(built):
@@ -1542,7 +1569,7 @@ def run_build(s, entries, catalogue, log, progress=None, cancel=None):
     step(2 + len(built), "Building the archive")
     log("4. build")
     try:
-        arc, xl, listing = build_archive(s, cli, built, active, log, fpp_mask, layouts)
+        arc, xl, listing = build_archive(s, cli, built, active, log, fpp_masks, layouts)
     except Cancelled:
         for p in (os.path.join(s.out, s.name + ".archive"), os.path.join(s.out, s.name + ".archive.xl")):
             if os.path.isfile(p):

@@ -1107,3 +1107,54 @@ réduits : les trous changent avec la vue) ; combat de profondeur coque / peau �
 décalage ?). Mesure 1 : Kala Japanese Body VTK (4K) à l'inventaire et en mode photo (propre ⇒ texture). Mesure 2 :
 exporter les mips du Samurai (DDS complet) et compter l'alpha par niveau. Remède si texture : reconstruire les mips
 au build (`normalize_textures` sait déjà exporter + réimporter avec chaîne complète).
+
+## 27. Première personne : le corps est dessiné par DEUX apps, torse (chunks 0-4) et jambes (chunks 5-7) ; correctif codé, canari bâti (2026-11-05, 14 h → 14 h 50, Fable, « Reprends », hors jeu)
+
+**Prémisse du § 26 corrigée par la mesure** : le torse d'Angel en FPP n'est pas dessiné par `Body:ANGEL` (composant sans
+maillage, chemin `0`, masque plein : une **étiquette** ArchiveXL de type de corps, elle ne dessine rien). Torse FPP vanilla
+extrait de `basegame_4_appearance` (`t0_000_pwa_fpp__torso.mesh`, 340 376 o, SHA `6dd76698…`, pas identique au corps
+complet vanilla `6d5f9dce…`) : **même découpe que le corps complet**, 8 chunks, mêmes comptes de sommets (1 011, 257, 367,
+514, 988, 260, 396, 848), mêmes hauteurs (0 : 1,22-1,50 m … 4 : 0,51-0,98 m, 5 : 0,28-0,53, 6 : 0,07-0,29, 7 : 0,01-0,11).
+Donc le masque `…E0` (chunks 5-7) = **mollets et pieds sur vanilla aussi** : `l0_000_fpp__full.app` est l'app des
+**jambes** (préfixe `l0_`, elle liste aussi `l0_000_pwa_base__high_heels` et `flat_shoes` à masque 0), pas celle du torse.
+
+**Les 14 apps FPP vanilla du corps** (`appearances\*fpp*.app`, 31 entrées extraites avec les maillages `fpp\`) :
+`t0_000_fpp__full.app` = **l'app du torse** : appearance `t0_000_pwa_fpp__01_ca_pale` = `t0_000_pwa_fpp__torso.mesh`
+masque **`18446744073709551391` = 0x…FF1F = chunks 0-4** (torse et cuisses, 0,51-1,53 m) ; appearance masculine
+`t0_000_pma_fpp__01_ca_pale` = `t0_000_pma_base__full.mesh` masque plein (cohérent avec § 19). `t0_000_fpp__full_censored`,
+`t0_000_fpp__tattoo_01..07` (maillage dédié `fpp\tattoos\tx_000_pwa_fpp__full_tattoo_0n.mesh`, masque plein : la voie
+vanilla, non reprise, § 16), `l0_000_fpp__cs_flat` (jambes avec chaussures plates : `l0_000_pwa_base__cs_flat.mesh` plein),
+`n0_000_base_fpp__neck`, `i0_000_fpp__nipple`, `a0_000_fpp__nails`. Le `.ent` FPP et `female_cco` ne sont pas dans
+`basegame_1/2/3/4` (0 entrée), sans importance ici.
+
+**Confirmé par la sonde du 02/11** (`tools\probe\logs\2026-11-02_181554`, vanilla pur) : le pantin `player_wa_fpp_ep1.ent`
+porte `t0_000_pwa_fpp__torso` (garment, `01_ca_pale`, **masque `…391`**, activé) = le torse ; le corps morphtarget
+`t0_000_pwa_base__full` avec **masque `…584`** = les jambes ; `body` (`entSkinnedMeshComponent`, torse FPP, plein) désactivé ;
+notre `inkflow_slot1_unknown_samurai_fpp` avec `…584` = ce qu'il a vu : **les mollets, par construction**.
+
+**Qui livre quoi** (`rdar.index` sur 130 archives de `3_Bodies` + `dl\uv`) : Angel, Solo, Songbird livrent l'app des
+jambes, le torse FPP et le corps complet, **aucune l'app du torse** (le jeu prend celle du jeu de base, masque 0-4, sur
+leur torse FPP = copie de leur corps complet) ; UV Framework 3.2.1 livre torse FPP + corps ; Gymfiend (masc) livre l'app
+du torse. Donc lire les deux apps par `find_owner` couvre tous les corps du dépôt.
+
+**Correctif (`core.py`, 96 lignes ajoutées / 69 retirées)** : `FPP_TORSO_APP` (`t0_000_fpp__full.app`, repli `…391`) et
+`FPP_LEGS_APP` (`l0_000_fpp__full.app`, repli `…584`) ; `FPP_TARGETS` = **`fpp_torso`** (nouveau : coque = copie du
+**torse FPP actif** `FPP_TORSO_MESH`, masque de l'app torse, texture du corps, suffixe `_fpp_torso`, `is_body` pour
+`skin_mask` / `strip_mask`), **`fpp_body` = « FPP legs »** (inchangé : coque du corps, masque de l'app jambes), bras
+inchangés ; `FPP_BY_PARENT` = listes (le corps a deux compagnons) ; `fpp_torso_mask` → `fpp_app_mask(cli, game, work, f,
+log)` (app, repli et cache `mesh\fpp_app_<code>` par compagnon) ; `build_archive(…, fpp_masks={code: mask})` ; le contrôle
+« autre mise à plat des bras » ne s'applique qu'aux compagnons de bras. Suiveur : **4 uiSlots** par slot. Les outils datés
+`qa_2026-11-02\{ebbrb_test,vanilla_test,build_fpp_bisect}.py` citent les anciens noms (jetables, non repris).
+
+**Canari** `tools\qa_2026-11-05\canari_fpp.py build | check | install` (Samurai VTK seul, 2 slots, miroir, FPP, sur son
+jeu actuel = corps vanilla, cache `work_canari_fpp`, sortie `gen\uv104\out_canari_fpp`) : build 96 s, 15,7 Mo, 26
+fichiers. `check` (dépaqueté, sérialisé) : `unknown_samurai_pwa_fpp_torso.mesh` = 8 chunks, 4 641 sommets, **24 décals**
+→ `unknown_samurai.xbm`, `preload` vide ; `unknown_samurai_slot1_fpp_torso.app` = garment sur ce maillage, masque
+**`…391`** ; `_slot1_fpp.app` = coque du corps, masque `…584` ; suiveur `inkflow_slot1_fpp` (1066, lié, `linkController`
+0) uiSlots `_fpp_torso, _fpp, _fpp_arm_l, _fpp_arm_r` ; `FPP_Body` 18 noms. Rien d'écrit dans le jeu.
+
+**QA attendue de lui (points annoncés)** : tête baissée hors miroir sur vanilla : torse et cuisses tatoués + mollets ;
+bras FPP inchangés ; créateur, miroir, mode photo inchangés (la coque TPP reste la même). **Effet visible possible** :
+un trait à la jonction cuisses / mollets (deux coques, mêmes sommets, masques complémentaires : le vanilla fait pareil)
+et, sous un vêtement, le torse FPP de la coque visible là où le jeu cache le sien (jamais mesuré, « V habillée » ouvert).
+Puis Angel (torse FPP = copie du corps complet, même masque 0-4) avec le même canari rebâti.

@@ -12,28 +12,32 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 2 h) : 1.4.0 NON publiable : la coque FPP du corps n'a jamais montré le torse ; trous à distance ouverts
+## État (2026-11-05, 14 h 50) : correctif FPP codé et vérifié sur canari, QA en jeu à lui ; trous à distance ouverts
 
-- Passe de sanité des `.md` du dépôt Cyberpunk (sa consigne du 05/11, 2 h) : **faite le 05/11**
-  (`cp:HANDOVER.md` § 2) ; ce chantier peut reprendre, premier geste = le correctif FPP ci-dessous.
-- **Deux défauts trouvés par sa QA du 05/11**, présents depuis la 1.0.1, confirmés par lui sur les
-  exe 1.3, 1.2, 1.1 et sur corps vanilla (pas une régression), ETUDE § 26 : (1) **FPP tête baissée :
-  manches, pas de corps**. Cause mesurée : la coque FPP du corps est une copie du maillage complet
-  avec le masque du torse FPP ; sur Angel ce masque = chunks 5-7 = mollets et pieds (le torse vient
-  de `Body:ANGEL`), sur vanilla il désigne d'autres chunks. **Correctif à coder** : une coque FPP
-  par composant de corps de l'app FPP, copie du maillage de ce composant avec son masque. (2)
-  **Trous dans le bas des jambes à l'inventaire et en mode photo**, créateur propre, Samurai 8K :
-  même coque TPP partout, donc la vue (distance, mips). Mesures : Kala Body 4K dans les mêmes vues ;
-  alpha par mip du Samurai. Remède probable : reconstruire les mips au build.
-- **Son jeu (2 h)** : instance re-régénérée depuis « Virgin », `archive\pc\mod` = Load Begone + Ink
+- **Correctif FPP codé (ETUDE § 27), non vu en jeu.** Cause corrigée par la mesure : le corps en FPP
+  est dessiné par **deux** apps vanilla sur le torse FPP (même découpe que le corps complet) : torse
+  `t0_000_fpp__full.app` = chunks 0-4, jambes `l0_000_fpp__full.app` = chunks 5-7 ; notre coque ne
+  portait que le masque des jambes (mollets : ce qu'il a vu). `Body:ANGEL` = étiquette, dessine rien.
+- `core.py` : compagnon **`fpp_torso`** (copie du torse FPP actif, masque lu dans l'app torse, repli
+  `…391`), `fpp_body` = « FPP legs » (inchangé), `fpp_app_mask`, suiveur à 4 uiSlots. **Canari**
+  `tools\qa_2026-11-05\canari_fpp.py` : `build` fait (Samurai VTK seul, corps vanilla, 15,7 Mo,
+  `gen\uv104\out_canari_fpp`), `check` vert (torse 4 641 sommets / 24 décals / `…391`, jambes `…584`).
+- **Sa QA, premier geste** : `canari_fpp.py install` sur sa formule (jeu fermé), puis tête baissée
+  hors miroir : torse + cuisses + mollets tatoués ; bras FPP, créateur, miroir, photo inchangés.
+  Effets possibles annoncés : trait cuisses / mollets ; torse de la coque visible sous un vêtement.
+  Ensuite Angel (même canari, Angel reposé) puis le pack complet (`pack_build.py build`, 1 000 s).
+- **Trous dans le bas des jambes à l'inventaire et en mode photo** (sa QA du 05/11, Samurai 8K,
+  créateur propre) : même coque TPP partout, donc la vue (distance, mips). Mesures à faire : Kala
+  Body 4K dans les mêmes vues ; alpha par mip du Samurai. Remède probable : mips reconstruits au
+  build. Non commencé.
+- **Son jeu** : instance re-régénérée depuis « Virgin » à 2 h, `archive\pc\mod` = Load Begone + Ink
   Flow 1.1 Samurai seul sur corps vanilla (15,5 Mo, SHA `08d84f60…`). Ses piles 1-3 à reposer par
-  lui. Overlay NVIDIA coupé (gels, § 25). Rien de parqué par moi (`mod__parked_2026-11-05` disparu
-  avec sa régénération ; `minimal_angel.py` reste utilisable).
+  lui. Overlay NVIDIA coupé (gels, § 25). `minimal_angel.py` reste utilisable. Rien écrit par moi.
 - **1.4.0 : tout est bâti, rien n'est publiable** : pack complet 465,8 Mo (`gen\uv104\out_pack`, SHA
-  `da5757d2…`, `pack_build.py`), exe `exe\dist\InkFlowBuilder.exe` 22,7 Mo SHA `a1bf1701…` (zip non
-  fait). `NEXUS.md`, README, sticky de `NEXUS_POSTS.md` : mentions FPP / photo retirées, crochets «
-  TO REWRITE AFTER THE FIX », **upload gelé** jusqu'aux deux points ci-dessus ; les crochets doivent
-  être réécrits après sa QA, jamais avant (faute de ce soir : écrits avant qu'il regarde la FPP).
+  `da5757d2…`) et exe `exe\dist\InkFlowBuilder.exe` (SHA `a1bf1701…`) **d'avant le correctif**, à
+  rebâtir ; zip non fait. `NEXUS.md`, README, sticky de `NEXUS_POSTS.md` : crochets « TO REWRITE
+  AFTER THE FIX », **upload gelé** jusqu'à sa QA FPP et les trous ; les crochets se réécrivent après
+  sa QA, jamais avant (faute du 05/11 à 2 h).
 - **Reste ouvert de sa QA** : Skeleton Face sur tête masculine vanilla (tête vanilla, limite connue)
   ; Samurai coupé net à la cheville sur Angel (pieds dans la bande, § 21, remède = rééchantillonner
   les pieds comme les bras) ; Tortured Skin UV ×2 refusés (3 fichiers inconnus) ; FrecklesV à tester

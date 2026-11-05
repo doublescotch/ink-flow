@@ -432,3 +432,17 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
 - Mesuré : masque du torse FPP d'Angel = chunks 5-7 = mollets et pieds (hauteurs lues), le torse vient de `Body:ANGEL` ;
   notre coque FPP copie le maillage complet avec ce masque. Correctif défini (ETUDE § 26). Trous à distance : ouvert,
   deux mesures listées. Session close à 2 h ; son jeu : instance Virgin + Load Begone + build 1.1 Samurai sur vanilla.
+
+## 2026-11-05 (14 h → 14 h 50) — Correctif FPP : le corps est dessiné par deux apps, coque de torse ajoutée, canari bâti (Fable)
+
+- « Reprends » : Cyberpunk choisi in-prompt (passation la plus récente). Mesures hors jeu avant de coder (ETUDE § 27) :
+  torse FPP vanilla extrait = même découpe que le corps complet (8 chunks, mêmes hauteurs) ; `l0_000_fpp__full.app` est
+  l'app des **jambes** (masque `…E0` = mollets et pieds, vanilla compris) ; l'app du **torse** est `t0_000_fpp__full.app`
+  (masque `…FF1F` = chunks 0-4) ; `Body:ANGEL` = étiquette sans maillage, le § 26 se trompait sur ce point.
+- Sonde du 02/11 relue : le pantin FPP porte le torse FPP garment à `…391` et le corps morph à `…584` ; notre coque à
+  `…584` = les mollets qu'il a vus. 130 archives indexées : Angel, Solo, Songbird livrent jambes + torse FPP, jamais
+  l'app du torse (prise au jeu de base).
+- Codé dans `core.py` : compagnon `fpp_torso` (copie du torse FPP actif, masque de l'app torse), `fpp_body` devient
+  « FPP legs », `fpp_app_mask` lit les deux apps avec repli, `FPP_BY_PARENT` en listes, 4 uiSlots par suiveur.
+  Canari `tools\qa_2026-11-05\canari_fpp.py` (Samurai VTK seul, corps vanilla) : build 96 s, `check` = coque de torse
+  4 641 sommets / 24 décals / masque `…391`, jambes `…584`. **Rien posé dans le jeu** : pose et QA à lui (sa formule).
