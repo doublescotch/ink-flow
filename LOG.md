@@ -515,3 +515,13 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   `36e00ca4…`), ancien pack gardé de côté. Rien posé : son déverrouillage a expiré à 19 h 25.
 - 19 h 50 : ses ArasakaWorkshop Vibrant ×6 mesurés hors jeu (pied vanilla peint jusqu'au sol, Angel 0 % : pieds dans la
   bande, ETUDE § 29) ; pack rebâti posé sur son go in-prompt (déverrouillage de 19 h 21), SHA identiques.
+
+## 2026-11-06 (15 h 30 → 15 h 50) — Sa QA du pack 1.4.0 rebâti : validée ; zip et textes Nexus (Opus)
+
+- Sa QA (pack posé le 05/11 à 19 h 50, Angel, 42 tatouages) : corps et bras propres dans toutes les vues, VTK et UV ;
+  manches de jambes un peu plus longues au créateur / modificateur (connu, ETUDE § 29). Jeu laissé ouvert par lui pour
+  la QA de Red World : rien écrit dans le jeu.
+- Solo relu au journal pour sa question : UV vu au créateur, VTK bras convertis au créateur et au miroir (04/11), jamais
+  revu depuis le correctif FPP / jambes ; plantages `memcpy` = Solo seul.
+- Zip `Ink_Flow_Builder-1.4.0.zip` (`5bff56a0…`, exe `8802c4d1…`) ; `NEXUS.md`, README, sticky réécrits sur sa QA
+  (crochets levés, limites : cheville du créateur, pieds d'Angel, main, chaussures, bras cybernétiques). Upload à lui.

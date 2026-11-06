@@ -4,21 +4,23 @@ One block per post; paste as is or trim. The individual replies of 2026-11-02 (E
 vanilla body) were removed on 2026-11-04 at Hell_Kaiser's request: posted, and superseded by the
 stickies (they stay in git history, commit `546200f` and before).
 
-## Sticky 1.4.0 (replaces the 1.2.0 one below, to post with the 1.4.0 upload ; **ON HOLD 2026-11-05, 2 h** : the
-## "Tested in game" line below claims first person and photo mode, both false on Angel, rewrite after the FPP fix)
+## Sticky 1.4.0 (replaces the 1.2.0 one below, to post with the 1.4.0 upload ; rewritten 2026-11-06 after his QA of
+## the rebuilt pack : the hold of 2026-11-05, 2 h, is lifted, first person and photo mode are now seen)
 
 ```
-1.4.0 IS OUT: UV Framework tattoos, arm conversion between the two families, per-tattoo opacity. Update, Build again, Install.
+1.4.0 IS OUT: first person and shins fixed, UV Framework tattoos, arm conversion between the two families, per-tattoo opacity. Update, Build again, Install.
 
 What's new (full list in the Changelogs tab; 1.2.0 and 1.3.0 were never uploaded, 1.4.0 carries them):
+- First person fixed: the body tattoo now shows when you look down or sit (thanks to those who reported it).
+- Shins fixed in photo mode, the inventory and first person: no more holes moving with the camera.
 - UV Framework tattoos (the one-file body + arms packs made for -KS- UV Texture Framework) are supported: drop them in the list like VTK ones, each gets its own Ink slot.
 - Arms of either family on arms of either family: a UV tattoo on vanilla / Angel arms, a VTK tattoo on Solo's UV arms, gets its arm part converted to your arms' layout (same arm, two unwrappings). This needs -KS- UV Texture Framework in your game; without it the arms of the other family are skipped and build.log says why.
 - Per-tattoo opacity column (0.1 to 2.0) and a "Body meshes in use" table at the top of the window (Female V / Male V, Body / Arms / Head).
 - Textures with a wrong header (some Kala Japanese V2 files) are rebuilt automatically.
 
-Tested in game (2.5, fresh install): female V on Angel (+ Vanilla Refits, VTK Vanilla HD Head, UV Framework 3.2.1), 42 tattoos VTK and UV, creator, mirror, first person, photo mode; male V on the vanilla body (creator). Solo 2.0: creator only.
+Tested in game (2.5, fresh install): female V on Angel (+ Vanilla Refits, VTK Vanilla HD Head, UV Framework 3.2.1) and on the vanilla body, 42 tattoos VTK and UV: body and arms clean in the creator, at the mirror, in photo mode, in the inventory and in first person. Male V on the vanilla body: creator. Solo 2.0: creator and mirror before the first-person fix, not since (it crashed at save load on our bench, Solo's page reports the same).
 
-Known: on Angel every tattoo stops at the ankles (Angel's feet live in the part of the texture that tattoos do not paint); head tattoos on a vanilla head (female or male) do not show; very faint overlays (freckles) do not show through the decal.
+Known: on Angel every tattoo stops at the ankles (Angel's feet live in the part of the texture that tattoos do not paint; resampling them is next); in the creator the shin ink ends a little lower than elsewhere; a tattoo past the wrist can stop straight on the back of the hand; heels / shoes feet states and cyberarms not tested; head tattoos on a vanilla head (female or male) do not show; very faint overlays (freckles) do not show through the decal.
 
 Ink Flow only needs ArchiveXL (and the RED4ext it runs on), plus the UV Framework if you want arm conversion.
 

@@ -12,7 +12,17 @@ tranchée se barre avec ce qui l'a fermée ; un bloc d'état remplacé se rééc
 Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` exclu. Tags posés :
 `v1.0.0`, `v1.0.1`, `v1.1.0`, `v1.2.0` ; 1.3.0 et 1.4.0 sans tag (jamais publiées).
 
-## État (2026-11-05, 19 h 50) : canari v4 validé vanilla ET Angel ; pack 1.4.0 rebâti POSÉ, sa passe attendue
+## État (2026-11-06, 15 h 50) : 1.4.0 VALIDÉE par sa QA du pack rebâti ; zip fait, textes réécrits ; upload à lui
+
+- **Sa QA du pack rebâti (06/11)** : corps et bras propres dans toutes les vues (créateur, miroir, photo, inventaire,
+  FPP), VTK comme UV du même tattoo ; manches de jambes un peu plus longues au créateur / modificateur (connu, § 29).
+  Non signalés par lui : V masculin, bascules longues, VRAM (rien de neuf écrit sur la page à leur sujet).
+- **Zip** `releases\Ink_Flow_Builder-1.4.0.zip` (23,5 Mo, SHA `5bff56a0…`, exe `8802c4d1…`, `testzip` vert).
+  `NEXUS.md`, README, sticky 1.4.0 réécrits sur sa QA : plus aucun crochet ; limites = cheville du créateur, pieds
+  d'Angel, main, chaussures / talons, bras cybernétiques ; Solo = vu avant le correctif, pas depuis.
+- **À lui** : upload (site, ou l'API v3 sur le fichier 1.1.0 sur son go) avec le SHA dans la description ;
+  coller page, changelogs 1.2.0 + 1.3.0 + 1.4.0, sticky ; confirmer le lien framework 3783 ; capture de la
+  fenêtre ; tags `v1.3.0` et `v1.4.0` sur son go.
 
 - **Sa QA du canari Angel (19 h)** : propre partout, identique au vanilla ; cheville plus longue au créateur seul.
   **Mesure (ETUDE § 29)** : le Samurai n'a aucune encre sur le pied, bord net ; même ensemble d'UV dans les deux

@@ -84,11 +84,18 @@ own `inkflow_pma.inkcharcustomization` (ArchiveXL `male:` key), same indexes (10
 `archive\pc\mod`. Add `InkFlowBuilder.exe` as an executable in MO2 and start it from there, so the Body meshes in
 use table shows your body mod. With Vortex (hardlink deployment, or REDmod deployment) nothing special is needed.
 
+**Lower legs (1.4.0).** The game draws V's shins and feet with other meshes than the body, chosen by two hidden
+options of its own: in the character creator a second copy of the body showing only the lower legs (feet raised,
+`lifted_feet`), everywhere else the separate `l0_000_pwa_base__cs_flat` mesh (`flat_feet`). Each tattoo gets a shell
+for both, listed in the same groups, so the shins keep their ink in every view. The body shell itself shows the chunks
+of the active body appearance (upper body, chunks 0-4).
+
 First person follows the vanilla pattern: each slot gets a hidden companion switcher linked to it (the way the game's
-own `fpp_body_tattoo` follows `body_tattoo`), listed in the `FPP_Body` group only, that drives the first-person shells:
-the body shell again, shown through the chunk mask the active first-person torso uses (read from the active
-`l0_000_fpp__full.app`; the torso mesh is a byte-identical copy of the body mesh), and copies of the active first-person
-arm meshes. The head is never seen in first person, so it has no first-person shell.
+own `fpp_body_tattoo` follows `body_tattoo`), listed in the `FPP_Body` group only, that drives the first-person shells.
+The game draws the first-person body with two appearances, the torso (`t0_000_fpp__full.app`) and the legs
+(`l0_000_fpp__full.app`), each with its own chunk mask: Ink Flow copies the active first-person torso mesh under the
+torso mask, the body under the legs mask plus a flat-feet legs shell, and the active first-person arm meshes. The head
+is never seen in first person, so it has no first-person shell.
 
 ## Files
 
@@ -139,24 +146,26 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
 
 ## Known limits of this first cut
 
-- UV Framework tattoos (1.3.0): seen in game on Angel (body, feet and ankles bare). On Solo 2.0 + UV Framework 3.2.1 +
-  Solo arms UV: seen in the character creator (body and both arms); mirror, first person and photo mode not seen, the
-  Solo bench crashed at save load (Solo's own page reports the same), Solo parked for now; in first person on Solo the
-  belly uses the vanilla torso mask (Solo's `.app` cannot be read by WolvenKit Console). Songbird 2.0 body: the shell
-  hides its cyber chunks, not seen in game. No icons in the creator (text options).
-- First person [TO REWRITE AFTER THE FIX]: the body tattoo does not show when looking down (arms do), on every body
-  (vanilla, Angel). The first-person body shell is a copy of the full body mesh wearing the chunk mask of the
-  first-person torso mesh, whose chunks are numbered differently (on Angel that mask is the lower legs; her torso is
-  another component). Present since 1.0.1, measured 2026-11-05. Fix: one first-person shell per body component of
-  the first-person appearance, copy of that component's mesh with its own mask.
-- Inventory and photo mode [UNDER INVESTIGATION]: holes on the shins with the 8K Samurai, none in the creator; same
-  shell in every view, so the camera distance (mip levels of that texture) is the lead, not the shells.
+- Seen in game with 1.4.0 (2.5, female V): Angel and vanilla body, VTK and UV tattoos, body and arms clean in the
+  creator, at the mirror, in photo mode, in the inventory and in first person (looking down, sitting).
+- UV Framework bodies: on Solo 2.0 + UV Framework 3.2.1 + Solo arms UV, body and both arms seen in the character
+  creator with UV tattoos, and in the creator and at the mirror with a VTK tattoo whose arms are converted, before
+  the 1.4.0 first-person and legs fix; not seen since. The Solo bench crashed at save load (Solo's own page reports
+  the same; the same tattoos on Angel never crashed), Solo parked for now; in first person on Solo the belly uses the
+  vanilla torso mask (Solo's `.app` cannot be read by WolvenKit Console). Songbird 2.0 body: the shell hides its cyber
+  chunks, not seen in game. No icons in the creator (text options).
+- Character creator and mirror: the ink of the shins ends a little lower than in the other views, with a stepped edge.
+  Both leg shells read the same texture through the same unwrapping (measured), so it is not the author's art;
+  cosmetic, being looked at.
+- Hands: a tattoo that goes past the wrist can stop in a straight line on the back of the hand (seen with Samurai).
+- Feet states with shoes (high heels, flat shoes): not tested, barefoot only so far.
 - Arm conversion (1.4.0): UV arms onto Angel's arms: seen in the creator and at the mirror for every UV tattoo of the
   test pack, on a game rebuilt from scratch; VTK arms onto UV arms (Solo): seen in the character creator. The converted texture is a resampling: a little softer than the original, and a seam of the unwrapping may
   show a hairline where the two layouts cut the arm differently.
 - Feet and ankles on Angel: Angel unwraps them into the arm strip of the body texture, which VTK textures do not paint
   and which the builder clears for UV textures: on Angel every tattoo stops in a straight line at the ankle, even one
-  painted further down by its author (Samurai). Angel-specific; being looked at (resampling the feet like the arms).
+  painted down to the toes by its author (Arasaka Workshop Vibrant body paints cover the feet on the vanilla body).
+  Angel-specific; next (resampling the feet like the arms).
 - Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal,
   even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as overlay archives.
 - Male V (vanilla body, Gymfiend VTK 1.4.3 + MV Head VTK) seen in the character creator only so far; mirror, first
