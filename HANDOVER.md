@@ -54,7 +54,9 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   `CANARI_BODY=angel`, SHA `1d2b193e…`, v4 vanilla dans `backup\2026-11-05_183135`) ; validé par lui à 19 h.
 - **Prochain geste** : l'upload de la 1.4.0 (à lui, ou par l'API sur son go). Puis 1.4.1 : pieds d'Angel
   convertis comme les bras (test Arasaka Vibrant), main, cheville du créateur (canari coloré), talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable
-  Feet ; maillage vanilla toujours en hash `15467513564352523783`).
+  Feet ; maillage vanilla toujours en hash `15467513564352523783`). Plus : l'alerte « same name in game »
+  (`gui.py:820-824`, `core.py:1605-1618`) compare les noms toutes V confondues alors que chaque V a sa propre
+  liste (`core.py:1530-1536`) : la limiter aux doublons d'une même V (fausse alerte F/M vue par lui le 06/11).
 - **Canari v4** : `tools\qa_2026-11-05\canari_feet.py`, sortie `gen\uv104\out_canari_feet` (vanilla,
   SHA `bed06d81…`, 22,2 Mo) et `out_canari_feet_angel` (`CANARI_BODY=angel`, travail à part) ; v3
   sauvegardé dans `%LOCALAPPDATA%\InkFlow\backup\2026-11-05_172940`.
