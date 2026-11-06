@@ -89,7 +89,7 @@ Ink Flow ships [b]no tattoo[/b]. It ships a small Windows builder: you drop your
 [*][b]Angel body[/b] (+ Vanilla Refits, VTK Vanilla HD Head): seen in game, every feature: creator, ripperdoc, mirror, first person, photo mode, body / arms / head tattoos, stacking. This is the setup Ink Flow was developed on. 1.4.0: seen again on a game rebuilt from scratch (Angel + Vanilla Refits + VTK Vanilla HD Head + UV Framework 3.2.1), the whole test pack, 42 tattoos VTK and UV with 19 arm conversions: body and arms clean in the creator, at the mirror, in photo mode, in the inventory and in first person (looking down, sitting), with the VTK and the UV version of the same tattoo.
 [*][b]Vanilla body[/b] (no body mod at all): seen in game, same views, body and arms (1.4.0: creator, mirror, photo mode, inventory, first person). Head tattoos on the vanilla head (no VTK head mod) do not show: known, being looked at; with a VTK HD head they work.
 [*][b]VTK Vanilla HD body[/b]: reported working by a user, and passes the builder's checks entirely (body, arms, first-person arms).
-[*][b]Male V, vanilla body[/b] and [b]Gymfiend VTK 1.4.3 + MV Head VTK[/b]: seen in the character creator (body tattoos, stacking). Mirror, first person and photo mode not seen in game yet. Male face tattoos on the vanilla male head do not show (same limit as the female vanilla head); on MV Head VTK not tested yet.
+[*][b]Male V, vanilla body[/b] and [b]Gymfiend VTK 1.4.3 + MV Head VTK[/b]: 1.4.0 seen in game on a save with male V, the builder run as a user over a whole setup (Angel for female V, Gymfiend for male V): body and arm tattoos at the ripperdoc, in the inventory, in photo mode and in first person, as on female V. On Gymfiend, UV tattoos (arms converted) leave V's right shoulder bare (seen with OneSlowZZ Pirate Vince UV); a VTK tattoo on that shoulder not seen yet. Male face tattoos do not show, on the vanilla male head nor on MV Head VTK (seen with Kala Halloween Skeleton).
 [*][b]Other VTK bodies[/b]: the builder reads the body, arm and head meshes your game actually loads and copies them. EBBRB 5.0 passes the builder's checks (measured on its archive, not seen in game yet). Any body mod whose meshes keep local materials and the standard skin appearance passes; a body mod that does not pass stops the build with "unsupported body mod" rather than producing a broken result. The body mod must itself work on your game version: the tattoo shells are copies of its meshes, so a body not updated for 2.5 will not get better under Ink Flow.
 [*][b]UV Framework bodies[/b] (1.3.0, arms of both families since 1.4.0): Solo 2.0 + UV Framework Texture 3.2.1 + Solo arms UV: body and both arms seen in the character creator with UV tattoos, and in the creator and at the mirror with a VTK tattoo whose arms are converted (see "Arms and families" below); not seen again since the first-person and legs fix. Photo mode on Solo: not seen, our Solo bench crashed at save load (Solo's own page reports the same on a clean install; the same tattoos on Angel never crashed), so Solo is parked for now; in first person on Solo the belly uses the vanilla torso mask (Solo's .app cannot be read by WolvenKit Console). Songbird 2.0 body: builds (its cyber plates are left out of the shell), not seen in game.
 [*][b]Not tested[/b]: cyberarms (Mantis Blades, Gorilla Arms… the tattoo shells cover the arms fully; what happens on a cyberarm has not been looked at).
@@ -131,12 +131,12 @@ For each tattoo file the builder extracts the texture(s), copies your active bod
 [size=5][b]Known limits (1.4.0)[/b][/size]
 
 [list]
-[*]Head tattoos on a vanilla head (no VTK head mod, female or male) do not show yet.
+[*]Head tattoos on a vanilla head (no VTK head mod, female or male) do not show yet, nor on male V's MV Head VTK.
 [*]Character creator and apartment mirror: the ink of the shins ends a little lower than in photo mode, the inventory or first person, with a stepped edge. Same texture and same unwrapping in both shells (measured), so it is not the author's art; cosmetic, being looked at.
 [*]Feet on Angel: Angel unwraps its feet into the arm strip of the body texture, which VTK textures do not paint and which the builder clears for UV textures. On Angel every tattoo therefore stops in a straight line at the ankle, even one the author painted down to the toes (seen with Arasaka Workshop Vibrant body paints, which cover the feet on the vanilla body). Angel-specific; next (resampling the feet the way the arms are).
 [*]Hands: a tattoo that goes past the wrist can stop in a straight line on the back of the hand (seen with Samurai). Being looked at.
 [*]Feet states with shoes (high heels, flat shoes) not tested: barefoot only so far.
-[*]Male V: seen in the character creator only so far (vanilla body, Gymfiend VTK).
+[*]Male V on Gymfiend VTK: a UV tattoo (arms converted) leaves V's right shoulder bare (seen with OneSlowZZ Pirate Vince UV); a VTK tattoo on that shoulder not seen yet. Being looked at.
 [*]Arm conversion (1.4.0): the converted arm is a resampling of the author's texture: a little softer than the original, and a hairline may show on a seam where the two unwrappings cut the arm differently. VTK arms onto UV arms (Solo): seen in the creator. UV arms onto vanilla / VTK arms (Angel): seen in the creator and at the mirror for every UV tattoo of the test pack. Needs UV Framework Texture in the game, see "Arms and families".
 [*]Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal, even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as plain overlay archives.
 [*]Cyberarms not tested (see above).
@@ -226,7 +226,7 @@ thrasherpass for the [url=https://www.nexusmods.com/cyberpunk2077/mods/20279]CCX
 ## Files to upload
 
 - 1.4.0 (exe rebuilt 2026-11-05 19 h 20 with the first-person and legs fix, zip 2026-11-06) :
-  `Ink_Flow_Builder-1.4.0.zip` (`releases\`, 23,5 Mo, SHA-256 `5bff56a0…3d47ba7`): `InkFlowBuilder.exe` (SHA-256
+  `Ink_Flow_Builder-1.4.0.zip` (`releases\`, 23,5 Mo, SHA-256 `15d96a10…5bb93c93`, refait le 06/11 au soir : README avec le V masculin vu en jeu): `InkFlowBuilder.exe` (SHA-256
   `8802c4d1…a9a7b6`, full `8802c4d186945dd32eb09b181bf3d6c00fe4620e7877ae98da04fc8219a9a7b6`) + `README.md` +
   `LICENSE`. Same file description as below. Mark 1.1.0 as old version (1.2.0 and 1.3.0 were never uploaded: 1.4.0 carries their changes). Mod
   version field: 1.4.0. Changelog tab: paste 1.2.0, 1.3.0 and 1.4.0.

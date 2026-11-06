@@ -525,3 +525,13 @@ Une entrée par séance ou par jalon, la plus récente en bas. Le détail (mesur
   revu depuis le correctif FPP / jambes ; plantages `memcpy` = Solo seul.
 - Zip `Ink_Flow_Builder-1.4.0.zip` (`5bff56a0…`, exe `8802c4d1…`) ; `NEXUS.md`, README, sticky réécrits sur sa QA
   (crochets levés, limites : cheville du créateur, pieds d'Angel, main, chaussures, bras cybernétiques). Upload à lui.
+
+## 2026-11-06 (soir) — Sa QA du V masculin ; alerte de doublons ; zip refait (Opus)
+
+- Alerte « same name in game » : fausse alerte pour les paires F / M (identifiants internes uniques, une liste par V,
+  `core.py:288-293`, `1530-1536`) ; correctif inscrit en 1.4.1 (`48f514a`).
+- Sa QA du V masculin (save Nexus, son build complet fait en utilisateur) : vanilla et Gymfiend vus dans toutes les vues ;
+  épaule droite nue sous UV sur Gymfiend ; tête MV sans tatouage ; glitch « peau noire » au miroir (V femme, Kala
+  Japanese VTK corps + bras), non reproduit ensuite, pas urgent. Détail et hypothèses dans la passation.
+- Page, README, sticky : V masculin vu en jeu, épaule et tête MV ajoutées aux limites. Le README est dans le zip :
+  zip refait (exe identique `8802c4d1…`), SHA `15d96a10…`.

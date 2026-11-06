@@ -16,8 +16,21 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
 
 - **Sa QA du pack rebâti (06/11)** : corps et bras propres dans toutes les vues (créateur, miroir, photo, inventaire,
   FPP), VTK comme UV du même tattoo ; manches de jambes un peu plus longues au créateur / modificateur (connu, § 29).
-  Non signalés par lui : V masculin, bascules longues, VRAM (rien de neuf écrit sur la page à leur sujet).
-- **Zip** `releases\Ink_Flow_Builder-1.4.0.zip` (23,5 Mo, SHA `5bff56a0…`, exe `8802c4d1…`, `testzip` vert).
+  Non signalés par lui : bascules longues, VRAM (rien de neuf écrit sur la page à leur sujet).
+- **Sa QA du V masculin (06/11 soir, save Nexus, son build complet `3_Bodies` fait en utilisateur)** : vanilla et
+  Gymfiend, corps et bras au charcudoc, inventaire, photo, FPP, comme la V femme. Trois constats, page réécrite :
+  (1) Gymfiend + UV (Pirate Vince, bras convertis 54 %, 100 % appariés au `build.log`) : **épaule droite de V nue**
+  (charcudoc, inventaire, photo) ; VTK masculin sur l'épaule jamais vu (il croit le VTK sain, à confirmer : VTK ONI V
+  masc porte des bras, 8-10 % d'encre). Coque `m_arm_r` = 4 893 sommets contre 9 086 pour `m_arm_l` (asymétrie de
+  Gymfiend AIO Clean Arms V2 ? non mesuré). Banc qui tranche : `seam5.py` (§ 23) sur Gymfiend, UV par la chaîne
+  contre UV sur le framework. (2) Tête : VTK Skeleton n'affiche rien sur MV Head VTK (en plus de la tête vanilla).
+  (3) **Glitch « peau noire »** (V femme, Kala Japanese VTK corps + 2 bras ± tête) : au reflet du miroir seul, peau
+  presque toute noire, bouts rouges / blancs qui bougent ; disparaît sans les bras ou sans le corps ; revenu 3 s
+  après un retour au miroir ; un éclair noir aussi pendant l'animation de sortie du miroir ; **plus reproductible**
+  ensuite, même jeu, mêmes 4 pièces. Hypothèse : texture pas encore résidente (streaming, 8 Go de VRAM, mesures du
+  § 25), non mesurée ; `vram_log.py` n'existe plus sous `C:\__DEV` (à réécrire si ça revient). **Pas urgent (lui).**
+- **Zip** `releases\Ink_Flow_Builder-1.4.0.zip` refait le 06/11 au soir (README : V masculin) : 23,5 Mo, SHA
+  `15d96a10…`, exe inchangé `8802c4d1…`, `testzip` vert.
   `NEXUS.md`, README, sticky 1.4.0 réécrits sur sa QA : plus aucun crochet ; limites = cheville du créateur, pieds
   d'Angel, main, chaussures / talons, bras cybernétiques ; Solo = vu avant le correctif, pas depuis.
 - **À lui** : upload (site, ou l'API v3 sur le fichier 1.1.0 sur son go) avec le SHA dans la description ;

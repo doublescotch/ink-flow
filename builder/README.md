@@ -168,8 +168,10 @@ Data folder: `%LOCALAPPDATA%\InkFlow` (`config.json`, `catalogue.json`, `work\` 
   Angel-specific; next (resampling the feet like the arms).
 - Very faint overlays (freckles, beauty marks: GetTenSO FrecklesV, VTK or UV) do not show through the tattoo decal,
   even at opacity 2.0: they are painted to melt into the skin's own overlay layer. Keep those as overlay archives.
-- Male V (vanilla body, Gymfiend VTK 1.4.3 + MV Head VTK) seen in the character creator only so far; mirror, first
-  person and photo mode not seen in game yet. Head tattoos on a vanilla head (female or male): see Troubleshooting.
+- Male V (vanilla body, Gymfiend VTK 1.4.3 + MV Head VTK), 1.4.0: body and arm tattoos seen at the ripperdoc, in
+  the inventory, in photo mode and in first person. On Gymfiend a UV tattoo (arms converted) leaves V's right shoulder
+  bare (seen with OneSlowZZ Pirate Vince UV); a VTK tattoo on that shoulder not seen yet. Male face tattoos do not show, on the
+  vanilla male head nor on MV Head VTK. Head tattoos on a vanilla female head: see Troubleshooting.
 - Face sculpting changed at the ripperdoc after a build has not been QA'd yet (the head shell follows the face morphs
   on an already sculpted face).
 - Single-file PyInstaller executables are sometimes flagged by antivirus heuristics. The source is here; you can run `python InkFlowBuilder.py` instead.
