@@ -52,9 +52,8 @@ Dépôt `https://github.com/doublescotch/ink-flow`, branche `master`, `canari\` 
   Codeware, CET à poser). 1.4.1.
 - **Canari v4 Angel** posé à 18 h 31 (7 archives de sa config minimale Angel copiées de l'arbre `3_Bodies`,
   `CANARI_BODY=angel`, SHA `1d2b193e…`, v4 vanilla dans `backup\2026-11-05_183135`) ; validé par lui à 19 h.
-- **Prochain geste** : sa passe courte sur Angel (Samurai UV bras convertis, V masculin, bascules de slots longues, VRAM : le pack a grossi de
-  36 %) ; zip ; crochets de `NEXUS.md` / README / sticky réécrits **après** cette passe ; upload. 1.4.1 :
-  main, cheville du créateur, talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable
+- **Prochain geste** : l'upload de la 1.4.0 (à lui, ou par l'API sur son go). Puis 1.4.1 : pieds d'Angel
+  convertis comme les bras (test Arasaka Vibrant), main, cheville du créateur (canari coloré), talons (Angel livre `l0_000_pwa_base__cs_heel.mesh`, chemin de Togglable
   Feet ; maillage vanilla toujours en hash `15467513564352523783`).
 - **Canari v4** : `tools\qa_2026-11-05\canari_feet.py`, sortie `gen\uv104\out_canari_feet` (vanilla,
   SHA `bed06d81…`, 22,2 Mo) et `out_canari_feet_angel` (`CANARI_BODY=angel`, travail à part) ; v3
