@@ -4,7 +4,8 @@ Turn every VTK tattoo archive you own into stackable slots ("Ink 1" to "Ink 9") 
 
 Nexus page and download: [nexusmods.com/cyberpunk2077/mods/36814](https://www.nexusmods.com/cyberpunk2077/mods/36814).
 The text below is the description of that page. The builder's own notes (run from source, build the
-exe) are in [`builder/README.md`](builder/README.md); licence: MIT ([`builder/LICENSE`](builder/LICENSE)).
+exe) are in [`builder/README.md`](builder/README.md); versions: [`CHANGELOG.md`](CHANGELOG.md); licence: MIT
+([`builder/LICENSE`](builder/LICENSE)).
 
 ## What it does
 
