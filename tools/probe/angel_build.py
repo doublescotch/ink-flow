@@ -3,8 +3,10 @@ qu'il est (Angel posé), puis installation. Usage :
   angel_build.py build     : bâtit dans %LOCALAPPDATA%\\InkFlow\\out (jeu ouvert ou fermé, rien d'écrit dans le jeu)
   angel_build.py install   : copie le résultat dans archive\\pc\\mod (jeu fermé), l'ancien part dans backup\\<horodatage>
 Sœur de tools\\qa_2026-11-02\\vanilla_in_game.py, sans parquer Angel."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import hashlib, os, sys, time
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import APP_NAME, MOD_NAME, VERSION, core, env
 from inkflow.config import Config
 

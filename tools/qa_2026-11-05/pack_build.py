@@ -4,13 +4,16 @@ pack à jour »), with his builder settings (slots, mirror, FPP, alpha) and a CO
 `gen\\uv104\\out_pack\\`, work cache `gen\\uv104\\work_game\\` (shared with the earlier game builds : textures already
 extracted are reused). Install : `pack_build.py install` on his unlock, game closed.
 Usage : pack_build.py build | install"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import glob, os, shutil, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 
 ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\uv104"
-PACK = r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos"
+PACK = os.path.join(_DEPOT, r"3_Bodies\__Tattoos")
 OUT = os.path.join(ROOT, "out_pack")
 cfg = Config()
 mode = sys.argv[1] if len(sys.argv) > 1 else "build"

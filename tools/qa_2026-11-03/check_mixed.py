@@ -1,8 +1,10 @@
 """Control of the mixed build (male_build.py mixed) : both .inkcharcustomization unbundled and serialised ; per gender
 the switchers (index, link, linkController, uiSlots), the groups and their option counts ; the male body shell vs the
 active Gymfiend body (vertices, decal materials)."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import json, os, shutil, subprocess, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import env
 from inkflow.config import Config
 

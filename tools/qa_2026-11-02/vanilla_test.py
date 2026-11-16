@@ -1,7 +1,9 @@
 """Does the Ink Flow engine accept the BASE GAME meshes (no body mod at all)? Same code path as a player whose
 archive\\pc\\mod holds no body archive: find_owner falls back to basegame_4_appearance.archive."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import os, sys, json
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import core
 
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"

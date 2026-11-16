@@ -1,4 +1,7 @@
 """Smoke test of the GUI : seed a redirected home, open the window, capture it to PNG (ctypes GDI, no PIL), close."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import ctypes
 import json
 import os
@@ -14,7 +17,7 @@ os.makedirs(HOME, exist_ok=True)
 IN = r"C:\__DEV\cyberpunk\ink_flow\in"
 cfg = {
     "game": r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077",
-    "cli": r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\WolvenKit.Console-9.1.0\WolvenKit.CLI.exe",
+    "cli": (os.environ.get("WOLVENKIT_CLI") or os.path.join(_DEPOT, "__DEV", "WolvenKit.Console-9.1.0", "WolvenKit.CLI.exe")),
     "out": r"C:\__DEV\cyberpunk\ink_flow\exe\test_out",
     "slots": 2, "mirror": True, "fpp": True, "alpha": 1.0,
     "files": [os.path.join(IN, f) for f in sorted(os.listdir(IN)) if f.lower().endswith(".archive")],
@@ -24,7 +27,7 @@ with open(os.path.join(HOME, "config.json"), "w", encoding="utf-8") as f:
     json.dump(cfg, f, indent=2)
 shutil.copyfile(r"C:\__DEV\cyberpunk\ink_flow\exe\test_catalogue.json", os.path.join(HOME, "catalogue.json"))
 
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import gui  # noqa: E402
 
 user32, gdi32 = ctypes.windll.user32, ctypes.windll.gdi32

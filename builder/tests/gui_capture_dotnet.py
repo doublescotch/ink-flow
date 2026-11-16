@@ -1,5 +1,7 @@
 """Smoke test of the Setup box when the .NET runtime is missing : `env.has_dotnet` forced to False, window captured to
 PNG (same GDI capture as gui_capture.py), the .NET button's text and visibility reported. No download, no install."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import ctypes
 import json
 import os
@@ -10,7 +12,7 @@ from ctypes import wintypes
 
 HOME = r"C:\__DEV\cyberpunk\ink_flow\exe\home"
 os.environ["INKFLOW_HOME"] = HOME
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import env  # noqa: E402
 
 env.has_dotnet = lambda major=env.DOTNET_MAJOR: False      # the player without the runtime

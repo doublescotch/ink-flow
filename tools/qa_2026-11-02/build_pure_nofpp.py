@@ -1,13 +1,16 @@
 """Pure vanilla build (body, arms, head from the base game) with HIS archives and settings, against the fake game tree
 (empty archive\\pc\\mod) : nothing is written in his game. Output : gen\\t101\\outD_nofpp."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import os, sys, time
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 
 FAKE = r"C:\__DEV\cyberpunk\ink_flow\gen\t101\fakegame"
 OUT = r"C:\__DEV\cyberpunk\ink_flow\gen\t101\outD_nofpp"
-FOLDER = r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__InkFlow"
+FOLDER = os.path.join(_DEPOT, r"3_Bodies\__InkFlow")
 cfg = Config()
 cat = core.Catalogue(env.CATALOGUE_FILE)
 files = [os.path.join(FOLDER, f) for f in sorted(os.listdir(FOLDER)) if f.lower().endswith(".archive")]

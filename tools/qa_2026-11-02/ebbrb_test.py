@@ -1,7 +1,9 @@
 """Same engine code path as a player whose archive\\pc\\mod holds EBBRB 5.0.0 only : which meshes does it ship, and does
 shell() accept them ?"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import os, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import core, rdar
 
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"

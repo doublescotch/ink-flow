@@ -1,8 +1,10 @@
 """Ink Flow 1.3.0 built on Hell_Kaiser's REAL game (read only : nothing written to the game) with his builder settings and
 tattoo list PLUS the 5 UV archives of `dl\\uv\\`, on a COPY of his catalogue. Output in `gen\\uv104\\out_game\\` ; install
 by hand (or `core.install`) on his unlock. Usage : game_build.py"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import glob, os, shutil, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 

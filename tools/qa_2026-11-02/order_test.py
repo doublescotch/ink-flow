@@ -1,7 +1,9 @@
 """Load-order resolution of core 1.0.1 on a fake game tree : legacy archive\\pc\\mod with modlist.txt, REDmod folder
 with MO_REDmod_load_order.txt, base game fallback, pure tattoo detection, conflicts labels."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import os, shutil, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import core, rdar
 
 T = r"C:\__DEV\cyberpunk\ink_flow\gen\t101"

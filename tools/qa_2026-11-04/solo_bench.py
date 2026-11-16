@@ -11,8 +11,10 @@ Usage : solo_bench.py park|build|install|restore|status
             backup folder holds the Angel build of 16 h 16 : copy it back by hand or rebuild).
   status  : what is in archive\\pc\\mod for bodies, read only.
 Refuses to write while the game is running. Every file written or removed is printed."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import glob, os, shutil, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 

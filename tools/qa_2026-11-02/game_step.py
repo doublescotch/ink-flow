@@ -2,8 +2,10 @@
   game_step.py isolate   : park the 4 VTK head archives next to Angel, move Ink_Flow.archive + .xl to the backup folder
   game_step.py install   : copy gen\\t101\\outC\\Ink_Flow.archive + .xl into archive\\pc\\mod (previous ones to backup)
   game_step.py restore   : put Angel + heads back from the park folder (Ink Flow left as is)"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import os, shutil, sys, time
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import core, env
 
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"

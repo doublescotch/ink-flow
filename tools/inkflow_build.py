@@ -28,6 +28,9 @@ Usage :
   python -I inkflow_build.py --in <dossier> [--game "E:\\...\\Cyberpunk 2077"] [--slots 2] [--slot-index 1041]
          [--slot-title "Ink {n}"] [--max-name 20] [--alpha 1.0] [--out ...] [--work ...] [--name Ink_Flow] [--route1] [--list]
 """
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import argparse
 import copy
 import json
@@ -43,7 +46,7 @@ import rdar  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES = os.path.normpath(os.path.join(HERE, "..", "templates"))
-CLI_DEFAULT = r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\WolvenKit.Console-9.1.0\WolvenKit.CLI.exe"
+CLI_DEFAULT = (os.environ.get("WOLVENKIT_CLI") or os.path.join(_DEPOT, "__DEV", "WolvenKit.Console-9.1.0", "WolvenKit.CLI.exe"))
 GAME_DEFAULT = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"
 WORK_DEFAULT = r"C:\__DEV\cyberpunk\ink_flow\gen"
 

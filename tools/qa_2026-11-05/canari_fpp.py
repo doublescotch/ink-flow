@@ -7,18 +7,21 @@ the fault on (« FPP tete baissee = manches, rien sur le corps »), so the fix i
   install : installs into the game (game closed, his unlock on archive\\pc\\mod)
 Expected in game : tete baissee hors miroir, torse tatoue (chunks 0-4 : torse et cuisses) + mollets (chunks 5-7) ;
 bras FPP inchanges ; createur, miroir, mode photo inchanges."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import glob, json, os, re, subprocess, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"
 ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\uv104"
 WORK, OUT = os.path.join(ROOT, "work_canari_fpp"), os.path.join(ROOT, "out_canari_fpp")
-TATTOOS = [r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive",
+TATTOOS = [os.path.join(_DEPOT, r"3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive"),
            # run 2 (15 h 40) : Bedellia body added for the first-person torso (the Samurai texture has no chest ink, his
            # QA of 15 h 30) ; the lower-legs fix (§ 27 bis : chunks 6-7 hidden, flat-foot legs shell) is in this run too.
-           r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Bedellia_Unrelated_Body.archive"]
+           os.path.join(_DEPOT, r"3_Bodies\__Tattoos\002_Tattoos_VTK_Bedellia_Unrelated_Body.archive")]
 cfg = Config()
 CLI = env.find_wolvenkit(cfg["cli"])
 mode = sys.argv[1] if len(sys.argv) > 1 else "build"

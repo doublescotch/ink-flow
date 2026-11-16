@@ -6,8 +6,11 @@ the source). Two tattoos only (his rule) on his MINIMAL game (Solo bench + Ink F
 Run 1 = current engine : expected to crash at the mirror or on a save load (reproduction).
 Run 2 = engine with the header check + re-import : expected clean.
 Usage : canari3.py build | install        (install : game closed, his formula on archive\\pc\\mod)"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import os, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 
@@ -15,7 +18,7 @@ GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"
 ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\uv104"
 WORK, OUT = os.path.join(ROOT, "work_canari3"), os.path.join(ROOT, "out_canari3")
 TATTOOS = [r"C:\__DEV\cyberpunk\ink_flow\dl\uv\tattoos\002_Tattoos_UV_Kala_Japanese_V2.archive",
-           r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive"]
+           os.path.join(_DEPOT, r"3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive")]
 cfg = Config()
 CLI = env.find_wolvenkit(cfg["cli"])
 mode = sys.argv[1]

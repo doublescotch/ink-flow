@@ -5,10 +5,13 @@ Usage :
   pose_probe.py remove   : retire r6\\scripts\\InkFlow_Probe (Redscript reste en place)
   pose_probe.py logs     : copie dans logs\\<horodatage>\\ tout journal qui cite InkFlowProbe + redscript_rCURRENT.log
 Chemins en dur du poste (même convention que tools\\qa_2026-11-02\\game_step.py)."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import os, shutil, subprocess, sys, time, zipfile
 
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"
-ZIP = r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\1_Core\__WOLVENKIT\Red Script-1511-0-5-32-1792693776.zip"
+ZIP = os.path.join(_DEPOT, r"1_Core\__WOLVENKIT\Red Script-1511-0-5-32-1792693776.zip")
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROBE_SRC = os.path.join(HERE, "InkFlow_Probe", "InkFlow_Probe.reds")
 PROBE_DST_DIR = os.path.join(GAME, "r6", "scripts", "InkFlow_Probe")

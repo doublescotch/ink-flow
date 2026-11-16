@@ -33,12 +33,15 @@ Sources (déjà extraites dans x\) :
 
 Usage : python -I build_canari.py [--alpha 0.6] [--fpp] [--files samurai,kala] [--slots 2] [--slot-index 1041] [--shell body] [--tag v5]
 """
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import argparse, copy, json, os, shutil, subprocess, sys
 
 ROOT = r"C:\__DEV\cyberpunk\ink_flow"
 X = os.path.join(ROOT, "x")
 TK = os.path.join(ROOT, r"dl\20279\unz")
-CLI = r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\WolvenKit.Console-9.1.0\WolvenKit.CLI.exe"
+CLI = (os.environ.get("WOLVENKIT_CLI") or os.path.join(_DEPOT, "__DEV", "WolvenKit.Console-9.1.0", "WolvenKit.CLI.exe"))
 BUILD = os.path.join(ROOT, "build")
 ARCHIVE_NAME = "Ink_Flow_Canari"
 SRC = os.path.join(BUILD, ARCHIVE_NAME)          # racine packée (= archive\pc\mod\<nom>.archive)

@@ -1,4 +1,6 @@
 """GUI smoke test 1.0.1 : own home, real game, open the window, wait for the Body mesh line, capture, report."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import ctypes, json, os, struct, sys, zlib
 from ctypes import wintypes
 
@@ -12,7 +14,7 @@ cfg = {"game": r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077",
        "files": [os.path.join(IN, f) for f in sorted(os.listdir(IN)) if f.lower().endswith(".archive")], "unchecked": []}
 with open(os.path.join(HOME, "config.json"), "w", encoding="utf-8") as f:
     json.dump(cfg, f, indent=2)
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import gui  # noqa: E402
 
 user32, gdi32 = ctypes.windll.user32, ctypes.windll.gdi32

@@ -5,8 +5,11 @@ flat-legs shell listed in `flat_feet` only ; first person unchanged. Output in o
   build | check | install  (same as canari_fpp.py)
 Expected in game : creator / apartment mirror : shins clean from the front (lifted feet), no moving holes ; in game
 (photo, inventory, FPP) unchanged from v3 ; with shoes : to look at."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import glob, json, os, re, subprocess, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 
@@ -17,10 +20,10 @@ WORK, OUT = os.path.join(ROOT, "work_canari_fpp"), os.path.join(ROOT, "out_canar
 # folders, so the vanilla v4 output stays as it is.
 if os.environ.get("CANARI_BODY"):
     WORK, OUT = WORK + "_" + os.environ["CANARI_BODY"], OUT + "_" + os.environ["CANARI_BODY"]
-TATTOOS = [r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive",
+TATTOOS = [os.path.join(_DEPOT, r"3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive"),
            # run 2 (15 h 40) : Bedellia body added for the first-person torso (the Samurai texture has no chest ink, his
            # QA of 15 h 30) ; the lower-legs fix (§ 27 bis : chunks 6-7 hidden, flat-foot legs shell) is in this run too.
-           r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Bedellia_Unrelated_Body.archive"]
+           os.path.join(_DEPOT, r"3_Bodies\__Tattoos\002_Tattoos_VTK_Bedellia_Unrelated_Body.archive")]
 cfg = Config()
 CLI = env.find_wolvenkit(cfg["cli"])
 mode = sys.argv[1] if len(sys.argv) > 1 else "build"

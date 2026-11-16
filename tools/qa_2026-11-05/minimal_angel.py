@@ -6,8 +6,10 @@ Usage : minimal_angel.py park_all | unpark_all | status   (game closed ; his unl
   park_all   : archive\\pc\\mod\\* -> archive\\pc\\mod__parked_2026-11-05\\
   unpark_all : everything moved back ; refuses if a name already exists in mod (nothing overwritten)
   status     : what is in mod and in the parked folder, read only"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import os, shutil, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import core
 
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"

@@ -1,7 +1,10 @@
 """Telecharge les fichiers MAIN d'un mod Nexus (API v1) dans dl\<modId>\ ; cle lue dans nexus.env, jamais affichee."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import json, os, subprocess, sys, urllib.parse
 def key():
-    for line in open(r"D:\OneDrive\Perso\Jeux\Mods\Nexus\__DEV\nexus.env", encoding="utf-8-sig"):
+    for line in open((os.environ.get("NEXUS_ENV") or os.path.join(_DEPOT, "..", "..", "Nexus", "__DEV", "nexus.env")), encoding="utf-8-sig"):
         if line.strip().startswith("NEXUS_API_KEY="): return line.split("=",1)[1].strip()
     sys.exit("cle absente")
 def curl(args):

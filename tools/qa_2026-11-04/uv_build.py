@@ -6,8 +6,10 @@ Tattoos : the 5 UV archives of `dl\\uv\\` (Bedellia Unrelated, Kala Japanese Sle
 Bloom = body + head) + 2 VTK (Samurai = body + arms, Kala Japanese Arm Body). Catalogue = a copy (his own is never
 written). Nothing is written to the game : the fake trees junction the base game's `archive\\pc\\content` (read only).
 Expected : solo = every UV target built, VTK arms skipped ; angel = UV arms skipped, Angel feet masked, VTK whole."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import glob, os, shutil, subprocess, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 

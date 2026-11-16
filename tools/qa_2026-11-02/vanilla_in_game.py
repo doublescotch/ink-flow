@@ -1,8 +1,10 @@
 """QA corps vanilla (demande de Hell_Kaiser, 2026-11-02) : parquer Angel hors du jeu, bâtir Ink Flow 1.0.1 avec SA
 configuration (ses archives, ses slots) sur le corps vanilla, installer. Une seule commande, jeu fermé.
 Usage : python vanilla_in_game.py <game> <park dir>"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import hashlib, os, shutil, sys, time
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import APP_NAME, MOD_NAME, VERSION, core, env
 from inkflow.config import Config
 

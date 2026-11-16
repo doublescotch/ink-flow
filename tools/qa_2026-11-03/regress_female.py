@@ -3,12 +3,15 @@ twice against the fake vanilla game tree of 2026-11-02 (`gen\\t101\\fakegame`), 
 catalogue (his own is never written) : once with the engine of the last commit (`git show HEAD:...` into a temp
 folder), once with the working tree. Both archives unbundled and compared file by file (SHA-256), plus the .xl.
 Usage : regress_female.py [git ref of the old engine, default HEAD]"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import hashlib, importlib, os, shutil, subprocess, sys
 
-PROJ = r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow"
+PROJ = _ROOT
 ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\m103"
 FAKE = r"C:\__DEV\cyberpunk\ink_flow\gen\t101\fakegame"
-FOLDER = r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos"   # ex-__InkFlow (03/11)
+FOLDER = os.path.join(_DEPOT, r"3_Bodies\__Tattoos")   # ex-__InkFlow (03/11)
 CAT = ROOT + r"\catalogue_copy.json"
 REF = sys.argv[1] if len(sys.argv) > 1 else "HEAD"
 

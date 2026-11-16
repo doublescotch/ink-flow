@@ -7,8 +7,10 @@ Expected if the converted texture is the fault : Samurai gets its sleeves ; Unkn
 keeps the left sleeve. Expected if the fault is elsewhere : Samurai still bare ; Unknown Samurai body gone, left sleeve.
 Output : gen\\uv104\\out_canari_swap\\Ink_Flow.archive (+ .xl). Nothing written to the game here (solo_bench-like install
 by hand : core.install). Usage : canari_swap.py"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import os, shutil, subprocess, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import env
 from inkflow.config import Config
 

@@ -7,18 +7,21 @@ Samurai UV. Then the Samurai VTK arm textures are replaced :
 Reading in game, Samurai VTK : left sleeve visible => the 8K import path is fine, the converted CONTENT is the fault ;
 left sleeve absent => the 8K import path (or the --keep template) is the fault ; right sleeve visible => 8K is the fault.
 Usage : canari2.py build | variants | install        (install : game closed, his unlock)"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import glob, os, shutil, subprocess, sys
 import numpy as np
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, armconv, core, env
 from inkflow.config import Config
 
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"
 ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\uv104"
 WORK, OUT = os.path.join(ROOT, "work_canari2"), os.path.join(ROOT, "out_canari2")
-TATTOOS = [r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive",
+TATTOOS = [os.path.join(_DEPOT, r"3_Bodies\__Tattoos\002_Tattoos_VTK_Unknown_Samurai.archive"),
            r"C:\__DEV\cyberpunk\ink_flow\dl\uv\tattoos\002_Tattoos_UV_Unknown_Samurai.archive"]
-UV_DDS = os.path.join(os.environ["TEMP"], r"claude\d--OneDrive-Serveurs\a4a06752-455f-4174-958c-186639a4eeda\scratchpad\diag\uv\unknown_samurai_2_uv_pwa.dds")
+UV_DDS = os.path.join(os.environ["TEMP"], r"inkflow_diag\uv\unknown_samurai_2_uv_pwa.dds")
 cfg = Config()
 CLI = env.find_wolvenkit(cfg["cli"])
 mode = sys.argv[1]

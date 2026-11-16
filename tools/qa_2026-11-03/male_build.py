@@ -5,8 +5,11 @@
 Male tattoos : Kala Japanese Faded MV (Nexus 7414, 5 archives), the Gymfiend vanilla tattoo overlays (6423, 8), and
 `__Tattoos\\002_Tattoos_Masc_V_VTK_Kala_Japanese_V2`. Catalogue = a copy (his own is never written). Nothing is written
 to the game : the fake trees junction the base game's `archive\\pc\\content` (read only)."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
+_DEPOT = os.environ.get("INKFLOW_DEPOT") or os.path.abspath(os.path.join(_ROOT, "..", "..", ".."))   # mods folder: three levels above the project, or INKFLOW_DEPOT
 import glob, os, shutil, subprocess, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import MOD_NAME, core, env
 from inkflow.config import Config
 
@@ -14,7 +17,7 @@ mode = sys.argv[1]
 ROOT = r"C:\__DEV\cyberpunk\ink_flow\gen\m103"
 CONTENT = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077\archive\pc\content"
 DL = r"C:\__DEV\cyberpunk\ink_flow\dl"
-TATTOOS = r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\3_Bodies\__Tattoos"
+TATTOOS = os.path.join(_DEPOT, r"3_Bodies\__Tattoos")
 BODY = {"vanilla": [], "gymfiend": [DL + r"\6423_vtk\archive\pc\mod\02_Gymfiend_[VTK]_v.1.4.3.archive",
                                     DL + r"\6423_head\archive\pc\mod\02_MV_Head_[VTK].archive"]}
 BODY["mixed"] = BODY["gymfiend"]

@@ -5,8 +5,10 @@ gymfiend masc V », instance reset to stacks 1 and 2). Usage : game_pose.py chec
   gymfiend : + Gymfiend VTK 1.4.3 (archive + .xl) + MV Head VTK, Ink_Flow replaced by gen\\m103\\out_gymfiend ;
   remove   : everything this script posed is taken out (Ink_Flow, Gymfiend, MV Head) ; his files are never touched.
 Refuses to run while the game is running. Every file written or removed is printed."""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import os, shutil, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import core
 
 GAME = r"E:\Jeux\SteamLibrary\steamapps\common\Cyberpunk 2077"

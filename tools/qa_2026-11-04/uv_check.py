@@ -1,8 +1,10 @@
 """Control of a UV build (uv_build.py solo|angel) : the archive unbundled and serialised ; listing by kind ; per .app
 the component chunkMask ; per shell mesh the decal texture and the material count ; the switchers and options of the
 female .inkcharcustomization (names per option = which targets each tattoo drives). Usage : uv_check.py solo|angel"""
+import os
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))   # Ink Flow project root
 import json, os, re, shutil, subprocess, sys
-sys.path.insert(0, r"D:\OneDrive\Perso\Jeux\Mods\Cyberpunk 2.5\__DEV\__DEV\Projects\Ink Flow\builder")
+sys.path.insert(0, os.path.join(_ROOT, "builder"))
 from inkflow import env
 from inkflow.config import Config
 
