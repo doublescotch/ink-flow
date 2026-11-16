@@ -12,3 +12,9 @@ __pycache__/
 build/
 dist/
 venv/
+# documents de travail (passation, journal, etude, brouillons Nexus) : gardes sur le poste, jamais au depot
+/HANDOVER.md
+/LOG.md
+/ETUDE.md
+/NEXUS.md
+/NEXUS_POSTS.md
